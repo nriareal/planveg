@@ -1253,6 +1253,7 @@
             // Specific validation for "Gain Weight (Low BMI)" goal
             if (currentStep === 2) {
                 const goal = document.getElementById('goal').value;
+                userData.goal = goal; // Capture the goal here!
                 if (goal === 'gain_weight') {
                     const height_m = userData.height / 100;
                     const bmi = userData.weight / (height_m * height_m);
@@ -1408,7 +1409,7 @@
 
         function displayNutritionSummary() {
             const summary = document.getElementById('nutritionSummary');
-            const goalText = {
+            const goalTextMap = { 
                 maintain: 'Maintain Current Weight',
                 lose: 'Fat Loss',
                 gain: 'Muscle Gain',
@@ -1416,9 +1417,15 @@
                 gain_weight: 'Weight Gain'
             };
             
-            // Get the user's goal, with a fallback if somehow undefined
-            const userGoalKey = userData.goal || 'unknown'; // Fallback key
-            const displayGoal = goalText[userGoalKey] || 'Your Goal'; // Fallback display text
+            const userSelectedGoal = userData.goal; 
+            let displayGoal = 'Goal Not Selected'; 
+
+            if (userSelectedGoal && goalTextMap[userSelectedGoal]) {
+                displayGoal = goalTextMap[userSelectedGoal];
+            } else if (userSelectedGoal) {
+                displayGoal = userSelectedGoal.charAt(0).toUpperCase() + userSelectedGoal.slice(1);
+            }
+            
 
             summary.innerHTML = `
                 <h3>Goal: ${displayGoal}</h3>
@@ -1542,7 +1549,6 @@
                         }
 
                         // Check if the recipe explicitly uses a milk type or if it's a generic 'plant milk'
-                        // If it's generic, it's assumed any milk can be used, so it passes.
                         // If it's a specific milk, then it must match the preference.
                         const recipeUsesSpecificMilk = mealIngredients.some(ing => ['almond milk', 'soy milk', 'oat milk', 'coconut milk'].includes(ing));
                         
