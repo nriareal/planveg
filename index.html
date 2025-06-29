@@ -957,6 +957,16 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="numWeeks">Number of Weeks for Meal Plan</label>
+                    <select id="numWeeks">
+                        <option value="1">1 Week</option>
+                        <option value="2">2 Weeks</option>
+                        <option value="3">3 Weeks</option>
+                        <option value="4">4 Weeks</option>
+                    </select>
+                </div>
+
                 <div class="form-group" style="margin-top: 30px;">
                     <label for="substitutePreference">Include Ready-to-Go Vegan Substitutes?</label>
                     <select id="substitutePreference">
@@ -1163,9 +1173,9 @@
         let currentStep = 1;
         let userData = {};
         let nutritionPlan = {};
-        let mealPlan = {};
+        let mealPlan = {}; // This will now store multiple weeks, e.g., { 'Week 1': {day: {meals}}, 'Week 2': {...} }
         let shoppingList = {};
-        let recipes = {}; // This will now store unique recipes chosen for the plan
+        let recipes = {}; // This will now store unique recipes chosen across all weeks
 
         const totalSteps = 9; // Updated to 9 steps (excluding loading, so 10 total states)
 
@@ -1238,6 +1248,8 @@
             userData.activityLevel = document.getElementById('activityLevel').value; // Store activity level
             userData.bodyType = document.getElementById('bodyType').value; // Store body type
             userData.milkPreference = document.getElementById('milkPreference').value; // Store milk preference
+            // Make sure numWeeks is set if it's step 5, default to 1 if not defined yet
+            userData.numWeeks = document.getElementById('numWeeks') ? parseInt(document.getElementById('numWeeks').value) : 1; 
             userData.substitutePreference = document.getElementById('substitutePreference') ? document.getElementById('substitutePreference').value : 'none'; // Store substitute preference, default to 'none' if element not present yet
 
             // Body Fat, Muscle Mass, Daily Calories are now optional at input stage
@@ -1466,17 +1478,35 @@
             };
             console.log('Meal Structure:', mealStructure);
             
-            const allVeganMeals = createVeganMealDatabase();
-            console.log('All Vegan Meals Database:', allVeganMeals);
+            const numWeeks = userData.numWeeks;
+            mealPlan = {}; // Reset mealPlan to store multiple weeks
+            recipes = {}; // Reset recipes for cumulative collection
+            shoppingList = {}; // Reset shoppingList for cumulative collection
 
-            mealPlan = generateWeeklyMealPlan(mealStructure, allVeganMeals);
-            console.log('Generated Weekly Meal Plan:', mealPlan);
+            for (let i = 1; i <= numWeeks; i++) {
+                const allVeganMeals = createVeganMealDatabase(); // Re-create/shuffle for each week for more randomization
+                const weeklyPlan = generateWeeklyMealPlan(mealStructure, allVeganMeals);
+                mealPlan[`Week ${i}`] = weeklyPlan;
 
-            createShoppingList();
-            console.log('Generated Shopping List:', shoppingList);
+                // Collect recipes for each week
+                Object.values(weeklyPlan).forEach(day => {
+                    Object.values(day).forEach(meal => {
+                        if (meal) {
+                            // Replace 'plant milk' with specific preference in recipe display if chosen
+                            const ingredientsForRecipe = meal.ingredients.map(ing => {
+                                if (ing.item === 'plant milk' && userData.milkPreference !== 'any') {
+                                    return { ...ing, item: userData.milkPreference + ' milk' };
+                                }
+                                return ing;
+                            });
+                            recipes[meal.name] = { ...meal, ingredients: ingredientsForRecipe };
+                        }
+                    });
+                });
+            }
 
-            createRecipeGuide(allVeganMeals);
-            console.log('Generated Recipes Guide:', recipes);
+            createShoppingList(); // This function now iterates through all weeks in mealPlan
+            // createRecipeGuide(allVeganMeals); // This is now done within the loop above to collect unique recipes from all weeks
 
             displayMealPlan();
             console.log('--- createMealPlan() finished ---');
@@ -1604,7 +1634,9 @@
                     console.warn(`No meals available in array for selection. Returning empty array.`);
                     return [];
                 }
-                const selected = arr.sort(() => 0.5 - Math.random()).slice(0, Math.min(count, arr.length));
+                // Shuffle the array and pick 'count' unique meals
+                const shuffled = arr.sort(() => 0.5 - Math.random());
+                const selected = shuffled.slice(0, Math.min(count, shuffled.length));
                 console.log(`Selected ${selected.length} unique meals from ${arr.length}:`, selected.map(m => m.name));
                 return selected;
             };
@@ -1617,7 +1649,7 @@
             };
             console.log('Selected Unique Meals for each type:', selectedUniqueMeals);
 
-            recipes = {}; // Clear recipes object before populating
+            // Populate the weekPlan with meals, cycling through the selected unique meals
             days.forEach((day, index) => {
                 weekPlan[day] = {
                     breakfast: selectedUniqueMeals.breakfast[index % selectedUniqueMeals.breakfast.length],
@@ -1625,11 +1657,6 @@
                     dinner: selectedUniqueMeals.dinner[index % selectedUniqueMeals.dinner.length],
                     snacks: selectedUniqueMeals.snacks[index % selectedUniqueMeals.snacks.length]
                 };
-                Object.values(weekPlan[day]).forEach(meal => { 
-                    if (meal) { // Ensure meal is not undefined before adding to recipes
-                        recipes[meal.name] = meal; 
-                    }
-                });
             });
             console.log('--- generateWeeklyMealPlan() finished ---');
             return weekPlan;
@@ -1644,20 +1671,24 @@
                 return;
             }
             let html = '';
-            Object.keys(mealPlan).forEach(day => {
-                const dayMeals = mealPlan[day];
-                // Ensure all meal types exist before trying to access their properties
-                const totalCals = Object.values(dayMeals).reduce((sum, meal) => sum + (meal ? meal.calories : 0), 0);
-                html += `
-                    <div class="day-card">
-                        <div class="day-header">${day} - ${totalCals} calories</div>
-                        <div class="meals">
-                            <div class="meal"><div class="meal-type">🌅 Breakfast</div><div class="meal-item">${dayMeals.breakfast ? dayMeals.breakfast.name : 'N/A'} (${dayMeals.breakfast ? dayMeals.breakfast.calories : 0} cal)</div></div>
-                            <div class="meal"><div class="meal-type">🌞 Lunch</div><div class="meal-item">${dayMeals.lunch ? dayMeals.lunch.name : 'N/A'} (${dayMeals.lunch ? dayMeals.lunch.calories : 0} cal)</div></div>
-                            <div class="meal"><div class="meal-type">🌙 Dinner</div><div class="meal-item">${dayMeals.dinner ? dayMeals.dinner.name : 'N/A'} (${dayMeals.dinner ? dayMeals.dinner.calories : 0} cal)</div></div>
-                            <div class="meal"><div class="meal-type">🍎 Snack</div><div class="meal-item">${dayMeals.snacks ? dayMeals.snacks.name : 'N/A'} (${dayMeals.snacks ? dayMeals.snacks.calories : 0} cal)</div></div>
-                        </div>
-                    </div>`;
+            Object.keys(mealPlan).forEach(weekKey => { // weekKey will be "Week 1", "Week 2", etc.
+                html += `<h3 style="text-align: center; margin-top: 30px; margin-bottom: 20px; color: #5a67d8;">${weekKey}</h3>`;
+                const weeklyPlan = mealPlan[weekKey];
+                Object.keys(weeklyPlan).forEach(day => {
+                    const dayMeals = weeklyPlan[day];
+                    // Ensure all meal types exist before trying to access their properties
+                    const totalCals = Object.values(dayMeals).reduce((sum, meal) => sum + (meal ? meal.calories : 0), 0);
+                    html += `
+                        <div class="day-card">
+                            <div class="day-header">${day} - ${totalCals} calories</div>
+                            <div class="meals">
+                                <div class="meal"><div class="meal-type">🌅 Breakfast</div><div class="meal-item">${dayMeals.breakfast ? dayMeals.breakfast.name : 'N/A'} (${dayMeals.breakfast ? dayMeals.breakfast.calories : 0} cal)</div></div>
+                                <div class="meal"><div class="meal-type">🌞 Lunch</div><div class="meal-item">${dayMeals.lunch ? dayMeals.lunch.name : 'N/A'} (${dayMeals.lunch ? dayMeals.lunch.calories : 0} cal)</div></div>
+                                <div class="meal"><div class="meal-type">🌙 Dinner</div><div class="meal-item">${dayMeals.dinner ? dayMeals.dinner.name : 'N/A'} (${dayMeals.dinner ? dayMeals.dinner.calories : 0} cal)</div></div>
+                                <div class="meal"><div class="meal-type">🍎 Snack</div><div class="meal-item">${dayMeals.snacks ? dayMeals.snacks.name : 'N/A'} (${dayMeals.snacks ? dayMeals.snacks.calories : 0} cal)</div></div>
+                            </div>
+                        </div>`;
+                });
             });
             resultsDiv.innerHTML = html;
             console.log('--- displayMealPlan() finished ---');
@@ -1666,24 +1697,26 @@
         function createShoppingList() {
             console.log('--- createShoppingList() started ---');
             const allIngredients = {};
-            Object.values(mealPlan).forEach(day => {
-                Object.values(day).forEach(meal => {
-                    if (meal && meal.ingredients) { // Ensure meal and ingredients exist
-                        meal.ingredients.forEach(ing => {
-                            const key = ing.item.toLowerCase();
-                            // Handle specific milk type replacement for shopping list based on user preference
-                            let itemKey = key;
-                            if (key === 'plant milk' && userData.milkPreference !== 'any') {
-                                itemKey = userData.milkPreference + ' milk';
-                            }
+            Object.values(mealPlan).forEach(weeklyPlan => { // Iterate over each week's plan
+                Object.values(weeklyPlan).forEach(day => {
+                    Object.values(day).forEach(meal => {
+                        if (meal && meal.ingredients) { // Ensure meal and ingredients exist
+                            meal.ingredients.forEach(ing => {
+                                const key = ing.item.toLowerCase();
+                                // Handle specific milk type replacement for shopping list based on user preference
+                                let itemKey = key;
+                                if (key === 'plant milk' && userData.milkPreference !== 'any') {
+                                    itemKey = userData.milkPreference + ' milk';
+                                }
 
-                            if (!allIngredients[itemKey]) {
-                                allIngredients[itemKey] = { quantity: 0, unit: ing.unit };
-                            }
-                            allIngredients[itemKey].quantity += ing.quantity;
-                            if(ing.unit === 'unit') allIngredients[itemKey].unit = 'units';
-                        });
-                    }
+                                if (!allIngredients[itemKey]) {
+                                    allIngredients[itemKey] = { quantity: 0, unit: ing.unit };
+                                }
+                                allIngredients[itemKey].quantity += ing.quantity;
+                                if(ing.unit === 'unit') allIngredients[itemKey].unit = 'units';
+                            });
+                        }
+                    });
                 });
             });
             console.log('All ingredients gathered:', allIngredients);
@@ -1723,24 +1756,13 @@
             console.log('--- createShoppingList() finished ---');
         }
         
-        function createRecipeGuide(allVeganMeals) {
+        function createRecipeGuide() { // Removed parameter as recipes are now collected during meal plan generation
             console.log('--- createRecipeGuide() started ---');
-            recipes = {};
-            const uniqueMealNames = new Set(Object.values(mealPlan).flatMap(day => Object.values(day).map(meal => meal ? meal.name : null)).filter(name => name !== null));
-            console.log('Unique meal names for recipes:', Array.from(uniqueMealNames));
-
-            Object.values(allVeganMeals).flat().forEach(meal => {
-                if (meal && uniqueMealNames.has(meal.name)) {
-                    // Replace 'plant milk' with specific preference in recipe display if chosen
-                    const ingredientsForRecipe = meal.ingredients.map(ing => {
-                        if (ing.item === 'plant milk' && userData.milkPreference !== 'any') {
-                            return { ...ing, item: userData.milkPreference + ' milk' };
-                        }
-                        return ing;
-                    });
-                    recipes[meal.name] = { ...meal, ingredients: ingredientsForRecipe };
-                }
-            });
+            // Recipes object is already populated in createMealPlan loop
+            // This function now just ensures recipes is ready for display/download
+            if (Object.keys(recipes).length === 0) {
+                console.warn('Recipes object is empty after meal plan generation.');
+            }
             console.log('--- createRecipeGuide() finished ---');
         }
         
@@ -1819,26 +1841,26 @@
             // - Average fish consumption -> hundreds of fish/shellfish per year.
             // Numbers here are representative based on common estimates.
 
-            const chickensSavedWeek = (35 / 52) * 1; // Approx 35 chickens per omnivore per year
-            const chickensSavedYear = 35;
-            const pigsSavedWeek = (0.7 / 52) * 1;    // Approx 0.7 pigs per omnivore per year
-            const pigsSavedYear = 0.7;
-            const cowsSavedWeek = (0.15 / 52) * 1;   // Approx 0.15 cows per omnivore per year
-            const cowsSavedYear = 0.15;
-            const fishSavedWeek = (150 / 52) * 1;    // Approx 150 fish per omnivore per year
-            const fishSavedYear = 150;
+            const chickensSavedWeek = (35 / 52) * userData.numWeeks; // Approx 35 chickens per omnivore per year
+            const chickensSavedTotal = 35 * userData.numWeeks;
+            const pigsSavedWeek = (0.7 / 52) * userData.numWeeks;    // Approx 0.7 pigs per omnivore per year
+            const pigsSavedTotal = 0.7 * userData.numWeeks;
+            const cowsSavedWeek = (0.15 / 52) * userData.numWeeks;   // Approx 0.15 cows per omnivore per year
+            const cowsSavedTotal = 0.15 * userData.numWeeks;
+            const fishSavedWeek = (150 / 52) * userData.numWeeks;    // Approx 150 fish per omnivore per year
+            const fishSavedTotal = 150 * userData.numWeeks;
 
             let animalsSavedWeekText = `• 🐔 <strong>${chickensSavedWeek.toFixed(1)}</strong> chicken${chickensSavedWeek !== 1 ? 's' : ''}`;
             animalsSavedWeekText += `<br>• 🐷 <strong>${pigsSavedWeek.toFixed(2)}</strong> pig${pigsSavedWeek !== 1 ? 's' : ''}`;
             animalsSavedWeekText += `<br>• 🐄 <strong>${cowsSavedWeek.toFixed(2)}</strong> cow${cowsSavedWeek !== 1 ? 's' : ''}`;
             animalsSavedWeekText += `<br>• 🐟 <strong>${fishSavedWeek.toFixed(1)}</strong> fish`;
-            document.getElementById('animalsSavedWeek').innerHTML = `<strong>Per week:</strong><br>${animalsSavedWeekText}`;
+            document.getElementById('animalsSavedWeek').innerHTML = `<strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong><br>${animalsSavedWeekText}`;
 
-            let animalsSavedYearText = `• 🐔 <strong>${chickensSavedYear.toFixed(0)}</strong> chicken${chickensSavedYear !== 1 ? 's' : ''}`;
-            animalsSavedYearText += `<br>• 🐷 <strong>${pigsSavedYear.toFixed(1)}</strong> pig${pigsSavedYear !== 1 ? 's' : ''}`;
-            animalsSavedYearText += `<br>• 🐄 <strong>${cowsSavedYear.toFixed(1)}</strong> cow${cowsSavedYear !== 1 ? 's' : ''}`;
-            animalsSavedYearText += `<br>• 🐟 <strong>${fishSavedYear.toFixed(0)}</strong> fish`;
-            document.getElementById('animalsSavedYear').innerHTML = `<strong>Per year:</strong><br>${animalsSavedYearText}`;
+            let animalsSavedYearText = `• 🐔 <strong>${chickensSavedTotal.toFixed(0)}</strong> chicken${chickensSavedTotal !== 1 ? 's' : ''}`;
+            animalsSavedYearText += `<br>• 🐷 <strong>${pigsSavedTotal.toFixed(1)}</strong> pig${pigsSavedTotal !== 1 ? 's' : ''}`;
+            animalsSavedYearText += `<br>• 🐄 <strong>${cowsSavedTotal.toFixed(1)}</strong> cow${cowsSavedTotal !== 1 ? 's' : ''}`;
+            animalsSavedYearText += `<br>• 🐟 <strong>${fishSavedTotal.toFixed(0)}</strong> fish`;
+            document.getElementById('animalsSavedYear').innerHTML = `<strong>Projected per year:</strong><br>${animalsSavedYearText}`;
 
 
             // --- Environmental Benefits Saved ---
@@ -1848,23 +1870,23 @@
             // - CO2e: ~1.8 kg CO2e per day (difference between ~2.5kg omnivore and ~0.7kg vegan)
             // - Water: ~4164 liters per day
             
-            // Per Week
-            const landSavedSqMetersWeek = 18 * 7; 
-            const landSavedSqFtWeek = (landSavedSqMetersWeek * 10.764).toFixed(0); 
-            const co2SavedKgWeek = (2.5 - 0.7) * 7; 
-            const co2SavedLbsWeek = (co2SavedKgWeek * 2.20462).toFixed(1);
-            const waterSavedLitersWeek = 4164 * 7; 
-            const waterSavedGallonsWeek = (waterSavedLitersWeek / 3.785).toFixed(0);
+            // Per Selected Weeks
+            const landSavedSqMetersTotal = 18 * 7 * userData.numWeeks; 
+            const landSavedSqFtTotal = (landSavedSqMetersTotal * 10.764).toFixed(0); 
+            const co2SavedKgTotal = (2.5 - 0.7) * 7 * userData.numWeeks; 
+            const co2SavedLbsTotal = (co2SavedKgTotal * 2.20462).toFixed(1);
+            const waterSavedLitersTotal = 4164 * 7 * userData.numWeeks; 
+            const waterSavedGallonsTotal = (waterSavedLitersTotal / 3.785).toFixed(0);
 
-            // Per Year
+            // Per Year (re-calculate based on full year)
             const landSavedSqMetersYear = 18 * 365;
             const landSavedAcresYear = (landSavedSqMetersYear / 4046.86).toFixed(1); // 1 acre = 4046.86 sq meters
             const co2SavedTonnesYear = ((2.5 - 0.7) * 365 / 1000).toFixed(2); // Convert kg to tonnes
             const waterSavedMillionLitersYear = (4164 * 365 / 1000000).toFixed(2); // Convert liters to million liters
 
-            document.getElementById('landSaved').innerHTML = `• 🌱 <strong>Per week:</strong> Approximately <strong>${landSavedSqFtWeek} square feet</strong> (${landSavedSqMetersWeek} square meters) of land. (Enough for a small garden!)<br>• 🌱 <strong>Per year:</strong> Approximately <strong>${landSavedAcresYear} acres</strong> of land.`;
-            document.getElementById('co2Saved').innerHTML = `• 💨 <strong>Per week:</strong> Approximately <strong>${co2SavedKgWeek.toFixed(1)} kg CO2e</strong> (${co2SavedLbsWeek} lbs CO2e) of greenhouse gas emissions. (Equivalent to driving a car for ~${(co2SavedKgWeek / 0.22).toFixed(0)} km)<br>• 🌍 <strong>Per year:</strong> Approximately <strong>${co2SavedTonnesYear} tonnes CO2e</strong>.`;
-            document.getElementById('waterSaved').innerHTML = `• 💧 <strong>Per week:</strong> Approximately <strong>${waterSavedLitersWeek} liters</strong> (${waterSavedGallonsWeek} gallons) of water. (Enough for ~${(waterSavedLitersWeek / 150).toFixed(0)} showers!)<br>• 🚿 <strong>Per year:</strong> Approximately <strong>${waterSavedMillionLitersYear} million liters</strong> of water.`;
+            document.getElementById('landSaved').innerHTML = `• 🌱 <strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong> Approximately <strong>${landSavedSqFtTotal} square feet</strong> (${landSavedSqMetersTotal} square meters) of land. (Enough for a small garden!)<br>• 🌱 <strong>Projected per year:</strong> Approximately <strong>${landSavedAcresYear} acres</strong> of land.`;
+            document.getElementById('co2Saved').innerHTML = `• 💨 <strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong> Approximately <strong>${co2SavedKgTotal.toFixed(1)} kg CO2e</strong> (${co2SavedLbsTotal} lbs CO2e) of greenhouse gas emissions. (Equivalent to driving a car for ~${(co2SavedKgTotal / 0.22).toFixed(0)} km)<br>• 🌍 <strong>Projected per year:</strong> Approximately <strong>${co2SavedTonnesYear} tonnes CO2e</strong>.`;
+            document.getElementById('waterSaved').innerHTML = `• 💧 <strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong> Approximately <strong>${waterSavedLitersTotal} liters</strong> (${waterSavedGallonsTotal} gallons) of water. (Enough for ~${(waterSavedLitersTotal / 150).toFixed(0)} showers!)<br>• 🚿 <strong>Projected per year:</strong> Approximately <strong>${waterSavedMillionLitersYear} million liters</strong> of water.`;
 
             // Add sources section here by dynamically adding content to the benefitsSection
             // Check if sources section already exists to avoid duplication on multiple calls
@@ -1881,12 +1903,8 @@
                             <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/animals" target="_blank">The Vegan Society: Why go vegan? (Animals)</a></li>
                         </ul>
                     </li>
-                    <li><strong>Environmental Impact Saved (Land, CO2, Water):</strong> These figures are based on comprehensive lifecycle assessments comparing environmental footprints of different dietary patterns.
-                        <ul>
-                            <li>Poore, J., & Nemecek, T. (2018). Reducing food’s environmental impacts through producers and consumers. <a href="https://www.science.org/doi/10.1126/science.aaq0216" target="_blank"><em>Science</em>, 360(6392), 987-992.</a></li>
-                            <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/environment" target="_blank">The Vegan Society: Why go vegan? (Environment)</a> (Summarizes impact data)</li>
-                        </ul>
-                    </li>
+                    <li>Poore, J., & Nemecek, T. (2018). Reducing food’s environmental impacts through producers and consumers. <a href="https://www.science.org/doi/10.1126/science.aaq0216" target="_blank"><em>Science</em>, 360(6392), 987-992.</a></li>
+                    <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/environment" target="_blank">The Vegan Society: Why go vegan? (Environment)</a> (Summarizes impact data)</li>
                 </ul>
             `;
             const sourcesDiv = document.createElement('div');
@@ -1959,85 +1977,86 @@
 
             pdf.setFont("helvetica");
             pdf.setFontSize(24);
-            pdf.text("Your 7-Day Vegan Meal Plan", pageWidth / 2, cursorY, { align: "center" });
+            pdf.text("Your Multi-Week Vegan Meal Plan", pageWidth / 2, cursorY, { align: "center" });
             cursorY += 20;
 
             const tableHeaders = ["Day", "Total Calories", "Meals"];
-            // Adjusted column widths to give more space to the 'Meals' column
-            // Total available width for columns is (pageWidth - 2 * margin)
             const availableWidth = pageWidth - (2 * margin);
-            const colWidths = [availableWidth * 0.18, availableWidth * 0.22, availableWidth * 0.60]; // Adjusted percentages
+            const colWidths = [availableWidth * 0.18, availableWidth * 0.22, availableWidth * 0.60];
             const colStarts = [margin, margin + colWidths[0], margin + colWidths[0] + colWidths[1]];
 
 
-            cursorY += 10;
+            Object.keys(mealPlan).forEach(weekKey => {
+                // Add Week Header
+                pdf.addPage(); // Start each week on a new page for clarity in PDF
+                cursorY = margin; // Reset Y for new page
 
-            // Draw table headers
-            pdf.setFontSize(10);
-            tableHeaders.forEach((header, index) => {
-                // Position header text within the calculated column start and width
-                pdf.text(header, colStarts[index] + 2, cursorY + 5); 
-            });
-            cursorY += 8;
+                pdf.setFontSize(18); // Larger font for week title
+                pdf.text(weekKey, pageWidth / 2, cursorY, { align: "center" });
+                cursorY += 15;
 
-            Object.keys(mealPlan).forEach((day, dayIndex) => {
-                const dayMeals = mealPlan[day];
-                const totalCals = Object.values(dayMeals).reduce((sum, meal) => sum + (meal ? meal.calories : 0), 0);
-
-                const rowPadding = 2; // Padding within each cell
-                let maxCellHeight = 0;
-
-                const dayCellContent = day;
-                const calCellContent = `~${totalCals} kcal`;
-                
-                // Format each meal item with its type (Breakfast, Lunch, etc.) and calories
-                const mealsListFormatted = [
-                    `Breakfast: ${dayMeals.breakfast ? dayMeals.breakfast.name : 'N/A'} (${dayMeals.breakfast ? dayMeals.breakfast.calories : 0} kcal)`,
-                    `Lunch: ${dayMeals.lunch ? dayMeals.lunch.name : 'N/A'} (${dayMeals.lunch ? dayMeals.lunch.calories : 0} kcal)`,
-                    `Dinner: ${dayMeals.dinner ? dayMeals.dinner.name : 'N/A'} (${dayMeals.dinner ? dayMeals.dinner.calories : 0} kcal)`,
-                    `Snack: ${dayMeals.snacks ? dayMeals.snacks.name : 'N/A'} (${dayMeals.snacks ? dayMeals.snacks.calories : 0} kcal)`
-                ];
-                
-                let mealsLines = []; // Store all lines for the meals column for this day
-                // Calculate maxCellHeight based on the actual number of lines needed for the meals content
-                mealsListFormatted.forEach(mealText => {
-                    const lines = pdf.splitTextToSize(mealText, colWidths[2] - (2 * rowPadding)); 
-                    mealsLines.push(...lines); // Add all lines from this meal to the array
+                // Draw table headers for each week
+                pdf.setFontSize(10);
+                tableHeaders.forEach((header, index) => {
+                    pdf.text(header, colStarts[index] + 2, cursorY + 5); 
                 });
-                // Calculate maxCellHeight based on total lines for meals and a suitable line height
-                maxCellHeight = Math.max(maxCellHeight, mealsLines.length * 4.5); // Use 4.5mm line height for meal details
-                maxCellHeight = Math.max(maxCellHeight, 15); // Ensure a minimum height for the row if content is sparse
+                cursorY += 8;
 
-                if (cursorY + maxCellHeight + rowPadding * 2 + margin > pageHeight) { // Check for page break BEFORE drawing row
-                    pdf.addPage();
-                    cursorY = margin; // Reset Y to top margin of new page
-                    pdf.setFontSize(10);
-                    // Redraw headers on new page
-                    tableHeaders.forEach((header, index) => {
-                        pdf.text(header, colStarts[index] + 2, cursorY + 5);
+                const weeklyPlan = mealPlan[weekKey];
+                Object.keys(weeklyPlan).forEach((day, dayIndex) => {
+                    const dayMeals = weeklyPlan[day];
+                    const totalCals = Object.values(dayMeals).reduce((sum, meal) => sum + (meal ? meal.calories : 0), 0);
+
+                    const rowPadding = 2;
+                    let maxCellHeight = 0;
+
+                    const dayCellContent = day;
+                    const calCellContent = `~${totalCals} kcal`;
+                    
+                    const mealsListFormatted = [
+                        `Breakfast: ${dayMeals.breakfast ? dayMeals.breakfast.name : 'N/A'} (${dayMeals.breakfast ? dayMeals.breakfast.calories : 0} kcal)`,
+                        `Lunch: ${dayMeals.lunch ? dayMeals.lunch.name : 'N/A'} (${dayMeals.lunch ? dayMeals.lunch.calories : 0} kcal)`,
+                        `Dinner: ${dayMeals.dinner ? dayMeals.dinner.name : 'N/A'} (${dayMeals.dinner ? dayMeals.dinner.calories : 0} kcal)`,
+                        `Snack: ${dayMeals.snacks ? dayMeals.snacks.name : 'N/A'} (${dayMeals.snacks ? dayMeals.snacks.calories : 0} kcal)`
+                    ];
+                    
+                    let mealsLines = [];
+                    mealsListFormatted.forEach(mealText => {
+                        const lines = pdf.splitTextToSize(mealText, colWidths[2] - (2 * rowPadding)); 
+                        mealsLines.push(...lines);
                     });
-                    cursorY += 8;
-                }
+                    maxCellHeight = Math.max(maxCellHeight, mealsLines.length * 4.5);
+                    maxCellHeight = Math.max(maxCellHeight, 15);
 
-                pdf.setLineWidth(0.2); // Keep thin border for readability
+                    if (cursorY + maxCellHeight + rowPadding * 2 + margin > pageHeight) {
+                        pdf.addPage();
+                        cursorY = margin;
+                        pdf.setFontSize(10);
+                        tableHeaders.forEach((header, index) => {
+                            pdf.text(header, colStarts[index] + 2, cursorY + 5);
+                        });
+                        cursorY += 8;
+                    }
 
-                // Draw cells and content for the current row
-                pdf.rect(colStarts[0], cursorY, colWidths[0], maxCellHeight + rowPadding * 2, 'S'); // 'S' for stroke (border only)
-                pdf.text(dayCellContent, colStarts[0] + rowPadding, cursorY + rowPadding + 3);
+                    pdf.setLineWidth(0.2);
 
-                pdf.rect(colStarts[1], cursorY, colWidths[1], maxCellHeight + rowPadding * 2, 'S');
-                pdf.text(calCellContent, colStarts[1] + rowPadding, cursorY + rowPadding + 3);
+                    pdf.rect(colStarts[0], cursorY, colWidths[0], maxCellHeight + rowPadding * 2, 'S');
+                    pdf.text(dayCellContent, colStarts[0] + rowPadding, cursorY + rowPadding + 3);
 
-                pdf.rect(colStarts[2], cursorY, colWidths[2], maxCellHeight + rowPadding * 2, 'S');
-                let mealTextY = cursorY + rowPadding + 3; // Starting Y for meals text in the cell
-                mealsListFormatted.forEach(mealText => {
-                    const lines = pdf.splitTextToSize(mealText, colWidths[2] - (2 * rowPadding));
-                    lines.forEach(line => {
-                        pdf.text(line, colStarts[2] + rowPadding, mealTextY);
-                        mealTextY += 4.5; // Use the adjusted line height for meal details
+                    pdf.rect(colStarts[1], cursorY, colWidths[1], maxCellHeight + rowPadding * 2, 'S');
+                    pdf.text(calCellContent, colStarts[1] + rowPadding, cursorY + rowPadding + 3);
+
+                    pdf.rect(colStarts[2], cursorY, colWidths[2], maxCellHeight + rowPadding * 2, 'S');
+                    let mealTextY = cursorY + rowPadding + 3;
+                    mealsListFormatted.forEach(mealText => {
+                        const lines = pdf.splitTextToSize(mealText, colWidths[2] - (2 * rowPadding));
+                        lines.forEach(line => {
+                            pdf.text(line, colStarts[2] + rowPadding, mealTextY);
+                            mealTextY += 4.5;
+                        });
                     });
+                    cursorY += maxCellHeight + rowPadding * 2;
                 });
-                cursorY += maxCellHeight + rowPadding * 2; // Move cursor to next row
             });
 
             pdf.save('vegan-meal-plan.pdf');
@@ -2216,6 +2235,11 @@
             cursorY += 20;
 
             pdf.setFontSize(10);
+
+            // Ensure recipes are collected before calling this.
+            // If createRecipeGuide() logic is now integrated into createMealPlan(), this might not be strictly necessary here.
+            // For now, it relies on the global 'recipes' object being correctly populated.
+            // createRecipeGuide(); // Call to ensure 'recipes' is up-to-date, if not done elsewhere
 
             const sortedRecipeNames = Object.keys(recipes).sort();
 
