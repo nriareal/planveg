@@ -1134,8 +1134,12 @@
                 <li><a href="https://veganoutreach.org/environment/" target="_blank">Vegan Outreach: Environmental Benefits of a Vegan Diet</a></li>
                 <li><a href="https://www.theguardian.com/environment/2023/jul/20/vegan-diet-cuts-environmental-damage-climate-heating-emissions-study" target="_blank">The Guardian: Vegan diet ‘cuts environmental damage’ more than other meat-free living, study finds</a></li>
                 <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan" target="_blank">The Vegan Society: Why Go Vegan?</a></li>
-                <li><a href="https://www.cambridge.org/core/journals/proceedings-of-the-nutrition-society/article/food-system-and-climate-change-are-plantbased-diets-becoming-unhealthy-and-less-environmentally-sustainable/525CDD9FC618E5488A5B931669FA7493" target="_blank">Cambridge Core: Food system and climate change: are plant-based diets becoming unhealthy and less environmentally sustainable?</a></li>
-                <li><a href="https://hsph.harvard.edu/news/vegan-diet-health-environment/" target="_blank">Harvard T.H. Chan School of Public Health: Vegan Diet: Health, Environment</a></li>
+                <li><strong>Environmental Impact Saved (Land, CO2, Water):</strong> These figures are based on comprehensive lifecycle assessments comparing environmental footprints of different dietary patterns.
+                        <ul>
+                            <li>Poore, J., & Nemecek, T. (2018). Reducing food’s environmental impacts through producers and consumers. <a href="https://www.science.org/doi/10.1126/science.aaq0216" target="_blank"><em>Science</em>, 360(6392), 987-992.</a></li>
+                            <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/environment" target="_blank">The Vegan Society: Why go vegan? (Environment)</a> (Summarizes impact data)</li>
+                        </ul>
+                    </li>
             </ul>
         </div>
     </div>
@@ -1404,16 +1408,20 @@
 
         function displayNutritionSummary() {
             const summary = document.getElementById('nutritionSummary');
-            const goalText = { 
-                maintain: 'Maintain Current Weight', 
-                lose: 'Fat Loss', 
-                gain: 'Muscle Gain', 
+            const goalText = {
+                maintain: 'Maintain Current Weight',
+                lose: 'Fat Loss',
+                gain: 'Muscle Gain',
                 recomp: 'Body Recomposition',
                 gain_weight: 'Weight Gain'
             };
             
+            // Get the user's goal, with a fallback if somehow undefined
+            const userGoalKey = userData.goal || 'unknown'; // Fallback key
+            const displayGoal = goalText[userGoalKey] || 'Your Goal'; // Fallback display text
+
             summary.innerHTML = `
-                <h3>Goal: ${goalText[userData.goal]}</h3>
+                <h3>Goal: ${displayGoal}</h3>
                 <div style="margin: 15px 0;">
                     <strong>Daily Calorie Target: ${nutritionPlan.targetCalories} calories</strong>
                     ${nutritionPlan.deficit > 0 ? `<br><em>Daily Deficit: ${nutritionPlan.deficit} calories</em>` : ''}
@@ -1476,40 +1484,41 @@
             console.log('--- createVeganMealDatabase() started ---');
             const meals = {
                 breakfast: [
-                    { name: "Overnight Oats with Berries", calories: 320, protein: 12, cookingTime: "5 mins prep", ingredients: [{item: "oats", quantity: 50, unit: "g"}, {item: "almond milk", quantity: 200, unit: "ml"}, {item: "chia seeds", quantity: 15, unit: "g"}, {item: "mixed berries", quantity: 100, unit: "g"}, {item: "maple syrup", quantity: 10, unit: "ml"}], instructions: 'Combine oats, almond milk, chia seeds, and maple syrup in a jar. Stir well, cover, and refrigerate overnight. In the morning, top with mixed berries.' },
-                    { name: "Smoothie Bowl", calories: 350, protein: 15, cookingTime: "10 mins", ingredients: [{item: "frozen banana", quantity: 150, unit: "g"}, {item: "spinach", quantity: 50, unit: "g"}, {item: "plant protein powder", quantity: 25, unit: "g"}, {item: "almond butter", quantity: 30, unit: "g"}, {item: "granola", quantity: 30, unit: "g"}], instructions: 'Blend frozen banana, spinach, protein powder, and almond butter with a splash of water until thick. Pour into a bowl and top with granola.' },
-                    { name: "Avocado Toast", calories: 280, protein: 8, cookingTime: "10 mins", ingredients: [{item: "whole grain bread", quantity: 100, unit: "g"}, {item: "avocado", quantity: 100, unit: "g"}, {item: "hemp seeds", quantity: 10, unit: "g"}, {item: "cherry tomatoes", quantity: 50, unit: "g"}, {item: "lime", quantity: 1, unit: "unit"}], instructions: 'Toast bread. Mash avocado with a squeeze of lime. Spread on toast, sprinkle with hemp seeds, and top with sliced cherry tomatoes.' },
-                    { name: "Chia Pudding", calories: 290, protein: 10, cookingTime: "5 mins prep", ingredients: [{item: "chia seeds", quantity: 30, unit: "g"}, {item: "coconut milk", quantity: 200, unit: "ml"}, {item: "vanilla extract", quantity: 5, unit: "ml"}, {item: "fresh fruit", quantity: 80, unit: "g"}, {item: "almonds", quantity: 20, unit: "g"}], instructions: 'Whisk chia seeds, coconut milk, and vanilla extract. Refrigerate for at least 4 hours or overnight until thickened. Top with fresh fruit and almonds.' },
-                    { name: "Tofu Scramble", calories: 310, protein: 18, cookingTime: "15 mins", ingredients: [{item: "firm tofu", quantity: 200, unit: "g"}, {item: "nutritional yeast", quantity: 10, unit: "g"}, {item: "turmeric", quantity: 2, unit: "g"}, {item: "mixed vegetables", quantity: 150, unit: "g"}, {item: "whole grain toast", quantity: 50, unit: "g"}], instructions: 'Crumble tofu into a pan. Sauté with nutritional yeast, turmeric, and mixed vegetables until heated through. Serve with whole grain toast.' },
-                    { name: "Tofu & Vegan Sausage Scramble", calories: 420, protein: 25, cookingTime: "20 mins", ingredients: [{item: "firm tofu", quantity: 150, unit: "g"}, {item: "vegan sausage", quantity: 100, unit: "g"}, {item: "bell peppers", quantity: 100, unit: "g"}, {item: "spinach", quantity: 50, unit: "g"}, {item: "turmeric", quantity: 2, unit: "g"}], instructions: 'Crumble tofu and slice vegan sausage. Sauté together with bell peppers and spinach. Season with turmeric and black pepper.' }
+                    { name: "Overnight Oats with Berries", calories: 320, protein: 12, cookingTime: "5 mins prep", ingredients: [{item: "oats", quantity: 50, unit: "g"}, {item: "plant milk", quantity: 200, unit: "ml"}, {item: "chia seeds", quantity: 15, unit: "g"}, {item: "mixed berries", quantity: 100, unit: "g"}, {item: "maple syrup", quantity: 10, unit: "ml"}], instructions: 'Combine oats, preferred plant milk, chia seeds, and maple syrup in a jar. Stir well, cover, and refrigerate overnight. In the morning, top with mixed berries.' },
+                    { name: "Green Smoothie", calories: 350, protein: 15, cookingTime: "5 mins", ingredients: [{item: "spinach", quantity: 100, unit: "g"}, {item: "banana", quantity: 150, unit: "g"}, {item: "plant protein powder", quantity: 25, unit: "g"}, {item: "plant milk", quantity: 250, unit: "ml"}, {item: "flax seeds", quantity: 10, unit: "g"}], instructions: 'Blend all ingredients until smooth. Serve immediately.' },
+                    { name: "Avocado Toast with Tomato", calories: 280, protein: 8, cookingTime: "10 mins", ingredients: [{item: "whole grain bread", quantity: 100, unit: "g"}, {item: "avocado", quantity: 100, unit: "g"}, {item: "cherry tomatoes", quantity: 50, unit: "g"}, {item: "nutritional yeast", quantity: 5, unit: "g"}, {item: "red pepper flakes", quantity: 1, unit: "g"}], instructions: 'Toast bread. Mash avocado and spread on toast. Top with sliced cherry tomatoes, nutritional yeast, and red pepper flakes.' },
+                    { name: "Tofu Scramble", calories: 310, protein: 18, cookingTime: "15 mins", ingredients: [{item: "firm tofu", quantity: 200, unit: "g"}, {item: "nutritional yeast", quantity: 10, unit: "g"}, {item: "turmeric", quantity: 2, unit: "g"}, {item: "bell peppers", quantity: 80, unit: "g"}, {item: "onion", quantity: 50, unit: "g"}, {item: "spinach", quantity: 50, unit: "g"}, {item: "whole grain toast", quantity: 50, unit: "g"}], instructions: 'Crumble tofu. Sauté chopped bell peppers and onion. Add tofu, nutritional yeast, turmeric, and spinach. Cook until heated through. Serve with toast.' },
+                    { name: "Vegan Breakfast Burrito", calories: 400, protein: 20, cookingTime: "20 mins", ingredients: [{item: "whole wheat tortilla", quantity: 60, unit: "g"}, {item: "black beans", quantity: 100, unit: "g"}, {item: "scrambled tofu", quantity: 100, unit: "g"}, {item: "avocado", quantity: 50, unit: "g"}, {item: "salsa", quantity: 30, unit: "ml"}, {item: "vegan sausage patty", quantity: 50, unit: "g"}], instructions: 'Warm tortilla. Mash black beans. Cook scrambled tofu and vegan sausage patty. Assemble burrito with all fillings and salsa.' },
+                    { name: "Vegan Pancakes with Fruit", calories: 380, protein: 10, cookingTime: "15 mins", ingredients: [{item: "vegan pancake mix", quantity: 80, unit: "g"}, {item: "plant milk", quantity: 100, unit: "ml"}, {item: "banana", quantity: 100, unit: "g"}, {item: "mixed berries", quantity: 80, unit: "g"}, {item: "maple syrup", quantity: 20, unit: "ml"}], instructions: 'Prepare pancake mix with plant milk. Cook pancakes. Top with sliced banana, mixed berries, and maple syrup.' }
                 ],
                 lunch: [
-                    { name: "Buddha Bowl", calories: 480, protein: 22, cookingTime: "30 mins", ingredients: [{item: "quinoa", quantity: 80, unit: "g"}, {item: "chickpeas", quantity: 100, unit: "g"}, {item: "roasted vegetables", quantity: 200, unit: "g"}, {item: "tahini", quantity: 30, unit: "g"}, {item: "leafy greens", quantity: 80, unit: "g"}], instructions: 'Cook quinoa. Roast your favorite vegetables. Assemble bowl with leafy greens, cooked quinoa, chickpeas, roasted vegetables, and a drizzle of tahini.' },
-                    { name: "Lentil Soup", calories: 420, protein: 20, cookingTime: "30 mins", ingredients: [{item: "red lentils", quantity: 80, unit: "g"}, {item: "mixed vegetables", quantity: 200, unit: "g"}, {item: "vegetable broth", quantity: 300, unit: "ml"}, {item: "coconut milk", quantity: 50, unit: "ml"}, {item: "curry powder", quantity: 5, unit: "g"}], instructions: 'Sauté chopped vegetables. Add red lentils, vegetable broth, coconut milk, and curry powder. Simmer until lentils are tender, about 20-25 minutes.' },
-                    { name: "Veggie Wrap", calories: 450, protein: 18, cookingTime: "10 mins", ingredients: [{item: "whole wheat tortilla", quantity: 60, unit: "g"}, {item: "hummus", quantity: 50, unit: "g"}, {item: "mixed vegetables", quantity: 150, unit: "g"}, {item: "alfalfa sprouts", quantity: 20, unit: "g"}, {item: "hemp seeds", quantity: 10, unit: "g"}], instructions: 'Spread hummus on a whole wheat tortilla. Fill with mixed vegetables, alfalfa sprouts, and sprinkle with hemp seeds. Roll up tightly.' },
-                    { name: "Quinoa Salad", calories: 390, protein: 16, cookingTime: "20 mins", ingredients: [{item: "quinoa", quantity: 70, unit: "g"}, {item: "black beans", quantity: 80, unit: "g"}, {item: "corn", quantity: 50, unit: "g"}, {item: "bell peppers", quantity: 80, unit: "g"}, {item: "lime", quantity: 1, unit: "unit"}], instructions: 'Cook quinoa and let cool. Combine with rinsed black beans, corn, chopped bell peppers. Dress with lime juice and a pinch of salt.' },
-                    { name: "Stuffed Sweet Potato", calories: 410, protein: 14, cookingTime: "50 mins", ingredients: [{item: "sweet potato", quantity: 200, unit: "g"}, {item: "black beans", quantity: 80, unit: "g"}, {item: "spinach", quantity: 50, unit: "g"}, {item: "nutritional yeast", quantity: 5, unit: "g"}, {item: "tahini", quantity: 15, unit: "g"}], instructions: 'Bake sweet potato until tender. Split open and fill with heated black beans and wilted spinach. Drizzle with tahini and sprinkle with nutritional yeast.' },
-                    { name: "Quick Vegan Burger Bowl", calories: 550, protein: 28, cookingTime: "15 mins", ingredients: [{item: "vegan patty", quantity: 120, unit: "g"}, {item: "quinoa", quantity: 70, unit: "g"}, {item: "mixed greens", quantity: 80, unit: "g"}, {item: "cherry tomatoes", quantity: 60, unit: "g"}, {item: "avocado", quantity: 50, unit: "g"}], instructions: 'Cook vegan patty. Assemble bowl with quinoa, mixed greens, cherry tomatoes, and sliced avocado. Top with crumbled vegan patty.' }
+                    { name: "Buddha Bowl with Crispy Chickpeas", calories: 480, protein: 22, cookingTime: "30 mins", ingredients: [{item: "quinoa", quantity: 80, unit: "g"}, {item: "chickpeas", quantity: 100, unit: "g"}, {item: "roasted vegetables", quantity: 200, unit: "g"}, {item: "tahini dressing", quantity: 30, unit: "g"}, {item: "leafy greens", quantity: 80, unit: "g"}], instructions: 'Cook quinoa. Roast chickpeas and your favorite vegetables until crispy. Assemble bowl with leafy greens, cooked quinoa, roasted chickpeas and vegetables, and tahini dressing.' },
+                    { name: "Hearty Lentil Soup", calories: 420, protein: 20, cookingTime: "30 mins", ingredients: [{item: "red lentils", quantity: 80, unit: "g"}, {item: "mixed vegetables", quantity: 200, unit: "g"}, {item: "vegetable broth", quantity: 300, unit: "ml"}, {item: "coconut milk", quantity: 50, unit: "ml"}, {item: "curry powder", quantity: 5, unit: "g"}, {item: "crushed tomatoes", quantity: 50, unit: "g"}], instructions: 'Sauté chopped vegetables. Add red lentils, vegetable broth, coconut milk, curry powder, and crushed tomatoes. Simmer until lentils are tender, about 20-25 minutes.' },
+                    { name: "Mediterranean Quinoa Salad", calories: 410, protein: 18, cookingTime: "20 mins", ingredients: [{item: "quinoa", quantity: 70, unit: "g"}, {item: "cucumber", quantity: 80, unit: "g"}, {item: "cherry tomatoes", quantity: 80, unit: "g"}, {item: "olives", quantity: 30, unit: "g"}, {item: "red onion", quantity: 20, unit: "g"}, {item: "hummus", quantity: 50, unit: "g"}], instructions: 'Cook and cool quinoa. Chop cucumber, tomatoes, and red onion. Combine all ingredients with olives and a dollop of hummus. Dress with lemon juice and herbs.' },
+                    { name: "Vegan Deli Slice Sandwich", calories: 390, protein: 15, cookingTime: "5 mins", ingredients: [{item: "whole grain bread", quantity: 100, unit: "g"}, {item: "vegan deli slices", quantity: 80, unit: "g"}, {item: "lettuce", quantity: 30, unit: "g"}, {item: "tomato", quantity: 50, unit: "g"}, {item: "vegan mayonnaise", quantity: 20, unit: "g"}], instructions: 'Assemble sandwich with bread, vegan deli slices, lettuce, tomato, and vegan mayonnaise.' },
+                    { name: "Beyond Burger with Side Salad", calories: 600, protein: 25, cookingTime: "20 mins", ingredients: [{item: "beyond burger patty", quantity: 120, unit: "g"}, {item: "whole grain bun", quantity: 80, unit: "g"}, {item: "mixed greens", quantity: 100, unit: "g"}, {item: "dressing", quantity: 20, unit: "ml"}, {item: "onion", quantity: 20, unit: "g"}, {item: "tomato", quantity: 30, unit: "g"}], instructions: 'Cook Beyond Burger patty according to package. Toast bun. Assemble burger with desired toppings. Serve with a simple side salad.' }
                 ],
                 dinner: [
-                    { name: "Lentil Curry", calories: 520, protein: 25, cookingTime: "30 mins", ingredients: [{item: "green lentils", quantity: 100, unit: "g"}, {item: "coconut milk", quantity: 150, unit: "ml"}, {item: "curry paste", quantity: 20, unit: "g"}, {item: "mixed vegetables", quantity: 250, unit: "g"}, {item: "brown rice", quantity: 80, unit: "g"}], instructions: 'Cook brown rice. Sauté vegetables, add green lentils, curry paste, and coconut milk. Simmer until lentils are tender and sauce has thickened. Serve with rice.' },
-                    { name: "Pasta Primavera", calories: 480, protein: 18, cookingTime: "20 mins", ingredients: [{item: "whole grain pasta", quantity: 80, unit: "g"}, {item: "seasonal vegetables", quantity: 250, unit: "g"}, {item: "cashew cream", quantity: 50, unit: "ml"}, {item: "nutritional yeast", quantity: 10, unit: "g"}, {item: "fresh basil", quantity: 10, unit: "g"}], instructions: 'Cook pasta according to package. Sauté seasonal vegetables until tender-crisp. Toss pasta with vegetables, cashew cream, nutritional yeast, and fresh basil.' },
-                    { name: "Tofu Stir-fry", calories: 450, protein: 20, cookingTime: "20 mins", ingredients: [{item: "firm tofu", quantity: 150, unit: "g"}, {item: "mixed vegetables", quantity: 200, unit: "g"}, {item: "brown rice", quantity: 70, unit: "g"}, {item: "fresh ginger", quantity: 5, unit: "g"}, {item: "low-sodium soy sauce", quantity: 30, unit: "ml"}], instructions: 'Press and cube tofu. Stir-fry tofu and mixed vegetables. Add grated ginger and soy sauce. Serve over brown rice.' },
-                    { name: "Black Bean Burger", calories: 500, protein: 22, cookingTime: "25 mins", ingredients: [{item: "black bean patty", quantity: 120, unit: "g"}, {item: "whole grain bun", quantity: 80, unit: "g"}, {item: "avocado", quantity: 50, unit: "g"}, {item: "lettuce", quantity: 20, unit: "g"}, {item: "sweet potato", quantity: 150, unit: "g"}], instructions: 'Cook black bean patty. Toast bun. Assemble burger with patty, sliced avocado, and lettuce. Serve with baked sweet potato fries.' },
-                    { name: "Stuffed Bell Peppers", calories: 420, protein: 16, cookingTime: "35 mins", ingredients: [{item: "bell peppers", quantity: 200, unit: "g"}, {item: "quinoa", quantity: 60, unit: "g"}, {item: "canned crushed tomatoes", quantity: 100, unit: "g"}, {item: "black beans", quantity: 50, unit: "g"}, {item: "herbs", quantity: 5, unit: "g"}], instructions: 'Halve bell peppers. Cook quinoa and mix with black beans, crushed tomatoes, and herbs. Stuff peppers and bake until tender.' },
-                    { name: "Beyond Bolognese Pasta", calories: 600, protein: 30, cookingTime: "25 mins", ingredients: [{item: "whole grain pasta", quantity: 100, unit: "g"}, {item: "beyond meat grounds", quantity: 120, unit: "g"}, {item: "canned crushed tomatoes", quantity: 150, unit: "g"}, {item: "onion", quantity: 50, unit: "g"}, {item: "garlic", quantity: 10, unit: "g"}, {item: "fresh basil", quantity: 10, unit: "g"}], instructions: 'Cook pasta. Sauté onion and garlic, add Beyond Meat grounds and cook until browned. Stir in crushed tomatoes and simmer. Serve over pasta, topped with fresh basil.' }
+                    { name: "Creamy Lentil Curry", calories: 520, protein: 25, cookingTime: "30 mins", ingredients: [{item: "green lentils", quantity: 100, unit: "g"}, {item: "coconut milk", quantity: 150, unit: "ml"}, {item: "curry paste", quantity: 20, unit: "g"}, {item: "mixed vegetables", quantity: 250, unit: "g"}, {item: "brown rice", quantity: 80, unit: "g"}, {item: "spinach", quantity: 50, unit: "g"}], instructions: 'Cook brown rice. Sauté vegetables. Add green lentils, curry paste, coconut milk, and spinach. Simmer until lentils are tender and sauce has thickened. Serve with rice.' },
+                    { name: "Spaghetti with Marinara & Meatballs", calories: 550, protein: 28, cookingTime: "35 mins", ingredients: [{item: "whole grain pasta", quantity: 100, unit: "g"}, {item: "vegan meatballs", quantity: 120, unit: "g"}, {item: "marinara sauce", quantity: 150, unit: "ml"}, {item: "onion", quantity: 30, unit: "g"}, {item: "garlic", quantity: 10, unit: "g"}, {item: "fresh basil", quantity: 10, unit: "g"}], instructions: 'Cook pasta. Sauté onion and garlic. Add vegan meatballs and cook until browned. Stir in marinara sauce and simmer. Serve over pasta, topped with fresh basil.' },
+                    { name: "Sheet Pan Fajitas", calories: 480, protein: 20, cookingTime: "25 mins", ingredients: [{item: "bell peppers", quantity: 200, unit: "g"}, {item: "onion", quantity: 100, unit: "g"}, {item: "mushrooms", quantity: 100, unit: "g"}, {item: "black beans", quantity: 80, unit: "g"}, {item: "fajita seasoning", quantity: 10, unit: "g"}, {item: "tortillas", quantity: 60, unit: "g"}, {item: "avocado", quantity: 50, unit: "g"}], instructions: 'Toss sliced bell peppers, onion, and mushrooms with black beans and fajita seasoning on a sheet pan. Roast until tender. Serve in warm tortillas with sliced avocado.' },
+                    { name: "Tofu Katsu Curry", calories: 600, protein: 30, cookingTime: "40 mins", ingredients: [{item: "firm tofu", quantity: 200, unit: "g"}, {item: "panko breadcrumbs", quantity: 50, unit: "g"}, {item: "flour", quantity: 20, unit: "g"}, {item: "curry block sauce", quantity: 100, unit: "g"}, {item: "jasmine rice", quantity: 80, unit: "g"}, {item: "broccoli", quantity: 100, unit: "g"}], instructions: 'Press tofu, coat in flour, then breadcrumbs. Fry until golden. Prepare curry sauce. Cook jasmine rice and steam broccoli. Serve tofu over rice with sauce and broccoli.' },
+                    { name: "Chickpea & Spinach Masala", calories: 490, protein: 24, cookingTime: "30 mins", ingredients: [{item: "chickpeas", quantity: 150, unit: "g"}, {item: "spinach", quantity: 100, unit: "g"}, {item: "diced tomatoes", quantity: 150, unit: "g"}, {item: "onion", quantity: 50, unit: "g"}, {item: "garlic", quantity: 10, unit: "g"}, {item: "ginger", quantity: 5, unit: "g"}, {item: "garam masala", quantity: 5, unit: "g"}, {item: "brown rice", quantity: 70, unit: "g"}], instructions: 'Cook brown rice. Sauté onion, garlic, ginger. Add chickpeas, diced tomatoes, garam masala. Simmer. Stir in spinach until wilted. Serve with rice.' },
+                    { name: "Impossible Burger with Sweet Potato Fries", calories: 650, protein: 27, cookingTime: "30 mins", ingredients: [{item: "impossible burger patty", quantity: 120, unit: "g"}, {item: "sweet potato", quantity: 200, unit: "g"}, {item: "whole grain bun", quantity: 80, unit: "g"}, {item: "ketchup", quantity: 20, unit: "g"}, {item: "lettuce", quantity: 20, unit: "g"}, {item: "tomato", quantity: 30, unit: "g"}], instructions: 'Cook Impossible Burger patty. Slice sweet potato into fries and bake. Assemble burger with bun, lettuce, tomato. Serve with fries and ketchup.' }
                 ],
                 snacks: [
                     { name: "Energy Balls", calories: 120, protein: 4, cookingTime: "10 mins", ingredients: [{item: "dates", quantity: 40, unit: "g"}, {item: "walnuts", quantity: 20, unit: "g"}, {item: "chia seeds", quantity: 5, unit: "g"}, {item: "cocoa powder", quantity: 5, unit: "g"}], instructions: 'Blend dates, walnuts, chia seeds, and cocoa powder in a food processor until a sticky mixture forms. Roll into small balls.' },
-                    { name: "Hummus & Veggies", calories: 110, protein: 5, cookingTime: "5 mins", ingredients: [{item: "hummus", quantity: 50, unit: "g"}, {item: "carrots", quantity: 80, unit: "g"}, {item: "cucumber", quantity: 80, unit: "g"}, {item: "bell peppers", quantity: 80, unit: "g"}], instructions: 'Serve hummus with sliced carrots, cucumber sticks, and bell pepper strips for dipping.' },
-                    { name: "Protein Smoothie", calories: 130, protein: 8, cookingTime: "5 mins", ingredients: [{item: "plant protein powder", quantity: 15, unit: "g"}, {item: "almond milk", quantity: 150, unit: "ml"}, {item: "banana", quantity: 100, unit: "g"}, {item: "spinach", quantity: 20, unit: "g"}], instructions: 'Blend plant protein powder, banana, almond milk, and spinach until smooth.' },
-                    { name: "Mixed Nuts", calories: 140, protein: 5, cookingTime: "1 min", ingredients: [{item: "mixed nuts", quantity: 30, unit: "g"}], instructions: 'Enjoy a handful of mixed nuts as a quick and healthy snack.' },
-                    { name: "Apple with Almond Butter", calories: 150, protein: 6, cookingTime: "5 mins", ingredients: [{item: "apple", quantity: 150, unit: "g"}, {item: "almond butter", quantity: 20, unit: "g"}, {item: "cinnamon", quantity: 2, unit: "g"}], instructions: 'Slice an apple and spread almond butter on the slices. Sprinkle with cinnamon.' }
+                    { name: "Hummus & Veggie Sticks", calories: 110, protein: 5, cookingTime: "5 mins", ingredients: [{item: "hummus", quantity: 50, unit: "g"}, {item: "carrots", quantity: 80, unit: "g"}, {item: "cucumber", quantity: 80, unit: "g"}, {item: "bell peppers", quantity: 80, unit: "g"}], instructions: 'Serve hummus with sliced carrots, cucumber sticks, and bell pepper strips for dipping.' },
+                    { name: "Protein Smoothie", calories: 130, protein: 8, cookingTime: "5 mins", ingredients: [{item: "plant protein powder", quantity: 15, unit: "g"}, {item: "plant milk", quantity: 150, unit: "ml"}, {item: "banana", quantity: 100, unit: "g"}, {item: "spinach", quantity: 20, unit: "g"}], instructions: 'Blend plant protein powder, preferred plant milk, banana, and spinach until smooth.' },
+                    { name: "Mixed Nuts & Dried Fruit", calories: 180, protein: 6, cookingTime: "1 min", ingredients: [{item: "mixed nuts", quantity: 30, unit: "g"}, {item: "dried fruit", quantity: 20, unit: "g"}], instructions: 'Combine mixed nuts and dried fruit for a quick snack.' },
+                    { name: "Apple with Almond Butter", calories: 150, protein: 6, cookingTime: "5 mins", ingredients: [{item: "apple", quantity: 150, unit: "g"}, {item: "almond butter", quantity: 20, unit: "g"}, {item: "cinnamon", quantity: 2, unit: "g"}], instructions: 'Slice an apple and spread almond butter on the slices. Sprinkle with cinnamon.' },
+                    { name: "Edamame (steamed)", calories: 160, protein: 14, cookingTime: "10 mins", ingredients: [{item: "frozen edamame", quantity: 150, unit: "g"}, {item: "salt", quantity: 2, unit: "g"}], instructions: 'Steam frozen edamame according to package instructions. Sprinkle with salt.' }
                 ]
             };
 
             // Step 1: Filter based on allergies/exclusions (existing logic)
-            const exclusions = userData.exclusions || [];
+            const exclusions = Array.from(document.querySelectorAll('#foodExclusions input:checked')).map(cb => cb.value);
+            console.log('Exclusions:', exclusions);
             let filteredByExclusions = {};
             Object.keys(meals).forEach(mealType => {
                 filteredByExclusions[mealType] = meals[mealType].filter(meal => {
@@ -1525,15 +1534,24 @@
                 Object.keys(filteredByExclusions).forEach(mealType => {
                     filteredByMilk[mealType] = filteredByExclusions[mealType].filter(meal => {
                         const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
-                        const milkIngredientsInMeal = mealIngredients.filter(ing => ing.includes('milk'));
+                        const milkIngredientsInMeal = mealIngredients.filter(ing => ing.includes('plant milk'));
                         
-                        // If meal has no milk, it's fine.
+                        // If meal has no generic 'plant milk' entry, it's fine.
                         if (milkIngredientsInMeal.length === 0) {
                             return true;
                         }
 
-                        // If meal has specific milk, check if it matches preference
-                        return milkIngredientsInMeal.some(ing => ing.includes(milkPreference));
+                        // Check if the recipe explicitly uses a milk type or if it's a generic 'plant milk'
+                        // If it's generic, it's assumed any milk can be used, so it passes.
+                        // If it's a specific milk, then it must match the preference.
+                        const recipeUsesSpecificMilk = mealIngredients.some(ing => ['almond milk', 'soy milk', 'oat milk', 'coconut milk'].includes(ing));
+                        
+                        if (recipeUsesSpecificMilk) {
+                            return mealIngredients.some(ing => ing.includes(milkPreference));
+                        } else {
+                            // If recipe uses generic "plant milk", it's compatible with any choice
+                            return true;
+                        }
                     });
                 });
             } else {
@@ -1554,23 +1572,19 @@
                                                  mealIngredients.some(ing => ing.includes('beyond meat') || ing.includes('impossible meat'));
 
                     if (substitutePreference === 'none') {
+                        // Exclude all substitutes
                         return !hasGenericSubstitute && !hasBrandedSubstitute;
                     } else if (substitutePreference === 'some') {
                         // Allow generic, exclude branded
                         return !hasBrandedSubstitute;
                     } else if (substitutePreference === 'all') {
-                        return true; // Allow all
+                        // Allow all substitutes
+                        return true;
                     }
                     return true; // Default if preference is not explicitly handled or for any other value
                 });
             });
 
-            // If a meal type ends up empty after filtering, try to fill it with fallback options if possible,
-            // or just ensure the app doesn't break if a meal category is empty.
-            // For simplicity here, if a category becomes empty due to strict filtering,
-            // the user will just see fewer options or N/A for that meal type, which is handled in displayMealPlan.
-            // A more robust solution might involve providing a "no suitable meals found" message or relaxing filters.
-            
             console.log('Final Filtered Meals based on all preferences:', finalFilteredMeals);
             return finalFilteredMeals;
         }
@@ -1656,11 +1670,17 @@
                     if (meal && meal.ingredients) { // Ensure meal and ingredients exist
                         meal.ingredients.forEach(ing => {
                             const key = ing.item.toLowerCase();
-                            if (!allIngredients[key]) {
-                                allIngredients[key] = { quantity: 0, unit: ing.unit };
+                            // Handle specific milk type replacement for shopping list based on user preference
+                            let itemKey = key;
+                            if (key === 'plant milk' && userData.milkPreference !== 'any') {
+                                itemKey = userData.milkPreference + ' milk';
                             }
-                            allIngredients[key].quantity += ing.quantity;
-                            if(ing.unit === 'unit') allIngredients[key].unit = 'units';
+
+                            if (!allIngredients[itemKey]) {
+                                allIngredients[itemKey] = { quantity: 0, unit: ing.unit };
+                            }
+                            allIngredients[itemKey].quantity += ing.quantity;
+                            if(ing.unit === 'unit') allIngredients[itemKey].unit = 'units';
                         });
                     }
                 });
@@ -1668,14 +1688,14 @@
             console.log('All ingredients gathered:', allIngredients);
 
             const categories = {
-                'Produce': ['banana', 'berries', 'spinach', 'avocado', 'tomato', 'lime', 'vegetables', 'leafy greens', 'bell peppers', 'carrots', 'cucumber', 'apple', 'sweet potato', 'cherry tomatoes', 'fresh fruit', 'alfalfa sprouts', 'fresh ginger', 'seasonal vegetables', 'lettuce', 'basil', 'onion', 'garlic'],
-                'Pantry Staples': ['oats', 'chia seeds', 'maple syrup', 'quinoa', 'rice', 'bread', 'tortilla', 'pasta', 'dates', 'spices', 'herbs', 'vanilla extract', 'turmeric', 'curry powder', 'curry paste', 'cocoa powder', 'cinnamon', 'canned crushed tomatoes'],
-                'Plant Proteins': ['chickpeas', 'lentils', 'beans', 'tofu', 'plant protein powder', 'black bean patty', 'vegan sausage', 'vegan patty', 'beyond meat grounds'],
+                'Produce': ['banana', 'berries', 'spinach', 'avocado', 'tomato', 'lime', 'vegetables', 'leafy greens', 'bell peppers', 'carrots', 'cucumber', 'apple', 'sweet potato', 'cherry tomatoes', 'fresh fruit', 'alfalfa sprouts', 'fresh ginger', 'seasonal vegetables', 'lettuce', 'basil', 'onion', 'garlic', 'diced tomatoes'],
+                'Pantry Staples': ['oats', 'chia seeds', 'maple syrup', 'quinoa', 'rice', 'bread', 'tortilla', 'pasta', 'dates', 'spices', 'herbs', 'vanilla extract', 'turmeric', 'curry powder', 'curry paste', 'cocoa powder', 'cinnamon', 'canned crushed tomatoes', 'flax seeds', 'salsa', 'curry block sauce', 'panko breadcrumbs', 'flour', 'garam masala'],
+                'Plant Proteins': ['chickpeas', 'lentils', 'beans', 'tofu', 'plant protein powder', 'black bean patty', 'vegan sausage', 'vegan patty', 'beyond meat grounds', 'impossible burger patty', 'vegan deli slices', 'vegan meatballs', 'edamame'],
                 'Nuts & Seeds': ['hemp seeds', 'nuts', 'almonds', 'walnuts', 'cashews', 'almond butter', 'tahini'],
-                'Plant Milks & Alternatives': ['almond milk', 'coconut milk', 'nutritional yeast', 'cashew cream', 'soy milk', 'oat milk'],
-                'Condiments & Sauces': ['hummus', 'soy sauce'],
-                'Frozen': ['frozen banana'],
-                'Other': ['granola', 'vegetable broth', 'corn', 'toast', 'bun']
+                'Plant Milks & Alternatives': ['almond milk', 'coconut milk', 'nutritional yeast', 'cashew cream', 'soy milk', 'oat milk', 'plant milk'], // Keep 'plant milk' as fallback for categorization
+                'Condiments & Sauces': ['hummus', 'soy sauce', 'tahini dressing', 'vegan mayonnaise', 'ketchup', 'marinara sauce', 'dressing'],
+                'Frozen': ['frozen banana', 'frozen edamame'],
+                'Other': ['granola', 'vegetable broth', 'corn', 'toast', 'bun', 'salt']
             };
 
             shoppingList = {}; // Clear shoppingList object before populating
@@ -1695,6 +1715,10 @@
                     shoppingList['Other'].push({ name: ingName, ...ingData });
                 }
             }
+            // Ensure no 'plant milk' item if a specific one was chosen
+            if (userData.milkPreference !== 'any') {
+                shoppingList['Plant Milks & Alternatives'] = shoppingList['Plant Milks & Alternatives'].filter(item => item.name !== 'plant milk');
+            }
             console.log('--- createShoppingList() finished ---');
         }
         
@@ -1706,7 +1730,14 @@
 
             Object.values(allVeganMeals).flat().forEach(meal => {
                 if (meal && uniqueMealNames.has(meal.name)) {
-                    recipes[meal.name] = meal;
+                    // Replace 'plant milk' with specific preference in recipe display if chosen
+                    const ingredientsForRecipe = meal.ingredients.map(ing => {
+                        if (ing.item === 'plant milk' && userData.milkPreference !== 'any') {
+                            return { ...ing, item: userData.milkPreference + ' milk' };
+                        }
+                        return ing;
+                    });
+                    recipes[meal.name] = { ...meal, ingredients: ingredientsForRecipe };
                 }
             });
             console.log('--- createRecipeGuide() finished ---');
@@ -1724,7 +1755,7 @@
                 if (items.length > 0) {
                     html += `<div class="category-title">${category}</div><ul class="item-list">`;
                     items.forEach(item => {
-                        html += `<li class="shopping-item">${item.name} (${item.quantity}${item.unit})</li>`;
+                        html += `<li class="shopping-item">${formatShoppingListItem(item)}</li>`;
                     });
                     html += `</ul>`;
                 }
@@ -1851,8 +1882,7 @@
                     </li>
                     <li><strong>Environmental Impact Saved (Land, CO2, Water):</strong> These figures are based on comprehensive lifecycle assessments comparing environmental footprints of different dietary patterns.
                         <ul>
-                            <li>Poore, J., & Nemecek, T. (2018). Reducing food’s environmental impacts through producers and consumers. <em>Science</em>, 360(6392), 987-992.
-                                <a href="https://www.science.org/doi/10.1126/science.aaq0216" target="_blank">(Science.org Link)</a></li>
+                            <li>Poore, J., & Nemecek, T. (2018). Reducing food’s environmental impacts through producers and consumers. <a href="https://www.science.org/doi/10.1126/science.aaq0216" target="_blank"><em>Science</em>, 360(6392), 987-992.</a></li>
                             <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/environment" target="_blank">The Vegan Society: Why go vegan? (Environment)</a> (Summarizes impact data)</li>
                         </ul>
                     </li>
@@ -2103,7 +2133,12 @@
                         // Fits in the other column, switch to it
                         targetColumnIndex = otherColumnIndex;
                         currentX = margin + (targetColumnIndex * (columnWidth + columnGap));
-                        currentY = columnYs[targetColumnIndex];
+                        currentY = columnYs[targetColumnIndex]; // Set Y to the top of the next column
+                        
+                        pdf.setFontSize(12); // Redraw category title on new column
+                        pdf.text(category + " (cont.)", currentX + sectionPadding, currentY + categoryTitleHeight / 2 + 1.5);
+                        currentY += categoryTitleHeight + sectionPadding;
+                        pdf.setFontSize(10);
                     }
                 }
                 
