@@ -5,7 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vegan Meal Prep Planner</title>
     <style>
-        /* CSS Styles */
+        /* CSS Variables for Dark Mode */
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --text-color: #333;
+            --header-color-main: #4a5568;
+            --header-color-secondary: #2d3748;
+            --label-color: #4a5568;
+            --input-border: #e2e8f0;
+            --input-focus-border: #667eea;
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --checkbox-bg: rgba(255, 255, 255, 0.7);
+            --checkbox-hover-bg: rgba(102, 126, 234, 0.1);
+            --nutrition-summary-bg-start: #f7fafc;
+            --nutrition-summary-bg-end: #edf2f7;
+            --nutrition-summary-border: #e2e8f0;
+            --macro-item-bg: white;
+            --day-card-bg: white;
+            --meal-bg: #f8f9fa;
+            --meal-item-bg: white;
+            --warning-bg: #fed7d7;
+            --warning-color: #c53030;
+            --section-divider-color: #e2e8f0;
+            --b12-disclaimer-bg: #ffffee;
+            --b12-disclaimer-border: #ffd700;
+            --b12-disclaimer-color: #8B8000;
+            --b12-button-bg: #ffd700;
+            --b12-button-color: #6b4615;
+            --summary-card-bg: rgba(255, 255, 255, 0.8);
+            --summary-card-border: rgba(255, 255, 255, 0.3);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #1a202c;
+            --bg-gradient-end: #2d3748;
+            --card-bg: rgba(45, 55, 72, 0.95);
+            --card-border: rgba(63, 78, 100, 0.2);
+            --text-color: #e2e8f0;
+            --header-color-main: #90cdf4;
+            --header-color-secondary: #a0aec0;
+            --label-color: #cbd5e0;
+            --input-border: #4a5568;
+            --input-focus-border: #63b3ed;
+            --input-bg: rgba(74, 85, 104, 0.9);
+            --checkbox-bg: rgba(74, 85, 104, 0.7);
+            --checkbox-hover-bg: rgba(99, 179, 237, 0.1);
+            --nutrition-summary-bg-start: #2d3748;
+            --nutrition-summary-bg-end: #4a5568;
+            --nutrition-summary-border: #4a5568;
+            --macro-item-bg: #4a5568;
+            --day-card-bg: #4a5568;
+            --meal-bg: #2d3748;
+            --meal-item-bg: #4a5568;
+            --warning-bg: #742a2a;
+            --warning-color: #fbd38d;
+            --section-divider-color: #4a5568;
+            --b12-disclaimer-bg: #4c4015;
+            --b12-disclaimer-border: #b8860b;
+            --b12-disclaimer-color: #e2e8f0;
+            --b12-button-bg: #b8860b;
+            --b12-button-color: #2d3748;
+            --summary-card-bg: rgba(45, 55, 72, 0.8);
+            --summary-card-border: rgba(63, 78, 100, 0.3);
+        }
+
+        /* Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -14,9 +81,10 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
-            color: #333;
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
@@ -27,13 +95,14 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--card-border);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .step {
@@ -51,27 +120,30 @@
         }
 
         h1 {
-            color: #4a5568;
+            color: var(--header-color-main); /* Changed to solid color for better contrast */
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5em;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            /* Removed gradient for better accessibility */
+            background-clip: unset;
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: unset;
+            transition: color 0.3s ease;
         }
 
         h2 {
-            color: #2d3748;
+            color: var(--header-color-secondary);
             margin-bottom: 20px;
             font-size: 1.8em;
             text-align: center;
+            transition: color 0.3s ease;
         }
 
         h3 {
-            color: #4a5568;
+            color: var(--header-color-main);
             margin: 20px 0 10px 0;
             font-size: 1.3em;
+            transition: color 0.3s ease;
         }
         
         h4 {
@@ -79,6 +151,7 @@
             margin-top: 15px;
             margin-bottom: 8px;
             font-size: 1.1em;
+            transition: color 0.3s ease;
         }
 
         .form-group {
@@ -89,22 +162,24 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #4a5568;
+            color: var(--label-color);
+            transition: color 0.3s ease;
         }
 
         input, select, textarea {
             width: 100%;
             padding: 15px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--input-border);
             border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--input-bg);
+            color: var(--text-color);
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--input-focus-border);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             transform: translateY(-2px);
         }
@@ -120,20 +195,75 @@
             display: flex;
             align-items: center;
             padding: 12px;
-            background: rgba(255, 255, 255, 0.7);
+            background: var(--checkbox-bg);
             border-radius: 10px;
             border: 2px solid transparent;
             transition: all 0.3s ease;
         }
 
         .checkbox-item:hover {
-            background: rgba(102, 126, 234, 0.1);
-            border-color: #667eea;
+            background: var(--checkbox-hover-bg);
+            border-color: var(--input-focus-border);
         }
 
         .checkbox-item input[type="checkbox"] {
             width: auto;
             margin-right: 10px;
+        }
+
+        /* Checkbox visual feedback */
+        .checkbox-item input[type="checkbox"]:checked + label {
+            color: #667eea; /* Highlight label when checked */
+            font-weight: bold;
+        }
+        .checkbox-item input[type="checkbox"]:checked {
+            accent-color: #667eea; /* Color of the checkbox itself */
+        }
+        
+        /* Range slider styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            background: var(--input-border);
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+            border-radius: 5px;
+            padding: 0; /* Remove padding */
+            margin-top: 10px;
+        }
+
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .range-value {
+            display: block;
+            text-align: right;
+            font-size: 0.9em;
+            color: #718096;
+            margin-top: 5px;
         }
 
         .btn {
@@ -192,11 +322,12 @@
         }
 
         .nutrition-summary {
-            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            background: linear-gradient(135deg, var(--nutrition-summary-bg-start), var(--nutrition-summary-bg-end));
             border-radius: 15px;
             padding: 25px;
             margin: 20px 0;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--nutrition-summary-border);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .macro-grid {
@@ -207,11 +338,12 @@
         }
 
         .macro-item {
-            background: white;
+            background: var(--macro-item-bg);
             padding: 15px;
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease;
         }
 
         .macro-value {
@@ -225,11 +357,12 @@
         }
 
         .day-card {
-            background: white;
+            background: var(--day-card-bg);
             margin-bottom: 20px;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
         }
 
         .day-header {
@@ -247,23 +380,26 @@
         .meal {
             margin-bottom: 15px;
             padding: 15px;
-            background: #f8f9fa;
+            background: var(--meal-bg);
             border-radius: 10px;
             border-left: 4px solid #667eea;
+            transition: background-color 0.3s ease;
         }
 
         .meal-type {
             font-weight: bold;
-            color: #4a5568;
+            color: var(--label-color);
             margin-bottom: 8px;
+            transition: color 0.3s ease;
         }
 
         .meal-item {
             margin-bottom: 5px;
             padding: 8px;
-            background: white;
+            background: var(--meal-item-bg);
             border-radius: 6px;
             font-size: 0.95em;
+            transition: background-color 0.3s ease;
         }
 
         .hidden {
@@ -271,12 +407,13 @@
         }
 
         .warning {
-            background: #fed7d7;
-            color: #c53030;
+            background: var(--warning-bg);
+            color: var(--warning-color);
             padding: 10px;
             border-radius: 8px;
             margin: 10px 0;
             font-size: 0.9em;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         @media (max-width: 768px) {
@@ -339,12 +476,13 @@
         .shopping-list .category-title {
             font-size: 1.4em;
             font-weight: bold;
-            color: #2d3748;
+            color: var(--header-color-secondary);
             margin-top: 25px;
             margin-bottom: 15px;
             padding-bottom: 5px;
-            border-bottom: 2px solid #edf2f7;
+            border-bottom: 2px solid var(--section-divider-color);
             text-align: left; /* Align to left to match normal text flow */
+            transition: color 0.3s ease, border-color 0.3s ease;
         }
 
         .shopping-list .item-list {
@@ -354,21 +492,21 @@
         }
 
         .shopping-list .shopping-item {
-            background: #f8f9fa;
+            background: var(--meal-bg);
             border-radius: 8px;
             padding: 12px 15px;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
             font-size: 1.05em;
-            color: #4a5568;
-            border: 1px solid #e2e8f0;
+            color: var(--label-color);
+            border: 1px solid var(--input-border);
             transition: all 0.2s ease;
         }
 
         .shopping-list .shopping-item:hover {
-            background: #edf2f7;
-            border-color: #667eea;
+            background: var(--checkbox-hover-bg);
+            border-color: var(--input-focus-border);
         }
 
         .shopping-list .shopping-item::before {
@@ -384,21 +522,23 @@
         }
 
         .recipe-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--input-border);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .recipe-card .recipe-title {
             font-size: 1.6em;
             font-weight: bold;
-            color: #2d3748;
+            color: var(--header-color-secondary);
             margin-bottom: 10px;
-            border-bottom: 2px solid #e2e8f0;
+            border-bottom: 2px solid var(--section-divider-color);
             padding-bottom: 10px;
+            transition: color 0.3s ease, border-color 0.3s ease;
         }
 
         .recipe-card .recipe-info {
@@ -408,6 +548,7 @@
             margin-bottom: 15px;
             color: #718096;
             font-weight: 500;
+            transition: color 0.3s ease;
         }
 
         .recipe-card ul.ingredients-list,
@@ -416,8 +557,9 @@
             padding-left: 20px;
             margin-top: 0;
             margin-bottom: 15px;
-            color: #4a5568;
+            color: var(--label-color);
             line-height: 1.6;
+            transition: color 0.3s ease;
         }
 
         .recipe-card ul.ingredients-list li,
@@ -433,10 +575,11 @@
             list-style-type: decimal; /* Numbered list for steps */
         }
         
-        /* Styles for the PDF rendering container */
+        /* Styles for the PDF rendering container - mostly unchanged as it's separate from UI */
         #pdf-render-area {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
         .pdf-page {
             width: 210mm; /* A4 width */
@@ -580,7 +723,7 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--card-bg);
             padding: 30px;
             border-radius: 15px;
             max-width: 700px;
@@ -589,6 +732,7 @@
             position: relative;
             max-height: 90vh; /* Max height to fit viewport */
             overflow-y: auto; /* Enable scrolling within modal content */
+            transition: background-color 0.3s ease;
         }
 
         .modal-close-btn {
@@ -609,21 +753,26 @@
         }
 
         .modal-content h3 {
-            color: #2d3748;
+            color: var(--header-color-secondary);
             margin-top: 15px;
             margin-bottom: 10px;
             font-size: 1.4em;
+            transition: color 0.3s ease;
         }
 
         .modal-content p {
             margin-bottom: 10px;
             line-height: 1.5;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         .modal-content ul {
             list-style-type: disc;
             margin-left: 20px;
             margin-bottom: 10px;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         .modal-content li {
@@ -640,20 +789,22 @@
         }
 
         .disclaimer {
-            background-color: #fffbeb; /* Light yellow background */
+            background-color: var(--warning-bg); /* Light yellow background */
             border-left: 5px solid #ecc94b; /* Yellow border */
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 8px;
-            color: #6b4615; /* Darker text for contrast */
+            color: var(--warning-color); /* Darker text for contrast */
             font-size: 0.95em;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* New section styles for comparative benefits */
         .benefits-section {
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 2px dashed #e2e8f0;
+            border-top: 2px dashed var(--section-divider-color);
+            transition: border-color 0.3s ease;
         }
         .benefits-section h3 {
             text-align: center;
@@ -663,24 +814,26 @@
         }
         .benefits-section h4 {
             font-size: 1.2em;
-            color: #4a5568;
+            color: var(--header-color-secondary);
             margin-top: 15px;
             margin-bottom: 10px;
-            border-bottom: 1px solid #edf2f7;
+            border-bottom: 1px solid var(--section-divider-color);
             padding-bottom: 5px;
+            transition: color 0.3s ease, border-color 0.3s ease;
         }
         .benefits-section ul {
             list-style-type: none;
             padding-left: 0;
         }
         .benefits-section li {
-            background: #f8f9fa;
+            background: var(--meal-bg);
             border-radius: 8px;
             padding: 10px 15px;
             margin-bottom: 8px;
             font-size: 0.95em;
-            color: #4a5568;
+            color: var(--label-color);
             border-left: 3px solid #667eea;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .benefits-section .comparison-grid {
             display: grid;
@@ -689,12 +842,13 @@
             margin-top: 15px;
         }
         .benefits-section .comparison-item {
-            background: #eef9fc;
+            background: var(--meal-bg);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            border: 1px solid #a0d9e7;
+            border: 1px solid var(--input-border);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .benefits-section .comparison-value {
             font-size: 1.8em;
@@ -704,34 +858,37 @@
         }
         .benefits-section .comparison-label {
             font-size: 1em;
-            color: #333;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
         .benefits-section .comparison-text {
             font-size: 0.9em;
             color: #718096;
             margin-top: 10px;
+            transition: color 0.3s ease;
         }
         .b12-disclaimer {
-            background-color: #ffffee; /* Light pastel yellow */
-            border-left: 5px solid #ffd700; /* Gold-like border */
+            background-color: var(--b12-disclaimer-bg); /* Light pastel yellow */
+            border-left: 5px solid var(--b12-disclaimer-border); /* Gold-like border */
             padding: 15px;
             margin-top: 20px;
             border-radius: 8px;
-            color: #8B8000; /* Darker text for contrast */
+            color: var(--b12-disclaimer-color); /* Darker text for contrast */
             font-size: 0.9em;
             display: flex;
             align-items: center;
             gap: 10px;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
         .b12-disclaimer button {
-            background-color: #ffd700;
-            color: #6b4615;
+            background-color: var(--b12-button-bg);
+            color: var(--b12-button-color);
             border: none;
             padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
         .b12-disclaimer button:hover {
             background-color: #ffc107;
@@ -741,9 +898,69 @@
         #b12Modal .modal-content {
             max-width: 600px;
         }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            z-index: 100;
+        }
+        .dark-mode-toggle span {
+            font-size: 1.2em;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        /* Summary Card Preview */
+        .summary-card {
+            position: sticky;
+            top: 0;
+            background: var(--summary-card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--summary-card-border);
+            z-index: 50;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 10px;
+            font-size: 0.9em;
+            color: var(--text-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .summary-item {
+            flex: 1 1 auto;
+            min-width: 120px;
+            text-align: center;
+        }
+        .summary-item strong {
+            display: block;
+            font-size: 1.1em;
+            color: #667eea;
+        }
     </style>
 </head>
 <body>
+    <!-- Dark Mode Toggle Button -->
+    <div class="dark-mode-toggle" id="darkModeToggle">
+        <span id="darkModeIcon">🌙</span>
+    </div>
+
     <!-- This hidden div is used as a staging area for generating the clean PDF layout -->
     <div id="pdf-render-area" style="position: absolute; left: -9999px; top: 0; background: white;"></div>
 
@@ -752,13 +969,26 @@
             <div class="progress-fill" id="progressFill" style="width: 16.67%"></div>
         </div>
 
+        <!-- Summary Card - hidden by default, shown from Step 2 onwards -->
+        <div class="summary-card hidden" id="summaryCard">
+            <!-- Content will be injected by JavaScript -->
+        </div>
+
         <div class="step active" id="step1">
             <div class="card">
                 <h1>🌱 Vegan Meal Prep Planner</h1>
-                <h2>Personal Details</h2>
+                <p style="text-align: center; margin-bottom: 25px; color: #718096; font-size: 1.1em;">
+                    Let’s get started! We’ll use your details to craft a fully personalized vegan plan.
+                </p>
+                <h2><span style="margin-right: 10px;">👤</span> Personal Details</h2>
                 
                 <div class="disclaimer">
                     <strong>Disclaimer:</strong> This website provides meal plan estimations based on general nutritional science. These calculations are for informational purposes only and are not a substitute for professional medical or dietary advice. Individual results may vary. Consult with a healthcare professional or registered dietitian before making any significant changes to your diet or lifestyle.
+                </div>
+
+                <div class="form-group">
+                    <label for="planName">Your Plan Name (Optional)</label>
+                    <input type="text" id="planName" placeholder="e.g. My Vegan Journey">
                 </div>
 
                 <div class="form-group">
@@ -811,18 +1041,20 @@
                 <!-- End new optional fields -->
 
                 <div class="form-group">
-                    <label for="bodyFat">Body Fat Percentage (%) (Optional - estimated if left blank)</label>
-                    <input type="number" id="bodyFat" step="0.1" min="5" max="50" placeholder="e.g. 20 (estimated if blank)">
+                    <label for="bodyFat" title="Your Body Fat Percentage. This helps fine-tune calorie needs.">Body Fat Percentage (%) <span style="font-size: 0.8em; color: #718096;">(Optional)</span></label>
+                    <input type="range" id="bodyFat" min="5" max="50" value="20" oninput="document.getElementById('bodyFatValue').innerText = this.value + '%'">
+                    <span class="range-value" id="bodyFatValue">20%</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="muscleMass">Muscle Mass (kg) (Optional - estimated if left blank)</label>
+                    <label for="muscleMass" title="Your Muscle Mass in kilograms. Used for more accurate BMR calculations.">Muscle Mass (kg) <span style="font-size: 0.8em; color: #718096;">(Optional)</span></label>
                     <input type="number" id="muscleMass" step="0.1" placeholder="e.g. 45 (estimated if blank)">
                 </div>
 
                 <div class="form-group">
-                    <label for="dailyCaloriesBurned">Total Daily Calories Burned (Optional - estimated if left blank)</label>
-                    <input type="number" id="dailyCaloriesBurned" placeholder="e.g. 2000 (estimated if blank)">
+                    <label for="dailyCaloriesBurned" title="Your estimated total daily calorie expenditure.">Total Daily Calories Burned <span style="font-size: 0.8em; color: #718096;">(Optional)</span></label>
+                    <input type="range" id="dailyCaloriesBurned" min="1000" max="4000" value="2000" step="50" oninput="document.getElementById('dailyCaloriesBurnedValue').innerText = this.value + ' kcal'">
+                    <span class="range-value" id="dailyCaloriesBurnedValue">2000 kcal</span>
                 </div>
 
                 <div class="button-group">
@@ -835,7 +1067,7 @@
 
         <div class="step" id="step2">
             <div class="card">
-                <h2>Your Goals</h2>
+                <h2><span style="margin-right: 10px;">🎯</span> Your Goals</h2>
                 
                 <div class="form-group">
                     <label for="goal">Primary Goal</label>
@@ -869,7 +1101,7 @@
 
         <div class="step" id="step3">
             <div class="card">
-                <h2>Food Preferences & Allergies</h2>
+                <h2><span style="margin-right: 10px;">🍽️</span> Food Preferences & Allergies</h2>
                 <p style="margin-bottom: 20px; color: #718096;">Select any foods you'd like to exclude from your meal plan:</p>
                 
                 <div class="checkbox-group" id="foodExclusions">
@@ -927,7 +1159,7 @@
 
         <div class="step" id="step4">
             <div class="card">
-                <h2>Your Nutritional Plan</h2>
+                <h2><span style="margin-right: 10px;">📊</span> Your Nutritional Plan</h2>
                 
                 <div class="nutrition-summary" id="nutritionSummary">
                     </div>
@@ -941,7 +1173,7 @@
 
         <div class="step" id="step5">
             <div class="card">
-                <h2>Meal Preferences</h2>
+                <h2><span style="margin-right: 10px;">📅</span> Meal Preferences</h2>
                 
                 <div class="form-group">
                     <label for="cookingFreq">Cooking Frequency Preference</label>
@@ -999,7 +1231,7 @@
 
         <div class="step" id="step6">
             <div class="card">
-                <h2>Your 7-Day Vegan Meal Plan</h2>
+                <h2><span style="margin-right: 10px;">✅</span> Your 7-Day Vegan Meal Plan</h2>
                 
                 <div id="mealPlanResults">
                     </div>
@@ -1014,7 +1246,7 @@
 
         <div class="step" id="step7">
             <div class="card">
-                <h2>Shopping List</h2>
+                <h2><span style="margin-right: 10px;">🛒</span> Shopping List</h2>
                 
                 <div id="shoppingListResults">
                     </div>
@@ -1029,7 +1261,7 @@
 
         <div class="step" id="step8">
             <div class="card">
-                <h2>Meal Prep & Recipe Guide</h2>
+                <h2><span style="margin-right: 10px;">🧑‍🍳</span> Meal Prep & Recipe Guide</h2>
                 
                 <div id="recipeResults">
                     </div>
@@ -1046,9 +1278,9 @@
         <!-- New Step for Comparative Benefits -->
         <div class="step" id="step9">
             <div class="card">
+                <h2><span style="margin-right: 10px;">🌍</span> Impact of Your Vegan Diet</h2>
+                
                 <div id="comparativeBenefitsSection" class="benefits-section">
-                    <h3>Impact of Your Vegan Diet</h3>
-
                     <h4>Animal Lives Saved</h4>
                     <ul>
                         <li id="animalsSavedWeek"></li>
@@ -1183,6 +1415,29 @@
 
         const totalSteps = 9; // Updated to 9 steps (excluding loading, so 10 total states)
 
+        // Dark Mode Toggle Logic
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+
+        // Check for user's preferred color scheme on load
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            darkModeIcon.innerText = '☀️'; // Sun icon for dark mode
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            darkModeIcon.innerText = '🌙'; // Moon icon for light mode
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                darkModeIcon.innerText = '🌙';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                darkModeIcon.innerText = '☀️';
+            }
+        });
+
         function updateProgress() {
             const progressPercent = (currentStep / totalSteps) * 100;
             document.getElementById('progressFill').style.width = progressPercent + '%';
@@ -1218,6 +1473,15 @@
             
             currentStep = stepNumber;
             updateProgress();
+            updateSummaryCard(); // Update summary card on step change
+
+            // Show/hide summary card based on step number
+            const summaryCard = document.getElementById('summaryCard');
+            if (currentStep > 1 && currentStep < totalSteps + 1) { // Show from step 2 up to the last step before restart
+                summaryCard.classList.remove('hidden');
+            } else {
+                summaryCard.classList.add('hidden');
+            }
         }
 
         function nextStep() {
@@ -1236,18 +1500,19 @@
 
         function validateCurrentStep() {
             // Weight and Height are still required for base calculations
-            const weight = document.getElementById('weight').value;
-            const height = document.getElementById('height').value;
-            const age = document.getElementById('age').value; // Age is now required for estimation
+            const weightInput = document.getElementById('weight').value;
+            const heightInput = document.getElementById('height').value;
+            const ageInput = document.getElementById('age').value; // Age is now required for estimation
 
-            if (!weight || !height || !age) {
+            if (!weightInput || !heightInput || !ageInput) {
                 alert('Please fill in Weight, Height, and Age. Other fields are optional.');
                 return false;
             }
             
-            userData.weight = parseFloat(weight);
-            userData.height = parseFloat(height);
-            userData.age = parseInt(age); // Store age
+            userData.planName = document.getElementById('planName').value || 'Your Plan'; // Get plan name
+            userData.weight = parseFloat(weightInput);
+            userData.height = parseFloat(heightInput);
+            userData.age = parseInt(ageInput); // Store age
             userData.gender = document.getElementById('gender').value; // Store gender
             userData.activityLevel = document.getElementById('activityLevel').value; // Store activity level
             userData.bodyType = document.getElementById('bodyType').value; // Store body type
@@ -1274,8 +1539,28 @@
                     }
                 }
             }
+            
+            // Ensure all critical user data fields are numbers before proceeding
+            if (isNaN(userData.weight) || isNaN(userData.height) || isNaN(userData.age)) {
+                alert('Invalid input for Weight, Height, or Age. Please enter numerical values.');
+                return false;
+            }
 
             return true;
+        }
+
+        // Function to update the sticky summary card
+        function updateSummaryCard() {
+            const summaryCard = document.getElementById('summaryCard');
+            let summaryHtml = `
+                <div class="summary-item"><strong>${userData.planName || 'Your Plan'}</strong></div>
+                <div class="summary-item"><strong>Goal:</strong> ${userData.goal ? userData.goal.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'N/A'}</div>
+            `;
+            if (nutritionPlan.targetCalories) {
+                summaryHtml += `<div class="summary-item"><strong>Calories:</strong> ${nutritionPlan.targetCalories} kcal</div>`;
+                summaryHtml += `<div class="summary-item"><strong>Protein:</strong> ${nutritionPlan.protein.grams}g</div>`;
+            }
+            summaryCard.innerHTML = summaryHtml;
         }
 
         function toggleWeightLossRate() {
@@ -1284,12 +1569,18 @@
             const aggressiveOption = document.getElementById('aggressiveOption');
             const aggressiveWarning = document.getElementById('aggressiveWarning');
             
+            // Ensure userData.bodyFat is up-to-date when this function is called
+            // This might be called on 'change' of goal, before full userData validation for the next step.
+            // So, re-read bodyFat here if available.
+            let currentBodyFat = parseFloat(document.getElementById('bodyFat').value) || 0;
+            if (currentBodyFat === 0) { // If user left it blank, try to estimate for warning logic
+                currentBodyFat = estimateBodyFatPercentage(userData.gender, userData.bodyType);
+            }
+
             if (goal === 'lose' || goal === 'recomp') {
                 weightLossGroup.classList.remove('hidden');
                 
-                // Use the collected userData.bodyFat, which might be an estimate
-                const bodyFat = userData.bodyFat || 20; // Fallback if still not set or estimated
-                if (bodyFat <= 35) {
+                if (currentBodyFat <= 35) {
                     aggressiveOption.disabled = true;
                     aggressiveOption.style.display = 'none';
                     aggressiveWarning.classList.remove('hidden');
@@ -1304,18 +1595,30 @@
         }
 
         function calculateBMR(weight, height, age, gender) {
-            if (gender === 'male' || gender === 'trans_male') { // Apply male BMR for male and trans male
+            // Ensure inputs are numbers before calculation
+            weight = parseFloat(weight) || 0;
+            height = parseFloat(height) || 0;
+            age = parseInt(age) || 0;
+
+            if (weight === 0 || height === 0 || age === 0) {
+                console.warn("Invalid inputs for BMR calculation. Returning 0.");
+                return 0; // Return 0 if inputs are invalid
+            }
+
+            if (gender === 'male' || gender === 'trans_male') {
                 return (10 * weight) + (6.25 * height) - (5 * age) + 5;
-            } else if (gender === 'female' || gender === 'trans_female') { // Apply female BMR for female and trans female
+            } else if (gender === 'female' || gender === 'trans_female') {
                 return (10 * weight) + (6.25 * height) - (5 * age) - 161;
-            } else { // For non-binary, prefer not to say, etc. - use an average or a more generalized formula if available, or just female for default
-                return (10 * weight) + (6.25 * height) - (5 * age) - 161; // Default to female BMR for non-specified or general inclusivity
+            } else {
+                return (10 * weight) + (6.25 * height) - (5 * age) - 161; // Default to female BMR
             }
         }
 
 
         function estimateTDEE(weight, height, age, gender, activityLevel) {
             const bmr = calculateBMR(weight, height, age, gender);
+            if (bmr === 0) return 0; // If BMR is invalid, TDEE is also invalid
+
             const activityFactors = {
                 'sedentary': 1.2,
                 'lightly_active': 1.375,
@@ -1323,7 +1626,7 @@
                 'very_active': 1.725,
                 'extremely_active': 1.9
             };
-            return bmr * activityFactors[activityLevel];
+            return bmr * (activityFactors[activityLevel] || 1.2); // Fallback to sedentary if activityLevel is missing
         }
 
         function estimateBodyFatPercentage(gender, bodyType) {
@@ -1334,7 +1637,7 @@
                     case 'average': return 18; // Mesomorph
                     case 'stocky': return 25; // Endomorph
                 }
-            } else if (gender === 'female' || gender === 'trans_female') { // female and trans female
+            } else if (gender === 'female' || gender === 'trans_female') {
                 switch (bodyType) {
                     case 'lean': return 22; // Ectomorph
                     case 'average': return 28; // Mesomorph
@@ -1345,16 +1648,23 @@
         }
 
         function estimateMuscleMass(weight, bodyFat) {
-            // Muscle mass is a portion of Lean Body Mass (LBM)
+            weight = parseFloat(weight) || 0;
+            bodyFat = parseFloat(bodyFat) || 0;
+            if (weight === 0 || bodyFat === 0) return 0;
+
             const leanBodyMass = weight * (1 - (bodyFat / 100));
-            // Skeletal muscle typically accounts for 60-70% of LBM
             return leanBodyMass * 0.65; // Use 65% as a general estimate
         }
 
         function calculateNutrition() {
             if (!validateCurrentStep()) return;
 
-            // If dailyCaloriesBurned is not provided, estimate it
+            // Ensure userData fields used in estimations are numbers, if not provided
+            userData.weight = parseFloat(userData.weight) || 0;
+            userData.height = parseFloat(userData.height) || 0;
+            userData.age = parseInt(userData.age) || 0;
+
+            // If dailyCaloriesBurned is not provided (0), estimate it
             if (userData.dailyCaloriesBurned === 0) {
                 userData.dailyCaloriesBurned = estimateTDEE(
                     userData.weight,
@@ -1364,21 +1674,36 @@
                     userData.activityLevel
                 );
             }
+            // Ensure dailyCaloriesBurned is a valid number, fallback to 2000 if estimate fails
+            if (isNaN(userData.dailyCaloriesBurned) || userData.dailyCaloriesBurned <= 0) {
+                userData.dailyCaloriesBurned = 2000;
+                console.warn("Daily calories burned estimate failed or was zero, defaulting to 2000 kcal.");
+            }
 
-            // If bodyFat is not provided, estimate it
+            // If bodyFat is not provided (0), estimate it
             if (userData.bodyFat === 0) {
                 userData.bodyFat = estimateBodyFatPercentage(
                     userData.gender,
                     userData.bodyType
                 );
             }
+            // Ensure bodyFat is a valid number
+            if (isNaN(userData.bodyFat) || userData.bodyFat <= 0) {
+                userData.bodyFat = 20; // Default to 20%
+                console.warn("Body fat estimate failed or was zero, defaulting to 20%.");
+            }
 
-            // If muscleMass is not provided, estimate it
+            // If muscleMass is not provided (0), estimate it
             if (userData.muscleMass === 0) {
                 userData.muscleMass = estimateMuscleMass(
                     userData.weight,
                     userData.bodyFat
                 );
+            }
+            // Ensure muscleMass is a valid number
+            if (isNaN(userData.muscleMass) || userData.muscleMass <= 0) {
+                userData.muscleMass = userData.weight * 0.4; // Rough fallback for muscle mass
+                console.warn("Muscle mass estimate failed or was zero, using rough fallback.");
             }
             
             let targetCalories = userData.dailyCaloriesBurned;
@@ -1386,6 +1711,9 @@
             
             switch(userData.goal) {
                 case 'lose':
+                    // Ensure weightLossRate is a valid number
+                    const weightLossRateVal = parseFloat(document.getElementById('weightLossRate').value);
+                    userData.weightLossRate = isNaN(weightLossRateVal) ? 0.5 : weightLossRateVal; // Default to 0.5 if NaN
                     deficit = userData.weightLossRate * 7700 / 7;
                     targetCalories = userData.dailyCaloriesBurned - deficit;
                     break;
@@ -1393,26 +1721,55 @@
                     targetCalories = userData.dailyCaloriesBurned + 300; // Caloric surplus for muscle gain
                     break;
                 case 'recomp':
-                    deficit = (userData.weightLossRate * 7700 / 7) * 0.5;
+                    // For recomp, use a smaller deficit
+                    const recompWeightLossRateVal = parseFloat(document.getElementById('weightLossRate').value);
+                    userData.weightLossRate = isNaN(recompWeightLossRateVal) ? 0.25 : recompWeightLossRateVal; // A smaller default deficit for recomp
+                    deficit = (userData.weightLossRate * 7700 / 7) * 0.5; // Half the deficit of 'lose' goal
                     targetCalories = userData.dailyCaloriesBurned - deficit;
                     break;
                 case 'gain_weight':
                     targetCalories = userData.dailyCaloriesBurned + 500; // Caloric surplus for general weight gain (low BMI)
                     break;
+                case 'maintain': // No change for maintain
+                default:
+                    // targetCalories remains userData.dailyCaloriesBurned
+                    break;
             }
-            
+
+            // --- Robustness for targetCalories ---
+            if (isNaN(targetCalories) || targetCalories <= 0) {
+                console.error("Calculated targetCalories is invalid after goal adjustment:", targetCalories);
+                targetCalories = 1800; // Fallback to a sensible default if it became invalid
+                alert("Warning: Calorie target calculation resulted in an invalid number. Defaulting to 1800 kcal. Please check your inputs.");
+            }
+            // Ensure deficit is also a number
+            if (isNaN(deficit)) {
+                deficit = 0;
+            }
+            // --- End Robustness ---
+
             const protein = Math.round(userData.weight * 2.2);
             const proteinCals = protein * 4;
-            const fatCals = Math.round(targetCalories * 0.25);
-            const fat = Math.round(fatCals / 9);
-            const carbCals = targetCalories - proteinCals - fatCals;
-            const carbs = Math.round(carbCals / 4);
+            let fatCals = Math.round(targetCalories * 0.25);
+            let fat = Math.round(fatCals / 9);
+            let carbCals = targetCalories - proteinCals - fatCals;
+            let carbs = Math.round(carbCals / 4);
 
-            // Ensure targetCalories is not zero before calculating percentages to prevent NaN
+            // Ensure no negative calories for carbs/fat if protein is very high or targetCalories low
+            if (carbCals < 0) {
+                carbCals = 0;
+                carbs = 0;
+            }
+            if (fatCals < 0) {
+                fatCals = 0;
+                fat = 0;
+            }
+            
+            // Recalculate percentages based on potentially adjusted values
             const proteinPercent = targetCalories > 0 ? Math.round((proteinCals / targetCalories) * 100) : 0;
             const carbsPercent = targetCalories > 0 ? Math.round((carbCals / targetCalories) * 100) : 0;
             const fatPercent = targetCalories > 0 ? Math.round((fatCals / targetCalories) * 100) : 0;
-            
+
             nutritionPlan = {
                 targetCalories: Math.round(targetCalories),
                 deficit: Math.round(deficit),
@@ -1445,7 +1802,6 @@
                 displayGoal = userSelectedGoal.charAt(0).toUpperCase() + userSelectedGoal.slice(1);
             }
             
-
             summary.innerHTML = `
                 <h3>Goal: ${displayGoal}</h3>
                 <div style="margin: 15px 0;">
@@ -1842,9 +2198,14 @@
         function displayComparativeBenefits() {
             const benefitsSection = document.getElementById('comparativeBenefitsSection');
 
-            // Clear calculated animal lives saved text
-            document.getElementById('animalsSavedWeek').innerHTML = '';
-            document.getElementById('animalsSavedYear').innerHTML = '';
+            // --- Animal Lives Saved (Estimates based on average animal product consumption) ---
+            // These are widely cited estimates from organizations like The Vegan Society, Animal Charity Evaluators.
+            // A common figure is around 198 animals saved per year per vegan.
+            const animalsSavedPerYear = 198;
+            const animalsSavedPerWeek = (animalsSavedPerYear / 52); // No toFixed yet, do it in template string for better control
+
+            document.getElementById('animalsSavedWeek').innerHTML = `• 🐔🐷🐟 <strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong> Approximately <strong>${(animalsSavedPerWeek * userData.numWeeks).toFixed(1)} animal lives</strong>.`;
+            document.getElementById('animalsSavedYear').innerHTML = `• 🐔🐷🐟 <strong>Projected per year:</strong> Approximately <strong>${animalsSavedPerYear} animal lives</strong>.`;
 
             // --- Environmental Benefits Saved ---
             // Using approximate weekly and yearly savings for an average person switching to vegan
@@ -2360,6 +2721,18 @@
                 if(el.type === 'checkbox') el.checked = false;
                 else el.value = '';
             });
+            // Reset range slider displays
+            document.getElementById('bodyFat').value = 20;
+            document.getElementById('bodyFatValue').innerText = '20%';
+            document.getElementById('dailyCaloriesBurned').value = 2000;
+            document.getElementById('dailyCaloriesBurnedValue').innerText = '2000 kcal';
+            // Reset aggressive option visibility if it was hidden
+            const aggressiveOption = document.getElementById('aggressiveOption');
+            aggressiveOption.disabled = false;
+            aggressiveOption.style.display = 'block';
+            document.getElementById('aggressiveWarning').classList.add('hidden');
+
+
             showStep(1);
         }
 
@@ -2389,6 +2762,12 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             showStep(1);
+            // Initialize range slider values
+            document.getElementById('bodyFat').value = 20; // Default value from HTML
+            document.getElementById('bodyFatValue').innerText = document.getElementById('bodyFat').value + '%';
+            document.getElementById('dailyCaloriesBurned').value = 2000; // Default value from HTML
+            document.getElementById('dailyCaloriesBurnedValue').innerText = document.getElementById('dailyCaloriesBurned').value + ' kcal';
+
             document.getElementById('bodyFat').addEventListener('change', toggleWeightLossRate);
         });
     </script>
