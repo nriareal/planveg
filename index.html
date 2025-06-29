@@ -777,6 +777,10 @@
                     <select id="gender">
                         <option value="male">Male</option>
                         <option value="female">Female</option>
+                        <option value="non_binary">Non-binary</option>
+                        <option value="trans_male">Trans male</option>
+                        <option value="trans_female">Trans female</option>
+                        <option value="prefer_not_to_say">Prefer not to say</option>
                     </select>
                 </div>
 
@@ -1300,12 +1304,15 @@
         }
 
         function calculateBMR(weight, height, age, gender) {
-            if (gender === 'male') {
+            if (gender === 'male' || gender === 'trans_male') { // Apply male BMR for male and trans male
                 return (10 * weight) + (6.25 * height) - (5 * age) + 5;
-            } else { // female
+            } else if (gender === 'female' || gender === 'trans_female') { // Apply female BMR for female and trans female
                 return (10 * weight) + (6.25 * height) - (5 * age) - 161;
+            } else { // For non-binary, prefer not to say, etc. - use an average or a more generalized formula if available, or just female for default
+                return (10 * weight) + (6.25 * height) - (5 * age) - 161; // Default to female BMR for non-specified or general inclusivity
             }
         }
+
 
         function estimateTDEE(weight, height, age, gender, activityLevel) {
             const bmr = calculateBMR(weight, height, age, gender);
@@ -1321,20 +1328,20 @@
 
         function estimateBodyFatPercentage(gender, bodyType) {
             // Very rough estimates based on general body types
-            if (gender === 'male') {
+            if (gender === 'male' || gender === 'trans_male') {
                 switch (bodyType) {
                     case 'lean': return 12; // Ectomorph
                     case 'average': return 18; // Mesomorph
                     case 'stocky': return 25; // Endomorph
                 }
-            } else { // female
+            } else if (gender === 'female' || gender === 'trans_female') { // female and trans female
                 switch (bodyType) {
                     case 'lean': return 22; // Ectomorph
                     case 'average': return 28; // Mesomorph
                     case 'stocky': return 35; // Endomorph
                 }
             }
-            return 20; // Default fallback
+            return 20; // Default fallback for non-binary/prefer not to say, or if type not found
         }
 
         function estimateMuscleMass(weight, bodyFat) {
@@ -1400,13 +1407,18 @@
             const fat = Math.round(fatCals / 9);
             const carbCals = targetCalories - proteinCals - fatCals;
             const carbs = Math.round(carbCals / 4);
+
+            // Ensure targetCalories is not zero before calculating percentages to prevent NaN
+            const proteinPercent = targetCalories > 0 ? Math.round((proteinCals / targetCalories) * 100) : 0;
+            const carbsPercent = targetCalories > 0 ? Math.round((carbCals / targetCalories) * 100) : 0;
+            const fatPercent = targetCalories > 0 ? Math.round((fatCals / targetCalories) * 100) : 0;
             
             nutritionPlan = {
                 targetCalories: Math.round(targetCalories),
                 deficit: Math.round(deficit),
-                protein: { grams: protein, calories: proteinCals, percent: Math.round((proteinCals/targetCalories)*100) },
-                carbs: { grams: carbs, calories: carbCals, percent: Math.round((carbCals/targetCalories)*100) },
-                fat: { grams: fat, calories: fatCals, percent: Math.round((fatCals/targetCalories)*100) },
+                protein: { grams: protein, calories: proteinCals, percent: proteinPercent },
+                carbs: { grams: carbs, calories: carbCals, percent: carbsPercent },
+                fat: { grams: fat, calories: fatCals, percent: fatPercent },
                 vegetables: { grams: 400, recommendation: "5+ servings daily" }
             };
             
@@ -1829,39 +1841,10 @@
 
         function displayComparativeBenefits() {
             const benefitsSection = document.getElementById('comparativeBenefitsSection');
-            // benefitsSection.classList.remove('hidden'); // No longer needed as it's within its own active step
 
-            // --- Animal Lives Saved ---
-            // Data sources vary, using widely cited averages for *one week* and *one year* of veganism vs. omnivore
-            // These numbers are derived from various sources that aggregate FAO and national consumption data.
-            // Example derivations often cite data like:
-            // - Average US chicken consumption per capita: ~90-100 lbs/year -> several dozen chickens
-            // - Average pig consumption -> fractional pig per year
-            // - Average cattle consumption -> fractional cattle per year
-            // - Average fish consumption -> hundreds of fish/shellfish per year.
-            // Numbers here are representative based on common estimates.
-
-            const chickensSavedWeek = (35 / 52) * userData.numWeeks; // Approx 35 chickens per omnivore per year
-            const chickensSavedTotal = 35 * userData.numWeeks;
-            const pigsSavedWeek = (0.7 / 52) * userData.numWeeks;    // Approx 0.7 pigs per omnivore per year
-            const pigsSavedTotal = 0.7 * userData.numWeeks;
-            const cowsSavedWeek = (0.15 / 52) * userData.numWeeks;   // Approx 0.15 cows per omnivore per year
-            const cowsSavedTotal = 0.15 * userData.numWeeks;
-            const fishSavedWeek = (150 / 52) * userData.numWeeks;    // Approx 150 fish per omnivore per year
-            const fishSavedTotal = 150 * userData.numWeeks;
-
-            let animalsSavedWeekText = `• 🐔 <strong>${chickensSavedWeek.toFixed(1)}</strong> chicken${chickensSavedWeek !== 1 ? 's' : ''}`;
-            animalsSavedWeekText += `<br>• 🐷 <strong>${pigsSavedWeek.toFixed(2)}</strong> pig${pigsSavedWeek !== 1 ? 's' : ''}`;
-            animalsSavedWeekText += `<br>• 🐄 <strong>${cowsSavedWeek.toFixed(2)}</strong> cow${cowsSavedWeek !== 1 ? 's' : ''}`;
-            animalsSavedWeekText += `<br>• 🐟 <strong>${fishSavedWeek.toFixed(1)}</strong> fish`;
-            document.getElementById('animalsSavedWeek').innerHTML = `<strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong><br>${animalsSavedWeekText}`;
-
-            let animalsSavedYearText = `• 🐔 <strong>${chickensSavedTotal.toFixed(0)}</strong> chicken${chickensSavedTotal !== 1 ? 's' : ''}`;
-            animalsSavedYearText += `<br>• 🐷 <strong>${pigsSavedTotal.toFixed(1)}</strong> pig${pigsSavedTotal !== 1 ? 's' : ''}`;
-            animalsSavedYearText += `<br>• 🐄 <strong>${cowsSavedTotal.toFixed(1)}</strong> cow${cowsSavedTotal !== 1 ? 's' : ''}`;
-            animalsSavedYearText += `<br>• 🐟 <strong>${fishSavedTotal.toFixed(0)}</strong> fish`;
-            document.getElementById('animalsSavedYear').innerHTML = `<strong>Projected per year:</strong><br>${animalsSavedYearText}`;
-
+            // Clear calculated animal lives saved text
+            document.getElementById('animalsSavedWeek').innerHTML = '';
+            document.getElementById('animalsSavedYear').innerHTML = '';
 
             // --- Environmental Benefits Saved ---
             // Using approximate weekly and yearly savings for an average person switching to vegan
@@ -1898,11 +1881,7 @@
             let sourcesHtml = `
                 <h4>Sources for Impact Data</h4>
                 <ul>
-                    <li><strong>Animal Lives Saved:</strong> Estimates are derived from national and international agricultural statistics (e.g., USDA) combined with per capita consumption data. For general estimations and methodology, refer to organizations like The Vegan Society, which regularly updates these figures based on available data.
-                        <ul>
-                            <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/animals" target="_blank">The Vegan Society: Why go vegan? (Animals)</a></li>
-                        </ul>
-                    </li>
+                    <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/animals" target="_blank">The Vegan Society: Why go vegan? (Animals)</a></li>
                     <li>Poore, J., & Nemecek, T. (2018). Reducing food’s environmental impacts through producers and consumers. <a href="https://www.science.org/doi/10.1126/science.aaq0216" target="_blank"><em>Science</em>, 360(6392), 987-992.</a></li>
                     <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/environment" target="_blank">The Vegan Society: Why go vegan? (Environment)</a> (Summarizes impact data)</li>
                 </ul>
