@@ -2016,14 +2016,48 @@
                 snacks: selectUniqueMeals(veganMeals.snacks, numUniqueMeals)
             };
             console.log('Selected Unique Meals for each type:', selectedUniqueMeals);
+            
+            // Helper function to scale a meal to target calories
+            const scaleMeal = (baseMeal, targetCalories) => {
+                // Return a placeholder if the base meal is invalid or has no calories
+                if (!baseMeal || !baseMeal.calories || baseMeal.calories === 0) {
+                    return { name: 'Meal not available', calories: 0, protein: 0, ingredients: [], instructions: 'A suitable meal could not be found for this slot.' };
+                }
 
-            // Populate the weekPlan with meals, cycling through the selected unique meals
+                const scalingFactor = targetCalories / baseMeal.calories;
+
+                // Scale ingredients based on the calculated factor
+                const scaledIngredients = baseMeal.ingredients.map(ing => ({
+                    ...ing,
+                    // Round the new quantity to a whole number and ensure it's at least 1
+                    quantity: Math.max(1, Math.round(ing.quantity * scalingFactor))
+                }));
+
+                // Return a new meal object with scaled values
+                return {
+                    ...baseMeal,
+                    calories: Math.round(targetCalories),
+                    protein: Math.round(baseMeal.protein * scalingFactor),
+                    ingredients: scaledIngredients
+                    // Instructions remain the same; the user must adapt to the new quantities
+                };
+            };
+
+
+            // Populate the weekPlan, scaling each meal to fit the calorie structure
             days.forEach((day, index) => {
+                // Select a base meal for each slot
+                const breakfastChoice = selectedUniqueMeals.breakfast[index % selectedUniqueMeals.breakfast.length];
+                const lunchChoice = selectedUniqueMeals.lunch[index % selectedUniqueMeals.lunch.length];
+                const dinnerChoice = selectedUniqueMeals.dinner[index % selectedUniqueMeals.dinner.length];
+                const snackChoice = selectedUniqueMeals.snacks[index % selectedUniqueMeals.snacks.length];
+
+                // Assign the scaled version of the meal to the plan
                 weekPlan[day] = {
-                    breakfast: selectedUniqueMeals.breakfast[index % selectedUniqueMeals.breakfast.length],
-                    lunch: selectedUniqueMeals.lunch[index % selectedUniqueMeals.lunch.length],
-                    dinner: selectedUniqueMeals.dinner[index % selectedUniqueMeals.dinner.length],
-                    snacks: selectedUniqueMeals.snacks[index % selectedUniqueMeals.snacks.length]
+                    breakfast: scaleMeal(breakfastChoice, mealStructure.breakfast.calories),
+                    lunch: scaleMeal(lunchChoice, mealStructure.lunch.calories),
+                    dinner: scaleMeal(dinnerChoice, mealStructure.dinner.calories),
+                    snacks: scaleMeal(snackChoice, mealStructure.snacks.calories)
                 };
             });
             console.log('--- generateWeeklyMealPlan() finished ---');
