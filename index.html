@@ -953,15 +953,31 @@
             font-size: 1.1em;
             color: #667eea;
         }
+        /* Meal Review Styles */
+        .meal-review-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .meal-review-category {
+            background: var(--day-card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+        .meal-review-category h4 {
+            color: var(--header-color-secondary);
+            border-bottom: 1px solid var(--section-divider-color);
+            padding-bottom: 8px;
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
-    <!-- Dark Mode Toggle Button -->
     <div class="dark-mode-toggle" id="darkModeToggle">
         <span id="darkModeIcon">🌙</span>
     </div>
 
-    <!-- This hidden div is used as a staging area for generating the clean PDF layout -->
     <div id="pdf-render-area" style="position: absolute; left: -9999px; top: 0; background: white;"></div>
 
     <div class="container">
@@ -969,10 +985,8 @@
             <div class="progress-fill" id="progressFill" style="width: 16.67%"></div>
         </div>
 
-        <!-- Summary Card - hidden by default, shown from Step 2 onwards -->
         <div class="summary-card hidden" id="summaryCard">
-            <!-- Content will be injected by JavaScript -->
-        </div>
+            </div>
 
         <div class="step active" id="step1">
             <div class="card">
@@ -1001,7 +1015,6 @@
                     <input type="number" id="height" required>
                 </div>
 
-                <!-- New optional fields for estimation -->
                 <div class="form-group">
                     <label for="gender">Gender</label>
                     <select id="gender">
@@ -1038,8 +1051,6 @@
                         <option value="stocky">Stocky/Endomorph</option>
                     </select>
                 </div>
-                <!-- End new optional fields -->
-
                 <div class="form-group">
                     <label for="bodyFat" title="Your Body Fat Percentage. This helps fine-tune calorie needs.">Body Fat Percentage (%) <span style="font-size: 0.8em; color: #718096;">(Optional)</span></label>
                     <input type="range" id="bodyFat" min="5" max="50" value="20" oninput="document.getElementById('bodyFatValue').innerText = this.value + '%'">
@@ -1214,10 +1225,26 @@
 
                 <div class="button-group">
                     <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button class="btn" onclick="generateMealPlan()">Generate Meal Plan</button>
+                    <button class="btn" onclick="prepareMealReview()">Review & Refine Meals</button>
                 </div>
             </div>
         </div>
+
+        <div class="step" id="step6">
+            <div class="card">
+                <h2><span style="margin-right: 10px;">🔍</span> Review & Exclude Meals</h2>
+                <p style="text-align: center; margin-bottom: 25px; color: #718096; font-size: 1.1em;">
+                    Uncheck any meals you don't want in your plan. We'll replace them with other options.
+                </p>
+                <div id="mealReviewSection" class="meal-review-container">
+                    </div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">Back to Preferences</button>
+                    <button class="btn" onclick="generateMealPlan()">Generate My Meal Plan</button>
+                </div>
+            </div>
+        </div>
+
 
         <div class="step" id="loading">
             <div class="card">
@@ -1229,7 +1256,7 @@
             </div>
         </div>
 
-        <div class="step" id="step6">
+        <div class="step" id="step7">
             <div class="card">
                 <h2><span style="margin-right: 10px;">✅</span> Your 7-Day Vegan Meal Plan</h2>
                 
@@ -1244,7 +1271,7 @@
             </div>
         </div>
 
-        <div class="step" id="step7">
+        <div class="step" id="step8">
             <div class="card">
                 <h2><span style="margin-right: 10px;">🛒</span> Shopping List</h2>
                 
@@ -1259,7 +1286,7 @@
             </div>
         </div>
 
-        <div class="step" id="step8">
+        <div class="step" id="step9">
             <div class="card">
                 <h2><span style="margin-right: 10px;">🧑‍🍳</span> Meal Prep & Recipe Guide</h2>
                 
@@ -1275,8 +1302,7 @@
             </div>
         </div>
         
-        <!-- New Step for Comparative Benefits -->
-        <div class="step" id="step9">
+        <div class="step" id="step10">
             <div class="card">
                 <h2><span style="margin-right: 10px;">🌍</span> Impact of Your Vegan Diet</h2>
                 
@@ -1309,7 +1335,6 @@
         </div>
     </div>
 
-    <!-- Info Modal -->
     <div id="infoModal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="modal-close-btn" onclick="closeInfoModal()">✖</button>
@@ -1340,7 +1365,6 @@
         </div>
     </div>
 
-    <!-- Advantages of Vegan Diet Modal -->
     <div id="advantagesModal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="modal-close-btn" onclick="closeAdvantagesModal()">✖</button>
@@ -1385,7 +1409,6 @@
         </div>
     </div>
 
-    <!-- B12 Info Modal -->
     <div id="b12Modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="modal-close-btn" onclick="closeB12Modal()">✖</button>
@@ -1412,8 +1435,9 @@
         let mealPlan = {}; // This will now store multiple weeks, e.g., { 'Week 1': {day: {meals}}, 'Week 2': {...} }
         let shoppingList = {};
         let recipes = {}; // This will now store unique recipes chosen across all weeks
+        let preliminaryMealChoices = {}; // To hold meal choices for the review step
 
-        const totalSteps = 9; // Updated to 9 steps (excluding loading, so 10 total states)
+        const totalSteps = 10; // Updated to 10 steps
 
         // Dark Mode Toggle Logic
         const darkModeToggle = document.getElementById('darkModeToggle');
@@ -1451,18 +1475,9 @@
             
             // Show current step
             let stepId;
-            if (stepNumber === 6) { // This is the loading step
+            if (stepNumber === 'loading') { // Allow string for loading step
                 stepId = 'loading';
-            } else if (stepNumber === 7) { // This is actual step 6 in terms of content
-                stepId = 'step6';
-            } else if (stepNumber === 8) { // This is actual step 7 in terms of content
-                stepId = 'step7';
-            } else if (stepNumber === 9) { // This is actual step 8 (Recipes) in terms of content
-                stepId = 'step8';
-            } else if (stepNumber === 10) { // This is actual step 9 (Benefits) in terms of content
-                stepId = 'step9';
-            }
-            else { // For steps 1, 2, 3, 4, 5
+            } else {
                 stepId = `step${stepNumber}`;
             }
             
@@ -1471,8 +1486,11 @@
                 stepElement.classList.add('active');
             }
             
-            currentStep = stepNumber;
-            updateProgress();
+            if (stepNumber !== 'loading') {
+                currentStep = stepNumber;
+                updateProgress();
+            }
+            
             updateSummaryCard(); // Update summary card on step change
 
             // Show/hide summary card based on step number
@@ -1504,7 +1522,7 @@
             const heightInput = document.getElementById('height').value;
             const ageInput = document.getElementById('age').value; // Age is now required for estimation
 
-            if (!weightInput || !heightInput || !ageInput) {
+            if (currentStep === 1 && (!weightInput || !heightInput || !ageInput)) {
                 alert('Please fill in Weight, Height, and Age. Other fields are optional.');
                 return false;
             }
@@ -1542,8 +1560,10 @@
             
             // Ensure all critical user data fields are numbers before proceeding
             if (isNaN(userData.weight) || isNaN(userData.height) || isNaN(userData.age)) {
-                alert('Invalid input for Weight, Height, or Age. Please enter numerical values.');
-                return false;
+                if (currentStep === 1) { // Only show this alert if it's the first step validation
+                    alert('Invalid input for Weight, Height, or Age. Please enter numerical values.');
+                    return false;
+                }
             }
 
             return true;
@@ -1818,24 +1838,96 @@
                 </div>`;
         }
 
+        // New function to prepare the meal review step
+        function prepareMealReview() {
+            if (!validateCurrentStep()) return;
+            
+            // Get potential meals based on user's dietary preferences so far
+            const allVeganMeals = createVeganMealDatabase();
+            
+            const mealChoiceMap = { 'low': 1, 'medium': Math.ceil(7 / 2), 'high': 7 };
+            const numUniqueMeals = mealChoiceMap[userData.variety] || 7;
+
+            const selectUniqueMeals = (arr, count) => {
+                if (!arr || arr.length === 0) return [];
+                const shuffled = arr.sort(() => 0.5 - Math.random());
+                return shuffled.slice(0, Math.min(count, shuffled.length));
+            };
+
+            preliminaryMealChoices = {
+                breakfast: selectUniqueMeals(allVeganMeals.breakfast, numUniqueMeals),
+                lunch: selectUniqueMeals(allVeganMeals.lunch, numUniqueMeals),
+                dinner: selectUniqueMeals(allVeganMeals.dinner, numUniqueMeals),
+                snacks: selectUniqueMeals(allVeganMeals.snacks, numUniqueMeals)
+            };
+            
+            displayMealReview();
+            nextStep(); // Go to step 6 (the new review step)
+        }
+
+        // New function to display the meal review interface
+        function displayMealReview() {
+            const reviewSection = document.getElementById('mealReviewSection');
+            let html = '';
+            
+            const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+            mealTypes.forEach(type => {
+                const typeLower = type.toLowerCase();
+                if (preliminaryMealChoices[typeLower] && preliminaryMealChoices[typeLower].length > 0) {
+                    html += `<div class="meal-review-category"><h4>${type}</h4><div class="checkbox-group">`;
+                    preliminaryMealChoices[typeLower].forEach(meal => {
+                        html += `
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="meal_${meal.name.replace(/\s+/g, '_')}" value="${meal.name}" data-meal-type="${typeLower}" checked>
+                                <label for="meal_${meal.name.replace(/\s+/g, '_')}">${meal.name}</label>
+                            </div>
+                        `;
+                    });
+                    html += '</div></div>';
+                }
+            });
+            
+            reviewSection.innerHTML = html;
+        }
+
         function generateMealPlan() {
             if (!validateCurrentStep()) return;
-            showStep(6);
+            showStep('loading');
             
             setTimeout(() => {
                 try {
-                    createMealPlan();
-                    showStep(7);
+                    // Gather the user's final approved meals from the review step
+                    const approvedMeals = { breakfast: [], lunch: [], dinner: [], snacks: [] };
+                    document.querySelectorAll('#mealReviewSection input[type="checkbox"]:checked').forEach(checkbox => {
+                        const mealType = checkbox.getAttribute('data-meal-type');
+                        const mealName = checkbox.value;
+                        const mealData = preliminaryMealChoices[mealType].find(m => m.name === mealName);
+                        if (mealData) {
+                            approvedMeals[mealType].push(mealData);
+                        }
+                    });
+
+                    // Check if there are enough meals in each category
+                    Object.keys(approvedMeals).forEach(type => {
+                        if (approvedMeals[type].length === 0) {
+                            // If user unchecked all meals of a type, repopulate with the original choices for that type
+                            console.warn(`User unchecked all ${type} meals. Repopulating with preliminary choices.`);
+                            approvedMeals[type] = preliminaryMealChoices[type];
+                        }
+                    });
+
+                    createMealPlan(approvedMeals);
+                    showStep(7); // Show the final meal plan
                 } catch (error) {
                     console.error('Error generating meal plan:', error);
                     alert('There was an error generating your meal plan. Please try again.');
-                    showStep(5);
+                    showStep(6); // Go back to the review step on error
                 }
             }, 1500);
         }
 
-        function createMealPlan() {
-            console.log('--- createMealPlan() started ---');
+        function createMealPlan(approvedMeals) {
+            console.log('--- createMealPlan() started with approved meals ---');
             const dailyCals = nutritionPlan.targetCalories;
             const dailyProtein = nutritionPlan.protein.grams;
             const mealStructure = {
@@ -1852,8 +1944,8 @@
             shoppingList = {}; // Reset shoppingList for cumulative collection
 
             for (let i = 1; i <= numWeeks; i++) {
-                const allVeganMeals = createVeganMealDatabase(); // Re-create/shuffle for each week for more randomization
-                const weeklyPlan = generateWeeklyMealPlan(mealStructure, allVeganMeals);
+                // Now, we pass the user-approved meals directly to generate the weekly plan
+                const weeklyPlan = generateWeeklyMealPlan(mealStructure, approvedMeals);
                 mealPlan[`Week ${i}`] = weeklyPlan;
 
                 // Collect recipes for each week
@@ -1988,35 +2080,11 @@
             return finalFilteredMeals;
         }
 
-
-        function generateWeeklyMealPlan(mealStructure, veganMeals) {
-            console.log('--- generateWeeklyMealPlan() started ---');
+        function generateWeeklyMealPlan(mealStructure, approvedMeals) {
+            console.log('--- generateWeeklyMealPlan() started with approved meals ---');
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const weekPlan = {};
-            const mealChoiceMap = { 'low': 1, 'medium': Math.ceil(days.length / 2), 'high': days.length };
-            const numUniqueMeals = mealChoiceMap[userData.variety] || days.length;
-            console.log('Number of unique meals to select:', numUniqueMeals);
 
-            const selectUniqueMeals = (arr, count) => {
-                if (!arr || arr.length === 0) {
-                    console.warn(`No meals available in array for selection. Returning empty array.`);
-                    return [];
-                }
-                // Shuffle the array and pick 'count' unique meals
-                const shuffled = arr.sort(() => 0.5 - Math.random());
-                const selected = shuffled.slice(0, Math.min(count, shuffled.length));
-                console.log(`Selected ${selected.length} unique meals from ${arr.length}:`, selected.map(m => m.name));
-                return selected;
-            };
-
-            const selectedUniqueMeals = {
-                breakfast: selectUniqueMeals(veganMeals.breakfast, numUniqueMeals),
-                lunch: selectUniqueMeals(veganMeals.lunch, numUniqueMeals),
-                dinner: selectUniqueMeals(veganMeals.dinner, numUniqueMeals),
-                snacks: selectUniqueMeals(veganMeals.snacks, numUniqueMeals)
-            };
-            console.log('Selected Unique Meals for each type:', selectedUniqueMeals);
-            
             // Helper function to scale a meal to target calories
             const scaleMeal = (baseMeal, targetCalories) => {
                 // Return a placeholder if the base meal is invalid or has no calories
@@ -2043,14 +2111,13 @@
                 };
             };
 
-
             // Populate the weekPlan, scaling each meal to fit the calorie structure
             days.forEach((day, index) => {
-                // Select a base meal for each slot
-                const breakfastChoice = selectedUniqueMeals.breakfast[index % selectedUniqueMeals.breakfast.length];
-                const lunchChoice = selectedUniqueMeals.lunch[index % selectedUniqueMeals.lunch.length];
-                const dinnerChoice = selectedUniqueMeals.dinner[index % selectedUniqueMeals.dinner.length];
-                const snackChoice = selectedUniqueMeals.snacks[index % selectedUniqueMeals.snacks.length];
+                // We use the approved meals, cycling through them if there are fewer than 7 days
+                const breakfastChoice = approvedMeals.breakfast[index % approvedMeals.breakfast.length];
+                const lunchChoice = approvedMeals.lunch[index % approvedMeals.lunch.length];
+                const dinnerChoice = approvedMeals.dinner[index % approvedMeals.dinner.length];
+                const snackChoice = approvedMeals.snacks[index % approvedMeals.snacks.length];
 
                 // Assign the scaled version of the meal to the plan
                 weekPlan[day] = {
@@ -2187,7 +2254,7 @@
             });
             html += '</div>';
             resultsDiv.innerHTML = html;
-            showStep(8); // This is step7
+            showStep(8);
         }
 
         function showRecipes() {
@@ -2217,16 +2284,16 @@
             html += '</div>';
             resultsDiv.innerHTML = html;
 
-            showStep(9); // This is step8 (Recipes)
+            showStep(9);
         }
 
         function showBenefits() { // New function to show the benefits section
             displayComparativeBenefits();
-            showStep(10); // This is step9 (Benefits)
+            showStep(10);
         }
 
         function showRecipesBack() { // Function to go back from benefits to recipes
-            showStep(9); // Go back to the recipes step (step8)
+            showStep(9);
         }
 
         function displayComparativeBenefits() {
@@ -2288,7 +2355,7 @@
         }
 
         function showMealPlan() {
-            showStep(7); // This is step6
+            showStep(7);
         }
         
         // --- PDF Generation Logic ---
@@ -2751,6 +2818,7 @@
             mealPlan = {};
             shoppingList = {};
             recipes = {};
+            preliminaryMealChoices = {};
             document.querySelectorAll('input, select, textarea').forEach(el => {
                 if(el.type === 'checkbox') el.checked = false;
                 else el.value = '';
