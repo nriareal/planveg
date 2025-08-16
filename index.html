@@ -1596,7 +1596,7 @@
                         userData.bodyType = document.getElementById('bodyType').value;
                         userData.bodyFat = parseFloat(document.getElementById('bodyFat').value);
                         userData.muscleMass = parseFloat(document.getElementById('muscleMass').value) || 0;
-                        userData.dailyCaloriesBurned = parseFloat(document.getElementById('dailyCaloriesBurned').value);
+                        // DO NOT set userData.dailyCaloriesBurned here. It will be calculated or taken from the slider later.
                     }
                     break;
                 case 2:
