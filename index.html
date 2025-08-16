@@ -2056,7 +2056,7 @@
                 mealPlan[`Week ${i}`] = weeklyPlan;
 
                 Object.values(weeklyPlan).forEach(day => {
-                    const allMealsForDay = [day.breakfast, day.lunch, day.dinner, ...day.snacks];
+                    const allMealsForDay = [day.breakfast, day.lunch, day.dinner].concat(day.snacks);
                     allMealsForDay.forEach(meal => {
                         if (meal) {
                             const ingredientsForRecipe = meal.ingredients.map(ing => {
