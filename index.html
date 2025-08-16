@@ -1754,16 +1754,24 @@
             userData.weight = parseFloat(userData.weight) || 0;
             userData.height = parseFloat(userData.height) || 0;
             userData.age = parseInt(userData.age) || 0;
+            
+            // Always calculate TDEE based on user stats
+            const estimatedTDEE = estimateTDEE(
+                userData.weight,
+                userData.height,
+                userData.age,
+                userData.gender,
+                userData.activityLevel
+            );
 
-            if (userData.dailyCaloriesBurned === 0) {
-                userData.dailyCaloriesBurned = estimateTDEE(
-                    userData.weight,
-                    userData.height,
-                    userData.age,
-                    userData.gender,
-                    userData.activityLevel
-                );
+            // Use the user's slider input only if they've changed it from the default
+            const userCaloriesInput = parseFloat(document.getElementById('dailyCaloriesBurned').value);
+            if (userCaloriesInput !== 2000) { // 2000 is the default
+                 userData.dailyCaloriesBurned = userCaloriesInput;
+            } else {
+                userData.dailyCaloriesBurned = estimatedTDEE;
             }
+
             if (isNaN(userData.dailyCaloriesBurned) || userData.dailyCaloriesBurned <= 0) {
                 userData.dailyCaloriesBurned = 2000;
                 console.warn("Daily calories burned estimate failed or was zero, defaulting to 2000 kcal.");
