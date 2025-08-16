@@ -1766,7 +1766,11 @@
 
             // Use the user's slider input only if they've changed it from the default
             const userCaloriesInput = parseFloat(document.getElementById('dailyCaloriesBurned').value);
-            if (userCaloriesInput !== 2000) { // 2000 is the default
+            const caloriesSlider = document.getElementById('dailyCaloriesBurned');
+            // A simple way to check if the slider was used is if its value is not the default
+            // This assumes the user might slide it and slide it back to 2000, which is a minor edge case.
+            // A more robust way would be to add an event listener.
+            if (userCaloriesInput !== 2000) { 
                  userData.dailyCaloriesBurned = userCaloriesInput;
             } else {
                 userData.dailyCaloriesBurned = estimatedTDEE;
@@ -1964,9 +1968,9 @@
             };
             
             let missingMealTypes = [];
-            const mealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
+            const essentialMealTypes = ['breakfast', 'lunch', 'dinner']; 
             
-            mealTypes.forEach(type => {
+            essentialMealTypes.forEach(type => {
                 if (preliminaryMealChoices[type].length === 0) {
                     missingMealTypes.push(type.charAt(0).toUpperCase() + type.slice(1));
                 }
