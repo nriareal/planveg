@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vegan Meal Prep Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* CSS Variables for Dark Mode */
         :root {
@@ -669,44 +670,6 @@
              color: #667eea;
         }
 
-        /* Recipes */
-        .pdf-recipe-card {
-            break-inside: avoid;
-            margin-bottom: 8mm;
-            padding: 7mm;
-            border-radius: 5px;
-            background-color: #fff9f5; /* Soft Peach */
-            border: 1px solid #ffede3;
-        }
-        .pdf-recipe-card .pdf-recipe-title {
-             font-size: 16pt;
-             font-weight: bold;
-             color: #764ba2;
-             margin-bottom: 4mm;
-        }
-         .pdf-recipe-card .pdf-recipe-info {
-             font-size: 10pt;
-             color: #718096;
-             margin-bottom: 5mm;
-         }
-         .pdf-recipe-card .pdf-recipe-info span {
-             margin-right: 5mm;
-         }
-         .pdf-recipe-card .pdf-recipe-subtitle {
-             font-size: 12pt;
-             font-weight: 600;
-             color: #667eea;
-             margin-top: 5mm;
-             margin-bottom: 2mm;
-             border-bottom: 1px solid #eadef7;
-             padding-bottom: 1mm;
-        }
-        .pdf-recipe-card ul, .pdf-recipe-card ol {
-            padding-left: 5mm;
-            font-size: 10pt;
-            line-height: 1.5;
-        }
-
         /* Modal Styles */
         .modal-overlay {
             position: fixed;
@@ -995,6 +958,7 @@
                     Let’s get started! We’ll use your details to craft a fully personalized vegan plan.
                 </p>
                 <h2><span style="margin-right: 10px;">👤</span> Personal Details</h2>
+                <div id="step1-error-message" class="warning hidden"></div>
                 
                 <div class="disclaimer">
                     <strong>Disclaimer:</strong> This website provides meal plan estimations based on general nutritional science. These calculations are for informational purposes only and are not a substitute for professional medical or dietary advice. Individual results may vary. Consult with a healthcare professional or registered dietitian before making any significant changes to your diet or lifestyle.
@@ -1069,7 +1033,7 @@
                 </div>
 
                 <div class="button-group">
-                    <button class="btn" onclick="nextStep()">Next</button>
+                    <button class="btn" id="nextBtnStep1">Next</button>
                     <button class="btn btn-secondary" onclick="openInfoModal()">Learn More about Calculations</button>
                     <button class="btn btn-secondary" onclick="openAdvantagesModal()">Advantages of a Vegan Diet</button>
                 </div>
@@ -1079,6 +1043,7 @@
         <div class="step" id="step2">
             <div class="card">
                 <h2><span style="margin-right: 10px;">🎯</span> Your Goals</h2>
+                <div id="step2-error-message" class="warning hidden"></div>
                 
                 <div class="form-group">
                     <label for="goal">Primary Goal</label>
@@ -1104,8 +1069,8 @@
                 </div>
 
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button class="btn" onclick="nextStep()">Next</button>
+                    <button class="btn" id="prevBtnStep2">Previous</button>
+	                <button class="btn" id="nextBtnStep2">Next</button>
                 </div>
             </div>
         </div>
@@ -1113,6 +1078,7 @@
         <div class="step" id="step3">
             <div class="card">
                 <h2><span style="margin-right: 10px;">🍽️</span> Food Preferences & Allergies</h2>
+                <div id="step3-error-message" class="warning hidden"></div>
                 <p style="margin-bottom: 20px; color: #718096;">Select any foods you'd like to exclude from your meal plan:</p>
                 
                 <div class="checkbox-group" id="foodExclusions">
@@ -1162,8 +1128,8 @@
                 </div>
 
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button class="btn" onclick="calculateNutrition()">Calculate Plan</button>
+                    <button class="btn" id="prevBtnStep3">Previous</button>
+                    <button class="btn" id="calculatePlanBtn" onclick="calculateNutrition()">Calculate Plan</button>
                 </div>
             </div>
         </div>
@@ -1171,13 +1137,14 @@
         <div class="step" id="step4">
             <div class="card">
                 <h2><span style="margin-right: 10px;">📊</span> Your Nutritional Plan</h2>
+                <div id="step4-error-message" class="warning hidden"></div>
                 
                 <div class="nutrition-summary" id="nutritionSummary">
                     </div>
 
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button class="btn" onclick="nextStep()">Continue to Meal Preferences</button>
+                    <button class="btn" id="prevBtnStep4">Previous</button>
+                    <button class="btn" id="continueToMealPreferencesBtn" onclick="nextStep()">Continue to Meal Preferences</button>
                 </div>
             </div>
         </div>
@@ -1185,6 +1152,7 @@
         <div class="step" id="step5">
             <div class="card">
                 <h2><span style="margin-right: 10px;">📅</span> Meal Preferences</h2>
+                <div id="step5-error-message" class="warning hidden"></div>
                 
                 <div class="form-group">
                     <label for="cookingFreq">Cooking Frequency Preference</label>
@@ -1223,9 +1191,50 @@
                     </select>
                 </div>
 
+                <!-- *** NEW SECTION FOR CUISINE PREFERENCES *** -->
+                <div class="form-group" style="margin-top: 30px;">
+                    <label>Cuisine Preferences (select any you like, or leave blank for all)</label>
+                    <div class="checkbox-group" id="cuisinePreferences">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cuisine_east_asian" value="East Asian">
+                            <label for="cuisine_east_asian">East Asian (e.g., Japanese, Chinese)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cuisine_south_asian" value="South Asian">
+                            <label for="cuisine_south_asian">South Asian (e.g., Indian)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cuisine_southeast_asian" value="Southeast Asian">
+                            <label for="cuisine_southeast_asian">Southeast Asian (e.g., Thai, Vietnamese)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cuisine_latin_american" value="Latin American">
+                            <label for="cuisine_latin_american">Latin American (e.g., Mexican)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cuisine_mediterranean" value="Mediterranean">
+                            <label for="cuisine_mediterranean">Mediterranean (e.g., Greek, Italian)</label>
+                        </div>
+                         <div class="checkbox-item">
+                            <input type="checkbox" id="cuisine_middle_eastern" value="Middle Eastern">
+                            <label for="cuisine_middle_eastern">Middle Eastern (e.g., Lebanese)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cuisine_african" value="African">
+                            <label for="cuisine_african">African</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cuisine_western" value="Western">
+                            <label for="cuisine_western">Western (e.g., American, European)</label>
+                        </div>
+                    </div>
+                </div>
+                <!-- *** END OF NEW SECTION *** -->
+
+
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button class="btn" onclick="prepareMealReview()">Review & Refine Meals</button>
+                    <button class="btn btn-secondary" id="prevBtnStep5" onclick="prevStep()">Back</button>
+                    <button class="btn" id="reviewMealsBtn" onclick="prepareMealReview()">Review & Refine Meals</button>
                 </div>
             </div>
         </div>
@@ -1233,14 +1242,15 @@
         <div class="step" id="step6">
             <div class="card">
                 <h2><span style="margin-right: 10px;">🔍</span> Review & Exclude Meals</h2>
+                <div id="step6-error-message" class="warning hidden"></div>
                 <p style="text-align: center; margin-bottom: 25px; color: #718096; font-size: 1.1em;">
                     Uncheck any meals you don't want in your plan. We'll replace them with other options.
                 </p>
                 <div id="mealReviewSection" class="meal-review-container">
                     </div>
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">Back to Preferences</button>
-                    <button class="btn" onclick="generateMealPlan()">Generate My Meal Plan</button>
+                    <button class="btn btn-secondary" id="prevBtnStep6" onclick="prevStep()">Back to Preferences</button>
+                    <button class="btn" id="generatePlanBtn" onclick="generateMealPlan()">Generate My Meal Plan</button>
                 </div>
             </div>
         </div>
@@ -1259,14 +1269,15 @@
         <div class="step" id="step7">
             <div class="card">
                 <h2><span style="margin-right: 10px;">✅</span> Your 7-Day Vegan Meal Plan</h2>
+                <div id="step7-error-message" class="warning hidden"></div>
                 
                 <div id="mealPlanResults">
                     </div>
 
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-                    <button class="btn" onclick="showShoppingList()">View Shopping List</button>
-                    <button class="btn" onclick="downloadPlan()">Download PDF</button>
+                    <button class="btn btn-secondary" id="prevBtnStep7" onclick="prevStep()">Back</button>
+                    <button class="btn" id="viewShoppingListBtn" onclick="showShoppingList()">View Shopping List</button>
+                    <button class="btn" id="downloadPlanBtn" onclick="downloadPlan()">Download PDF</button>
                 </div>
             </div>
         </div>
@@ -1274,14 +1285,15 @@
         <div class="step" id="step8">
             <div class="card">
                 <h2><span style="margin-right: 10px;">🛒</span> Shopping List</h2>
+                <div id="step8-error-message" class="warning hidden"></div>
                 
                 <div id="shoppingListResults">
                     </div>
 
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">Back to Meal Plan</button>
-                    <button class="btn" onclick="showRecipes()">View Recipes</button>
-                    <button class="btn" onclick="downloadShoppingList()">Download List</button>
+                    <button class="btn btn-secondary" id="prevBtnStep8" onclick="prevStep()">Back to Meal Plan</button>
+                    <button class="btn" id="viewRecipesBtn" onclick="showRecipes()">View Recipes</button>
+                    <button class="btn" id="downloadShoppingListBtn" onclick="downloadShoppingList()">Download List</button>
                 </div>
             </div>
         </div>
@@ -1289,15 +1301,16 @@
         <div class="step" id="step9">
             <div class="card">
                 <h2><span style="margin-right: 10px;">🧑‍🍳</span> Meal Prep & Recipe Guide</h2>
+                <div id="step9-error-message" class="warning hidden"></div>
                 
                 <div id="recipeResults">
                     </div>
 
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="showShoppingList()">Back to Shopping List</button>
-                    <button class="btn" onclick="showBenefits()">View Impact Summary</button>
-                    <button class="btn" onclick="downloadRecipes()">Download Recipes</button>
-                    <button class="btn" onclick="restart()">Start Over</button>
+                    <button class="btn btn-secondary" id="prevBtnStep9" onclick="showShoppingList()">Back to Shopping List</button>
+                    <button class="btn" id="viewBenefitsBtn" onclick="showBenefits()">View Impact Summary</button>
+                    <button class="btn" id="downloadRecipesBtn" onclick="downloadRecipes()">Download Recipes</button>
+                    <button class="btn" id="restartBtnFromRecipes" onclick="restart()">Start Over</button>
                 </div>
             </div>
         </div>
@@ -1305,6 +1318,7 @@
         <div class="step" id="step10">
             <div class="card">
                 <h2><span style="margin-right: 10px;">🌍</span> Impact of Your Vegan Diet</h2>
+                <div id="step10-error-message" class="warning hidden"></div>
                 
                 <div id="comparativeBenefitsSection" class="benefits-section">
                     <h4>Animal Lives Saved</h4>
@@ -1327,9 +1341,9 @@
                 </div>
 
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="showRecipesBack()">Back to Recipes</button>
-                    <button class="btn" onclick="showMealPlan()">Back to Meal Plan</button>
-                    <button class="btn" onclick="restart()">Start Over</button>
+                    <button class="btn btn-secondary" id="prevBtnStep10" onclick="showRecipesBack()">Back to Recipes</button>
+                    <button class="btn" id="showMealPlanBtn" onclick="showMealPlan()">Back to Meal Plan</button>
+                    <button class="btn" id="restartBtnFromBenefits" onclick="restart()">Start Over</button>
                 </div>
             </div>
         </div>
@@ -1343,7 +1357,6 @@
 
             <h3>Basal Metabolic Rate (BMR) & Total Daily Energy Expenditure (TDEE)</h3>
             <p>Your Basal Metabolic Rate (BMR) is the number of calories your body needs to perform basic, life-sustaining functions when at rest. Your Total Daily Energy Expenditure (TDEE) is an estimate of how many calories you burn per day, including physical activity.</p>
-            <p>We use a variation of the Mifflin-St Jeor equation for BMR, which is then multiplied by an activity factor to estimate TDEE. For reference:</p>
             <ul>
                 <li><a href="https://pubmed.ncbi.nlm.nih.gov/2305711/" target="_blank">A new predictive equation for resting energy expenditure in healthy individuals (Mifflin, St Jeor, 1990)</a></li>
                 <li><a href="https://www.researchgate.net/publication/384950082_Comprehensive_Review_on_BMI_TDEE_BMR_and_Calories_for_Weight_Management: Insights into Energy Expenditure and Nutrient Balance for Long-Term Well-Being" target="_blank">Comprehensive Review on BMI, TDEE, BMR, and Calories for Weight Management (ResearchGate)</a></li>
@@ -1378,7 +1391,7 @@
                 <li><a href="https://www.hopkinsmedicine.org/health/wellness-and-prevention/how-to-maintain-a-balanced-diet-as-a-vegetarian-or-vegan" target="_blank">Johns Hopkins Medicine: How to Maintain a Balanced Diet as a Vegetarian or Vegan</a></li>
                 <li><a href="https://www.rush.edu/news/health-benefits-vegan-diet" target="_blank">Rush University Medical Center: The Health Benefits of a Vegan Diet</a></li>
                 <li><a href="https://www.nhs.uk/live-well/eat-well/how-to-eat-a-balanced-diet/the-vegan-diet/" target="_blank">NHS: The vegan diet</a></li>
-                <li><a href="https://www.health.harvard.edu/heart-health/more-evidence-that-plant-based-diets-might-ward-off-heart-problems" target="_blank">Harvard Health Publishing: More evidence that plant-based diets might ward off heart problems</a></li>
+                <li><a href="https://www.health.harvard.edu/heart-health/more-evidence-that-plant-based-diet-might-ward-off-heart-problems" target="_blank">Harvard Health Publishing: More evidence that plant-based diets might ward off heart problems</a></li>
                 <li><a href="https://nutritionj.biomedcentral.com/articles/10.1186/s12937-023-00877-2" target="_blank">Nutrition Journal: Vegan diet and metabolic health in adolescents: a narrative review (2023)</a></li>
                 <li><a href="https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat" target="_blank">WHO: Cancer: Carcinogenicity of the consumption of red meat and processed meat</a></li>
             </ul>
@@ -1426,30 +1439,34 @@
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- *** Linking the external mealsData.js file *** -->
+    <script src="mealsData.js"></script>
 
     <script>
+        // The allMeals and ingredientCategories objects will be loaded from the mealsData.js file.
+
         // JavaScript Logic
         let currentStep = 1;
         let userData = {};
         let nutritionPlan = {};
-        let mealPlan = {}; // This will now store multiple weeks, e.g., { 'Week 1': {day: {meals}}, 'Week 2': {...} }
+        let mealPlan = {}; 
         let shoppingList = {};
-        let recipes = {}; // This will now store unique recipes chosen across all weeks
-        let preliminaryMealChoices = {}; // To hold meal choices for the review step
+        let recipes = {}; 
+        let preliminaryMealChoices = {};
 
-        const totalSteps = 10; // Updated to 10 steps
+        const totalSteps = 10; 
 
         // Dark Mode Toggle Logic
         const darkModeToggle = document.getElementById('darkModeToggle');
         const darkModeIcon = document.getElementById('darkModeIcon');
 
-        // Check for user's preferred color scheme on load
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.setAttribute('data-theme', 'dark');
-            darkModeIcon.innerText = '☀️'; // Sun icon for dark mode
+            darkModeIcon.innerText = '☀️';
         } else {
             document.documentElement.setAttribute('data-theme', 'light');
-            darkModeIcon.innerText = '🌙'; // Moon icon for light mode
+            darkModeIcon.innerText = '';
         }
 
         darkModeToggle.addEventListener('click', () => {
@@ -1468,34 +1485,29 @@
         }
 
         function showStep(stepNumber) {
-            // Hide all steps
+            console.log('Attempting to show step:', stepNumber);
+
             document.querySelectorAll('.step').forEach(step => {
                 step.classList.remove('active');
             });
-            
-            // Show current step
-            let stepId;
-            if (stepNumber === 'loading') { // Allow string for loading step
-                stepId = 'loading';
-            } else {
-                stepId = `step${stepNumber}`;
-            }
-            
+
+            let stepId = (stepNumber === 'loading') ? 'loading' : `step${stepNumber}`;
             const stepElement = document.getElementById(stepId);
+            
             if (stepElement) {
                 stepElement.classList.add('active');
+                console.log('Step element found and activated:', stepId);
+            } else {
+                console.error('ERROR: Step element NOT FOUND in HTML for ID:', stepId);
             }
-            
+
             if (stepNumber !== 'loading') {
                 currentStep = stepNumber;
                 updateProgress();
             }
-            
-            updateSummaryCard(); // Update summary card on step change
-
-            // Show/hide summary card based on step number
+            updateSummaryCard();
             const summaryCard = document.getElementById('summaryCard');
-            if (currentStep > 1 && currentStep < totalSteps + 1) { // Show from step 2 up to the last step before restart
+            if (currentStep > 1 && currentStep < totalSteps + 1) {
                 summaryCard.classList.remove('hidden');
             } else {
                 summaryCard.classList.add('hidden');
@@ -1503,9 +1515,14 @@
         }
 
         function nextStep() {
+            console.log('Next button clicked. Current step:', currentStep);
             if (validateCurrentStep()) {
+                console.log('Validation passed for step', currentStep);
                 currentStep++;
+                console.log('New current step after incrementing:', currentStep);
                 showStep(currentStep);
+            } else {
+                console.warn('Validation failed for step', currentStep, '. Not advancing.');
             }
         }
 
@@ -1516,60 +1533,120 @@
             }
         }
 
-        function validateCurrentStep() {
-            // Weight and Height are still required for base calculations
-            const weightInput = document.getElementById('weight').value;
-            const heightInput = document.getElementById('height').value;
-            const ageInput = document.getElementById('age').value; // Age is now required for estimation
-
-            if (currentStep === 1 && (!weightInput || !heightInput || !ageInput)) {
-                alert('Please fill in Weight, Height, and Age. Other fields are optional.');
-                return false;
+        function displayErrorMessage(stepId, message) {
+            const errorDiv = document.getElementById(`${stepId}-error-message`);
+            if (errorDiv) {
+                errorDiv.innerText = message;
+                errorDiv.classList.remove('hidden');
+            } else {
+                console.error(`Error div not found for step ${stepId}`);
+                alert(message);
             }
-            
-            userData.planName = document.getElementById('planName').value || 'Your Plan'; // Get plan name
-            userData.weight = parseFloat(weightInput);
-            userData.height = parseFloat(heightInput);
-            userData.age = parseInt(ageInput); // Store age
-            userData.gender = document.getElementById('gender').value; // Store gender
-            userData.activityLevel = document.getElementById('activityLevel').value; // Store activity level
-            userData.bodyType = document.getElementById('bodyType').value; // Store body type
-            userData.milkPreference = document.getElementById('milkPreference').value; // Store milk preference
-            // Make sure numWeeks is set if it's step 5, default to 1 if not defined yet
-            userData.numWeeks = document.getElementById('numWeeks') ? parseInt(document.getElementById('numWeeks').value) : 1; 
-            userData.substitutePreference = document.getElementById('substitutePreference') ? document.getElementById('substitutePreference').value : 'none'; // Store substitute preference, default to 'none' if element not present yet
-
-            // Body Fat, Muscle Mass, Daily Calories are now optional at input stage
-            userData.bodyFat = parseFloat(document.getElementById('bodyFat').value) || 0; // Will be estimated if 0
-            userData.muscleMass = parseFloat(document.getElementById('muscleMass').value) || 0; // Will be estimated if 0
-            userData.dailyCaloriesBurned = parseFloat(document.getElementById('dailyCaloriesBurned').value) || 0; // Will be estimated if 0
-
-            // Specific validation for "Gain Weight (Low BMI)" goal
-            if (currentStep === 2) {
-                const goal = document.getElementById('goal').value;
-                userData.goal = goal; // Capture the goal here!
-                if (goal === 'gain_weight') {
-                    const height_m = userData.height / 100;
-                    const bmi = userData.weight / (height_m * height_m);
-                    if (bmi >= 18.5) { // Assuming 18.5 is the threshold for underweight
-                        alert('The "Gain Weight (Low BMI)" option is intended for individuals with a BMI below 18.5. Please choose another goal or provide different body metrics.');
-                        return false;
-                    }
-                }
-            }
-            
-            // Ensure all critical user data fields are numbers before proceeding
-            if (isNaN(userData.weight) || isNaN(userData.height) || isNaN(userData.age)) {
-                if (currentStep === 1) { // Only show this alert if it's the first step validation
-                    alert('Invalid input for Weight, Height, or Age. Please enter numerical values.');
-                    return false;
-                }
-            }
-
-            return true;
         }
 
-        // Function to update the sticky summary card
+        function clearErrorMessages() {
+            document.querySelectorAll('.warning').forEach(el => {
+                if (el.id.includes('-error-message')) {
+                    el.classList.add('hidden');
+                    el.innerText = '';
+                }
+            });
+            document.querySelectorAll('input, select').forEach(el => {
+                el.style.borderColor = '';
+            });
+        }
+
+        function validateCurrentStep() {
+            clearErrorMessages();
+            let isValid = true;
+            let errorMessage = '';
+            const currentStepElementId = `step${currentStep}`;
+
+            switch (currentStep) {
+                case 1:
+                    const weightInput = document.getElementById('weight');
+                    const heightInput = document.getElementById('height');
+                    const ageInput = document.getElementById('age');
+
+                    if (!weightInput.value || isNaN(weightInput.value) || parseFloat(weightInput.value) <= 0) {
+                        errorMessage += 'Please enter a valid weight (greater than 0). ';
+                        weightInput.style.borderColor = 'red';
+                        isValid = false;
+                    }
+                    
+                    if (!heightInput.value || isNaN(heightInput.value) || parseFloat(heightInput.value) <= 0) {
+                        errorMessage += 'Please enter a valid height (greater than 0). ';
+                        heightInput.style.borderColor = 'red';
+                        isValid = false;
+                    }
+
+                    if (!ageInput.value || isNaN(ageInput.value) || parseInt(ageInput.value) < 15 || parseInt(ageInput.value) > 100) {
+                        errorMessage += 'Please enter a valid age between 15 and 100. ';
+                        ageInput.style.borderColor = 'red';
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        userData.planName = document.getElementById('planName').value;
+                        userData.weight = parseFloat(weightInput.value);
+                        userData.height = parseFloat(heightInput.value);
+                        userData.gender = document.getElementById('gender').value;
+                        userData.age = parseInt(ageInput.value);
+                        userData.activityLevel = document.getElementById('activityLevel').value;
+                        userData.bodyType = document.getElementById('bodyType').value;
+                        userData.bodyFat = parseFloat(document.getElementById('bodyFat').value);
+                        userData.muscleMass = parseFloat(document.getElementById('muscleMass').value) || 0;
+                        userData.dailyCaloriesBurned = parseFloat(document.getElementById('dailyCaloriesBurned').value);
+                    }
+                    break;
+                case 2:
+                    const goalInput = document.getElementById('goal');
+
+                    if (!goalInput.value) {
+                        errorMessage += 'Please select a primary goal. ';
+                        goalInput.style.borderColor = 'red';
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        userData.goal = goalInput.value;
+                        if (userData.goal === 'lose' || userData.goal === 'recomp') {
+                            const weightLossRateInput = document.getElementById('weightLossRate');
+                            if (weightLossRateInput) {
+                                userData.weightLossRate = parseFloat(weightLossRateInput.value);
+                            }
+                        }
+                    }
+                    break;
+                case 3:
+                    userData.foodExclusions = Array.from(document.querySelectorAll('#foodExclusions input[type="checkbox"]:checked')).map(cb => cb.value);
+                    userData.milkPreference = document.getElementById('milkPreference').value;
+                    isValid = true;
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                    isValid = true;
+                    break;
+                default:
+                    isValid = true;
+                    break;
+            }
+
+            if (!isValid && errorMessage) {
+                displayErrorMessage(currentStepElementId, errorMessage.trim());
+                console.error('Validation Error for step', currentStep, ':', errorMessage.trim());
+            } else if (isValid) {
+                console.log('Validation successful for step', currentStep);
+                clearErrorMessages();
+            }
+            return isValid;
+        }
+
         function updateSummaryCard() {
             const summaryCard = document.getElementById('summaryCard');
             let summaryHtml = `
@@ -1589,11 +1666,8 @@
             const aggressiveOption = document.getElementById('aggressiveOption');
             const aggressiveWarning = document.getElementById('aggressiveWarning');
             
-            // Ensure userData.bodyFat is up-to-date when this function is called
-            // This might be called on 'change' of goal, before full userData validation for the next step.
-            // So, re-read bodyFat here if available.
             let currentBodyFat = parseFloat(document.getElementById('bodyFat').value) || 0;
-            if (currentBodyFat === 0) { // If user left it blank, try to estimate for warning logic
+            if (currentBodyFat === 0) {
                 currentBodyFat = estimateBodyFatPercentage(userData.gender, userData.bodyType);
             }
 
@@ -1615,14 +1689,13 @@
         }
 
         function calculateBMR(weight, height, age, gender) {
-            // Ensure inputs are numbers before calculation
             weight = parseFloat(weight) || 0;
             height = parseFloat(height) || 0;
             age = parseInt(age) || 0;
 
             if (weight === 0 || height === 0 || age === 0) {
                 console.warn("Invalid inputs for BMR calculation. Returning 0.");
-                return 0; // Return 0 if inputs are invalid
+                return 0;
             }
 
             if (gender === 'male' || gender === 'trans_male') {
@@ -1630,14 +1703,14 @@
             } else if (gender === 'female' || gender === 'trans_female') {
                 return (10 * weight) + (6.25 * height) - (5 * age) - 161;
             } else {
-                return (10 * weight) + (6.25 * height) - (5 * age) - 161; // Default to female BMR
+                return (10 * weight) + (6.25 * height) - (5 * age) - 161;
             }
         }
 
 
         function estimateTDEE(weight, height, age, gender, activityLevel) {
             const bmr = calculateBMR(weight, height, age, gender);
-            if (bmr === 0) return 0; // If BMR is invalid, TDEE is also invalid
+            if (bmr === 0) return 0;
 
             const activityFactors = {
                 'sedentary': 1.2,
@@ -1646,25 +1719,24 @@
                 'very_active': 1.725,
                 'extremely_active': 1.9
             };
-            return bmr * (activityFactors[activityLevel] || 1.2); // Fallback to sedentary if activityLevel is missing
+            return bmr * (activityFactors[activityLevel] || 1.2);
         }
 
         function estimateBodyFatPercentage(gender, bodyType) {
-            // Very rough estimates based on general body types
             if (gender === 'male' || gender === 'trans_male') {
                 switch (bodyType) {
-                    case 'lean': return 12; // Ectomorph
-                    case 'average': return 18; // Mesomorph
-                    case 'stocky': return 25; // Endomorph
+                    case 'lean': return 12;
+                    case 'average': return 18;
+                    case 'stocky': return 25;
                 }
             } else if (gender === 'female' || gender === 'trans_female') {
                 switch (bodyType) {
-                    case 'lean': return 22; // Ectomorph
-                    case 'average': return 28; // Mesomorph
-                    case 'stocky': return 35; // Endomorph
+                    case 'lean': return 22;
+                    case 'average': return 28;
+                    case 'stocky': return 35;
                 }
             }
-            return 20; // Default fallback for non-binary/prefer not to say, or if type not found
+            return 20;
         }
 
         function estimateMuscleMass(weight, bodyFat) {
@@ -1673,18 +1745,16 @@
             if (weight === 0 || bodyFat === 0) return 0;
 
             const leanBodyMass = weight * (1 - (bodyFat / 100));
-            return leanBodyMass * 0.65; // Use 65% as a general estimate
+            return leanBodyMass * 0.65;
         }
 
         function calculateNutrition() {
             if (!validateCurrentStep()) return;
 
-            // Ensure userData fields used in estimations are numbers, if not provided
             userData.weight = parseFloat(userData.weight) || 0;
             userData.height = parseFloat(userData.height) || 0;
             userData.age = parseInt(userData.age) || 0;
 
-            // If dailyCaloriesBurned is not provided (0), estimate it
             if (userData.dailyCaloriesBurned === 0) {
                 userData.dailyCaloriesBurned = estimateTDEE(
                     userData.weight,
@@ -1694,35 +1764,30 @@
                     userData.activityLevel
                 );
             }
-            // Ensure dailyCaloriesBurned is a valid number, fallback to 2000 if estimate fails
             if (isNaN(userData.dailyCaloriesBurned) || userData.dailyCaloriesBurned <= 0) {
                 userData.dailyCaloriesBurned = 2000;
                 console.warn("Daily calories burned estimate failed or was zero, defaulting to 2000 kcal.");
             }
 
-            // If bodyFat is not provided (0), estimate it
             if (userData.bodyFat === 0) {
                 userData.bodyFat = estimateBodyFatPercentage(
                     userData.gender,
                     userData.bodyType
                 );
             }
-            // Ensure bodyFat is a valid number
             if (isNaN(userData.bodyFat) || userData.bodyFat <= 0) {
-                userData.bodyFat = 20; // Default to 20%
+                userData.bodyFat = 20;
                 console.warn("Body fat estimate failed or was zero, defaulting to 20%.");
             }
 
-            // If muscleMass is not provided (0), estimate it
             if (userData.muscleMass === 0) {
                 userData.muscleMass = estimateMuscleMass(
                     userData.weight,
                     userData.bodyFat
                 );
             }
-            // Ensure muscleMass is a valid number
             if (isNaN(userData.muscleMass) || userData.muscleMass <= 0) {
-                userData.muscleMass = userData.weight * 0.4; // Rough fallback for muscle mass
+                userData.muscleMass = userData.weight * 0.4;
                 console.warn("Muscle mass estimate failed or was zero, using rough fallback.");
             }
             
@@ -1731,42 +1796,36 @@
             
             switch(userData.goal) {
                 case 'lose':
-                    // Ensure weightLossRate is a valid number
                     const weightLossRateVal = parseFloat(document.getElementById('weightLossRate').value);
-                    userData.weightLossRate = isNaN(weightLossRateVal) ? 0.5 : weightLossRateVal; // Default to 0.5 if NaN
+                    userData.weightLossRate = isNaN(weightLossRateVal) ? 0.5 : weightLossRateVal;
                     deficit = userData.weightLossRate * 7700 / 7;
                     targetCalories = userData.dailyCaloriesBurned - deficit;
                     break;
                 case 'gain':
-                    targetCalories = userData.dailyCaloriesBurned + 300; // Caloric surplus for muscle gain
+                    targetCalories = userData.dailyCaloriesBurned + 300;
                     break;
                 case 'recomp':
-                    // For recomp, use a smaller deficit
                     const recompWeightLossRateVal = parseFloat(document.getElementById('weightLossRate').value);
-                    userData.weightLossRate = isNaN(recompWeightLossRateVal) ? 0.25 : recompWeightLossRateVal; // A smaller default deficit for recomp
-                    deficit = (userData.weightLossRate * 7700 / 7) * 0.5; // Half the deficit of 'lose' goal
+                    userData.weightLossRate = isNaN(recompWeightLossRateVal) ? 0.25 : recompWeightLossRateVal;
+                    deficit = (userData.weightLossRate * 7700 / 7) * 0.5;
                     targetCalories = userData.dailyCaloriesBurned - deficit;
                     break;
                 case 'gain_weight':
-                    targetCalories = userData.dailyCaloriesBurned + 500; // Caloric surplus for general weight gain (low BMI)
+                    targetCalories = userData.dailyCaloriesBurned + 500;
                     break;
-                case 'maintain': // No change for maintain
+                case 'maintain':
                 default:
-                    // targetCalories remains userData.dailyCaloriesBurned
                     break;
             }
 
-            // --- Robustness for targetCalories ---
             if (isNaN(targetCalories) || targetCalories <= 0) {
                 console.error("Calculated targetCalories is invalid after goal adjustment:", targetCalories);
-                targetCalories = 1800; // Fallback to a sensible default if it became invalid
-                alert("Warning: Calorie target calculation resulted in an invalid number. Defaulting to 1800 kcal. Please check your inputs.");
+                targetCalories = 1800;
+                displayErrorMessage(currentStepElementId, "Warning: Calorie target calculation resulted in an invalid number. Defaulting to 1800 kcal. Please check your inputs.");
             }
-            // Ensure deficit is also a number
             if (isNaN(deficit)) {
                 deficit = 0;
             }
-            // --- End Robustness ---
 
             const protein = Math.round(userData.weight * 2.2);
             const proteinCals = protein * 4;
@@ -1775,7 +1834,6 @@
             let carbCals = targetCalories - proteinCals - fatCals;
             let carbs = Math.round(carbCals / 4);
 
-            // Ensure no negative calories for carbs/fat if protein is very high or targetCalories low
             if (carbCals < 0) {
                 carbCals = 0;
                 carbs = 0;
@@ -1785,7 +1843,6 @@
                 fat = 0;
             }
             
-            // Recalculate percentages based on potentially adjusted values
             const proteinPercent = targetCalories > 0 ? Math.round((proteinCals / targetCalories) * 100) : 0;
             const carbsPercent = targetCalories > 0 ? Math.round((carbCals / targetCalories) * 100) : 0;
             const fatPercent = targetCalories > 0 ? Math.round((fatCals / targetCalories) * 100) : 0;
@@ -1838,15 +1895,19 @@
                 </div>`;
         }
 
-        // New function to prepare the meal review step
         function prepareMealReview() {
+            userData.cookingFreq = document.getElementById('cookingFreq').value;
+            userData.variety = document.getElementById('variety').value;
+            userData.numWeeks = parseInt(document.getElementById('numWeeks').value, 10);
+            userData.substitutePreference = document.getElementById('substitutePreference').value;
+            // *** Read selected cuisine preferences ***
+            userData.cuisinePreferences = Array.from(document.querySelectorAll('#cuisinePreferences input[type="checkbox"]:checked')).map(cb => cb.value);
+
             if (!validateCurrentStep()) return;
             
-            // Get potential meals based on user's dietary preferences so far
-            const allVeganMeals = createVeganMealDatabase();
-            
+            const mealsToFilter = JSON.parse(JSON.stringify(allMeals));
             const mealChoiceMap = { 'low': 1, 'medium': Math.ceil(7 / 2), 'high': 7 };
-            const numUniqueMeals = mealChoiceMap[userData.variety] || 7;
+            const numUniqueMealsDesired = mealChoiceMap[userData.variety] || 7;
 
             const selectUniqueMeals = (arr, count) => {
                 if (!arr || arr.length === 0) return [];
@@ -1854,18 +1915,65 @@
                 return shuffled.slice(0, Math.min(count, shuffled.length));
             };
 
+            const filteredMeals = {};
+            Object.keys(mealsToFilter).forEach(mealType => {
+                filteredMeals[mealType] = mealsToFilter[mealType].filter(meal => {
+                    const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
+                    return !userData.foodExclusions.some(ex => mealIngredients.some(ingItem => ingItem.includes(ex.toLowerCase())));
+                });
+            });
+
+            if (userData.milkPreference && userData.milkPreference !== 'any') {
+                Object.keys(filteredMeals).forEach(mealType => {
+                    filteredMeals[mealType] = filteredMeals[mealType].filter(meal => {
+                        const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
+                        const hasGenericPlantMilk = mealIngredients.some(ing => ing.includes('plant milk'));
+                        const hasSpecificMilk = mealIngredients.some(ing => ing.includes(userData.milkPreference + ' milk'));
+
+                        if (hasGenericPlantMilk) return true;
+                        if (mealIngredients.some(ing => ing.includes('almond milk') || ing.includes('soy milk') || ing.includes('oat milk') || ing.includes('coconut milk'))) {
+                            return hasSpecificMilk;
+                        }
+                        return true;
+                    });
+                });
+            }
+
+            // *** Filter by cuisine preference ***
+            if (userData.cuisinePreferences && userData.cuisinePreferences.length > 0) {
+                Object.keys(filteredMeals).forEach(mealType => {
+                    filteredMeals[mealType] = filteredMeals[mealType].filter(meal =>
+                        userData.cuisinePreferences.includes(meal.cuisine)
+                    );
+                });
+            }
+
             preliminaryMealChoices = {
-                breakfast: selectUniqueMeals(allVeganMeals.breakfast, numUniqueMeals),
-                lunch: selectUniqueMeals(allVeganMeals.lunch, numUniqueMeals),
-                dinner: selectUniqueMeals(allVeganMeals.dinner, numUniqueMeals),
-                snacks: selectUniqueMeals(allVeganMeals.snacks, numUniqueMeals)
+                breakfast: selectUniqueMeals(filteredMeals.breakfast, numUniqueMealsDesired),
+                lunch: selectUniqueMeals(filteredMeals.lunch, numUniqueMealsDesired),
+                dinner: selectUniqueMeals(filteredMeals.dinner, numUniqueMealsDesired),
+                snacks: selectUniqueMeals(filteredMeals.snacks, numUniqueMealsDesired)
             };
             
+            let missingMealTypes = [];
+            const mealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
+            
+            mealTypes.forEach(type => {
+                if (preliminaryMealChoices[type].length === 0) {
+                    missingMealTypes.push(type.charAt(0).toUpperCase() + type.slice(1));
+                }
+            });
+
+            if (missingMealTypes.length > 0) {
+                const errorMessage = `Could not find enough meals for: ${missingMealTypes.join(', ')}. Please go back and adjust your preferences.`;
+                displayErrorMessage('step5', errorMessage);
+                return;
+            }
+            
             displayMealReview();
-            nextStep(); // Go to step 6 (the new review step)
+            nextStep();
         }
 
-        // New function to display the meal review interface
         function displayMealReview() {
             const reviewSection = document.getElementById('mealReviewSection');
             let html = '';
@@ -1878,8 +1986,8 @@
                     preliminaryMealChoices[typeLower].forEach(meal => {
                         html += `
                             <div class="checkbox-item">
-                                <input type="checkbox" id="meal_${meal.name.replace(/\s+/g, '_')}" value="${meal.name}" data-meal-type="${typeLower}" checked>
-                                <label for="meal_${meal.name.replace(/\s+/g, '_')}">${meal.name}</label>
+                                <input type="checkbox" id="meal_${meal.name.replace(/\s+/g, '_').replace(/'/g, '')}" value="${meal.name}" data-meal-type="${typeLower}" checked>
+                                <label for="meal_${meal.name.replace(/\s+/g, '_').replace(/'/g, '')}">${meal.name}</label>
                             </div>
                         `;
                     });
@@ -1896,7 +2004,6 @@
             
             setTimeout(() => {
                 try {
-                    // Gather the user's final approved meals from the review step
                     const approvedMeals = { breakfast: [], lunch: [], dinner: [], snacks: [] };
                     document.querySelectorAll('#mealReviewSection input[type="checkbox"]:checked').forEach(checkbox => {
                         const mealType = checkbox.getAttribute('data-meal-type');
@@ -1907,52 +2014,51 @@
                         }
                     });
 
-                    // Check if there are enough meals in each category
                     Object.keys(approvedMeals).forEach(type => {
-                        if (approvedMeals[type].length === 0) {
-                            // If user unchecked all meals of a type, repopulate with the original choices for that type
+                        if (approvedMeals[type].length === 0 && preliminaryMealChoices[type].length > 0) {
                             console.warn(`User unchecked all ${type} meals. Repopulating with preliminary choices.`);
                             approvedMeals[type] = preliminaryMealChoices[type];
                         }
                     });
 
+                    let finalMissingMealTypes = [];
+                    const mealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
+                    mealTypes.forEach(type => {
+                        if (approvedMeals[type].length === 0) {
+                            finalMissingMealTypes.push(type.charAt(0).toUpperCase() + type.slice(1));
+                        }
+                    });
+
+                    if (finalMissingMealTypes.length > 0) {
+                        displayErrorMessage('step6', `Cannot generate plan: No available meals for ${finalMissingMealTypes.join(', ')}. This might indicate an issue with the base meal data or very restrictive filters.`);
+                        showStep(6);
+                        return;
+                    }
+
                     createMealPlan(approvedMeals);
-                    showStep(7); // Show the final meal plan
+                    showStep(7);
                 } catch (error) {
                     console.error('Error generating meal plan:', error);
-                    alert('There was an error generating your meal plan. Please try again.');
-                    showStep(6); // Go back to the review step on error
+                    displayErrorMessage('step6', 'There was an unexpected error generating your meal plan. Please try again.');
+                    showStep(6);
                 }
             }, 1500);
         }
 
         function createMealPlan(approvedMeals) {
-            console.log('--- createMealPlan() started with approved meals ---');
-            const dailyCals = nutritionPlan.targetCalories;
-            const dailyProtein = nutritionPlan.protein.grams;
-            const mealStructure = {
-                breakfast: { calories: Math.round(dailyCals * 0.25), protein: Math.round(dailyProtein * 0.25) },
-                lunch: { calories: Math.round(dailyCals * 0.35), protein: Math.round(dailyProtein * 0.35) },
-                dinner: { calories: Math.round(dailyCals * 0.30), protein: Math.round(dailyProtein * 0.30) },
-                snacks: { calories: Math.round(dailyCals * 0.10), protein: Math.round(dailyProtein * 0.10) }
-            };
-            console.log('Meal Structure:', mealStructure);
-            
             const numWeeks = userData.numWeeks;
-            mealPlan = {}; // Reset mealPlan to store multiple weeks
-            recipes = {}; // Reset recipes for cumulative collection
-            shoppingList = {}; // Reset shoppingList for cumulative collection
+            mealPlan = {}; 
+            recipes = {}; 
+            shoppingList = {};
 
             for (let i = 1; i <= numWeeks; i++) {
-                // Now, we pass the user-approved meals directly to generate the weekly plan
-                const weeklyPlan = generateWeeklyMealPlan(mealStructure, approvedMeals);
+                const weeklyPlan = generateWeeklyMealPlan(approvedMeals);
                 mealPlan[`Week ${i}`] = weeklyPlan;
 
-                // Collect recipes for each week
                 Object.values(weeklyPlan).forEach(day => {
-                    Object.values(day).forEach(meal => {
+                    const allMealsForDay = [day.breakfast, day.lunch, day.dinner, ...day.snacks];
+                    allMealsForDay.forEach(meal => {
                         if (meal) {
-                            // Replace 'plant milk' with specific preference in recipe display if chosen
                             const ingredientsForRecipe = meal.ingredients.map(ing => {
                                 if (ing.item === 'plant milk' && userData.milkPreference !== 'any') {
                                     return { ...ing, item: userData.milkPreference + ' milk' };
@@ -1965,219 +2071,145 @@
                 });
             }
 
-            createShoppingList(); // This function now iterates through all weeks in mealPlan
-            // createRecipeGuide(allVeganMeals); // This is now done within the loop above to collect unique recipes from all weeks
-
+            createShoppingList();
             displayMealPlan();
-            console.log('--- createMealPlan() finished ---');
         }
         
-        function createVeganMealDatabase() {
-            console.log('--- createVeganMealDatabase() started ---');
-            const meals = {
-                breakfast: [
-                    { name: "Overnight Oats with Berries", calories: 320, protein: 12, cookingTime: "5 mins prep", ingredients: [{item: "oats", quantity: 50, unit: "g"}, {item: "plant milk", quantity: 200, unit: "ml"}, {item: "chia seeds", quantity: 15, unit: "g"}, {item: "mixed berries", quantity: 100, unit: "g"}, {item: "maple syrup", quantity: 10, unit: "ml"}], instructions: 'Combine oats, preferred plant milk, chia seeds, and maple syrup in a jar. Stir well, cover, and refrigerate overnight. In the morning, top with mixed berries.' },
-                    { name: "Green Smoothie", calories: 350, protein: 15, cookingTime: "5 mins", ingredients: [{item: "spinach", quantity: 100, unit: "g"}, {item: "banana", quantity: 150, unit: "g"}, {item: "plant protein powder", quantity: 25, unit: "g"}, {item: "plant milk", quantity: 250, unit: "ml"}, {item: "flax seeds", quantity: 10, unit: "g"}], instructions: 'Blend all ingredients until smooth. Serve immediately.' },
-                    { name: "Avocado Toast with Tomato", calories: 280, protein: 8, cookingTime: "10 mins", ingredients: [{item: "whole grain bread", quantity: 100, unit: "g"}, {item: "avocado", quantity: 100, unit: "g"}, {item: "cherry tomatoes", quantity: 50, unit: "g"}, {item: "nutritional yeast", quantity: 5, unit: "g"}, {item: "red pepper flakes", quantity: 1, unit: "g"}], instructions: 'Toast bread. Mash avocado and spread on toast. Top with sliced cherry tomatoes, nutritional yeast, and red pepper flakes.' },
-                    { name: "Tofu Scramble", calories: 310, protein: 18, cookingTime: "15 mins", ingredients: [{item: "firm tofu", quantity: 200, unit: "g"}, {item: "nutritional yeast", quantity: 10, unit: "g"}, {item: "turmeric", quantity: 2, unit: "g"}, {item: "bell peppers", quantity: 80, unit: "g"}, {item: "onion", quantity: 50, unit: "g"}, {item: "spinach", quantity: 50, unit: "g"}, {item: "whole grain toast", quantity: 50, unit: "g"}], instructions: 'Crumble tofu. Sauté chopped bell peppers and onion. Add tofu, nutritional yeast, turmeric, and spinach. Cook until heated through. Serve with toast.' },
-                    { name: "Vegan Breakfast Burrito", calories: 400, protein: 20, cookingTime: "20 mins", ingredients: [{item: "whole wheat tortilla", quantity: 60, unit: "g"}, {item: "black beans", quantity: 100, unit: "g"}, {item: "scrambled tofu", quantity: 100, unit: "g"}, {item: "avocado", quantity: 50, unit: "g"}, {item: "salsa", quantity: 30, unit: "ml"}, {item: "vegan sausage patty", quantity: 50, unit: "g"}], instructions: 'Warm tortilla. Mash black beans. Cook scrambled tofu and vegan sausage patty. Assemble burrito with all fillings and salsa.' },
-                    { name: "Vegan Pancakes with Fruit", calories: 380, protein: 10, cookingTime: "15 mins", ingredients: [{item: "vegan pancake mix", quantity: 80, unit: "g"}, {item: "plant milk", quantity: 100, unit: "ml"}, {item: "banana", quantity: 100, unit: "g"}, {item: "mixed berries", quantity: 80, unit: "g"}, {item: "maple syrup", quantity: 20, unit: "ml"}], instructions: 'Prepare pancake mix with plant milk. Cook pancakes. Top with sliced banana, mixed berries, and maple syrup.' }
-                ],
-                lunch: [
-                    { name: "Buddha Bowl with Crispy Chickpeas", calories: 480, protein: 22, cookingTime: "30 mins", ingredients: [{item: "quinoa", quantity: 80, unit: "g"}, {item: "chickpeas", quantity: 100, unit: "g"}, {item: "roasted vegetables", quantity: 200, unit: "g"}, {item: "tahini dressing", quantity: 30, unit: "g"}, {item: "leafy greens", quantity: 80, unit: "g"}], instructions: 'Cook quinoa. Roast chickpeas and your favorite vegetables until crispy. Assemble bowl with leafy greens, cooked quinoa, roasted chickpeas and vegetables, and tahini dressing.' },
-                    { name: "Hearty Lentil Soup", calories: 420, protein: 20, cookingTime: "30 mins", ingredients: [{item: "red lentils", quantity: 80, unit: "g"}, {item: "mixed vegetables", quantity: 200, unit: "g"}, {item: "vegetable broth", quantity: 300, unit: "ml"}, {item: "coconut milk", quantity: 50, unit: "ml"}, {item: "curry powder", quantity: 5, unit: "g"}, {item: "crushed tomatoes", quantity: 50, unit: "g"}], instructions: 'Sauté chopped vegetables. Add red lentils, vegetable broth, coconut milk, curry powder, and crushed tomatoes. Simmer until lentils are tender, about 20-25 minutes.' },
-                    { name: "Mediterranean Quinoa Salad", calories: 410, protein: 18, cookingTime: "20 mins", ingredients: [{item: "quinoa", quantity: 70, unit: "g"}, {item: "cucumber", quantity: 80, unit: "g"}, {item: "cherry tomatoes", quantity: 80, unit: "g"}, {item: "olives", quantity: 30, unit: "g"}, {item: "red onion", quantity: 20, unit: "g"}, {item: "hummus", quantity: 50, unit: "g"}], instructions: 'Cook and cool quinoa. Chop cucumber, tomatoes, and red onion. Combine all ingredients with olives and a dollop of hummus. Dress with lemon juice and herbs.' },
-                    { name: "Vegan Deli Slice Sandwich", calories: 390, protein: 15, cookingTime: "5 mins", ingredients: [{item: "whole grain bread", quantity: 100, unit: "g"}, {item: "vegan deli slices", quantity: 80, unit: "g"}, {item: "lettuce", quantity: 30, unit: "g"}, {item: "tomato", quantity: 50, unit: "g"}, {item: "vegan mayonnaise", quantity: 20, unit: "g"}], instructions: 'Assemble sandwich with bread, vegan deli slices, lettuce, tomato, and vegan mayonnaise.' },
-                    { name: "Beyond Burger with Side Salad", calories: 600, protein: 25, cookingTime: "20 mins", ingredients: [{item: "beyond burger patty", quantity: 120, unit: "g"}, {item: "whole grain bun", quantity: 80, unit: "g"}, {item: "mixed greens", quantity: 100, unit: "g"}, {item: "dressing", quantity: 20, unit: "ml"}, {item: "onion", quantity: 20, unit: "g"}, {item: "tomato", quantity: 30, unit: "g"}], instructions: 'Cook Beyond Burger patty according to package. Toast bun. Assemble burger with desired toppings. Serve with a simple side salad.' }
-                ],
-                dinner: [
-                    { name: "Creamy Lentil Curry", calories: 520, protein: 25, cookingTime: "30 mins", ingredients: [{item: "green lentils", quantity: 100, unit: "g"}, {item: "coconut milk", quantity: 150, unit: "ml"}, {item: "curry paste", quantity: 20, unit: "g"}, {item: "mixed vegetables", quantity: 250, unit: "g"}, {item: "brown rice", quantity: 80, unit: "g"}, {item: "spinach", quantity: 50, unit: "g"}], instructions: 'Cook brown rice. Sauté vegetables. Add green lentils, curry paste, coconut milk, and spinach. Simmer until lentils are tender and sauce has thickened. Serve with rice.' },
-                    { name: "Spaghetti with Marinara & Meatballs", calories: 550, protein: 28, cookingTime: "35 mins", ingredients: [{item: "whole grain pasta", quantity: 100, unit: "g"}, {item: "vegan meatballs", quantity: 120, unit: "g"}, {item: "marinara sauce", quantity: 150, unit: "ml"}, {item: "onion", quantity: 30, unit: "g"}, {item: "garlic", quantity: 10, unit: "g"}, {item: "fresh basil", quantity: 10, unit: "g"}], instructions: 'Cook pasta. Sauté onion and garlic. Add vegan meatballs and cook until browned. Stir in marinara sauce and simmer. Serve over pasta, topped with fresh basil.' },
-                    { name: "Sheet Pan Fajitas", calories: 480, protein: 20, cookingTime: "25 mins", ingredients: [{item: "bell peppers", quantity: 200, unit: "g"}, {item: "onion", quantity: 100, unit: "g"}, {item: "mushrooms", quantity: 100, unit: "g"}, {item: "black beans", quantity: 80, unit: "g"}, {item: "fajita seasoning", quantity: 10, unit: "g"}, {item: "tortillas", quantity: 60, unit: "g"}, {item: "avocado", quantity: 50, unit: "g"}], instructions: 'Toss sliced bell peppers, onion, and mushrooms with black beans and fajita seasoning on a sheet pan. Roast until tender. Serve in warm tortillas with sliced avocado.' },
-                    { name: "Tofu Katsu Curry", calories: 600, protein: 30, cookingTime: "40 mins", ingredients: [{item: "firm tofu", quantity: 200, unit: "g"}, {item: "panko breadcrumbs", quantity: 50, unit: "g"}, {item: "flour", quantity: 20, unit: "g"}, {item: "curry block sauce", quantity: 100, unit: "g"}, {item: "jasmine rice", quantity: 80, unit: "g"}, {item: "broccoli", quantity: 100, unit: "g"}], instructions: 'Press tofu, coat in flour, then breadcrumbs. Fry until golden. Prepare curry sauce. Cook jasmine rice and steam broccoli. Serve tofu over rice with sauce and broccoli.' },
-                    { name: "Chickpea & Spinach Masala", calories: 490, protein: 24, cookingTime: "30 mins", ingredients: [{item: "chickpeas", quantity: 150, unit: "g"}, {item: "spinach", quantity: 100, unit: "g"}, {item: "diced tomatoes", quantity: 150, unit: "g"}, {item: "onion", quantity: 50, unit: "g"}, {item: "garlic", quantity: 10, unit: "g"}, {item: "ginger", quantity: 5, unit: "g"}, {item: "garam masala", quantity: 5, unit: "g"}, {item: "brown rice", quantity: 70, unit: "g"}], instructions: 'Cook brown rice. Sauté onion, garlic, ginger. Add chickpeas, diced tomatoes, garam masala. Simmer. Stir in spinach until wilted. Serve with rice.' },
-                    { name: "Impossible Burger with Sweet Potato Fries", calories: 650, protein: 27, cookingTime: "30 mins", ingredients: [{item: "impossible burger patty", quantity: 120, unit: "g"}, {item: "sweet potato", quantity: 200, unit: "g"}, {item: "whole grain bun", quantity: 80, unit: "g"}, {item: "ketchup", quantity: 20, unit: "g"}, {item: "lettuce", quantity: 20, unit: "g"}, {item: "tomato", quantity: 30, unit: "g"}], instructions: 'Cook Impossible Burger patty. Slice sweet potato into fries and bake. Assemble burger with bun, lettuce, tomato. Serve with fries and ketchup.' }
-                ],
-                snacks: [
-                    { name: "Energy Balls", calories: 120, protein: 4, cookingTime: "10 mins", ingredients: [{item: "dates", quantity: 40, unit: "g"}, {item: "walnuts", quantity: 20, unit: "g"}, {item: "chia seeds", quantity: 5, unit: "g"}, {item: "cocoa powder", quantity: 5, unit: "g"}], instructions: 'Blend dates, walnuts, chia seeds, and cocoa powder in a food processor until a sticky mixture forms. Roll into small balls.' },
-                    { name: "Hummus & Veggie Sticks", calories: 110, protein: 5, cookingTime: "5 mins", ingredients: [{item: "hummus", quantity: 50, unit: "g"}, {item: "carrots", quantity: 80, unit: "g"}, {item: "cucumber", quantity: 80, unit: "g"}, {item: "bell peppers", quantity: 80, unit: "g"}], instructions: 'Serve hummus with sliced carrots, cucumber sticks, and bell pepper strips for dipping.' },
-                    { name: "Protein Smoothie", calories: 130, protein: 8, cookingTime: "5 mins", ingredients: [{item: "plant protein powder", quantity: 15, unit: "g"}, {item: "plant milk", quantity: 150, unit: "ml"}, {item: "banana", quantity: 100, unit: "g"}, {item: "spinach", quantity: 20, unit: "g"}], instructions: 'Blend plant protein powder, preferred plant milk, banana, and spinach until smooth.' },
-                    { name: "Mixed Nuts & Dried Fruit", calories: 180, protein: 6, cookingTime: "1 min", ingredients: [{item: "mixed nuts", quantity: 30, unit: "g"}, {item: "dried fruit", quantity: 20, unit: "g"}], instructions: 'Combine mixed nuts and dried fruit for a quick snack.' },
-                    { name: "Apple with Almond Butter", calories: 150, protein: 6, cookingTime: "5 mins", ingredients: [{item: "apple", quantity: 150, unit: "g"}, {item: "almond butter", quantity: 20, unit: "g"}, {item: "cinnamon", quantity: 2, unit: "g"}], instructions: 'Slice an apple and spread almond butter on the slices. Sprinkle with cinnamon.' },
-                    { name: "Edamame (steamed)", calories: 160, protein: 14, cookingTime: "10 mins", ingredients: [{item: "frozen edamame", quantity: 150, unit: "g"}, {item: "salt", quantity: 2, unit: "g"}], instructions: 'Steam frozen edamame according to package instructions. Sprinkle with salt.' }
-                ]
+        function generateWeeklyMealPlan(availableMeals) {
+            const dailyCals = nutritionPlan.targetCalories;
+            const mealTargets = {
+                breakfast: dailyCals * 0.25,
+                lunch: dailyCals * 0.35,
+                dinner: dailyCals * 0.30,
             };
 
-            // Step 1: Filter based on allergies/exclusions (existing logic)
-            const exclusions = Array.from(document.querySelectorAll('#foodExclusions input:checked')).map(cb => cb.value);
-            console.log('Exclusions:', exclusions);
-            let filteredByExclusions = {};
-            Object.keys(meals).forEach(mealType => {
-                filteredByExclusions[mealType] = meals[mealType].filter(meal => {
-                    const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
-                    return !exclusions.some(ex => mealIngredients.some(ingItem => ingItem.includes(ex.toLowerCase())));
-                });
-            });
-
-            // Step 2: Filter based on milk preference
-            const milkPreference = userData.milkPreference; // 'any', 'almond', 'soy', 'oat', 'coconut'
-            let filteredByMilk = {};
-            if (milkPreference && milkPreference !== 'any') {
-                Object.keys(filteredByExclusions).forEach(mealType => {
-                    filteredByMilk[mealType] = filteredByExclusions[mealType].filter(meal => {
-                        const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
-                        const milkIngredientsInMeal = mealIngredients.filter(ing => ing.includes('plant milk'));
-                        
-                        // If meal has no generic 'plant milk' entry, it's fine.
-                        if (milkIngredientsInMeal.length === 0) {
-                            return true;
-                        }
-
-                        // Check if the recipe explicitly uses a milk type or if it's a generic 'plant milk'
-                        // If it's a specific milk, then it must match the preference.
-                        const recipeUsesSpecificMilk = mealIngredients.some(ing => ['almond milk', 'soy milk', 'oat milk', 'coconut milk'].includes(ing));
-                        
-                        if (recipeUsesSpecificMilk) {
-                            return mealIngredients.some(ing => ing.includes(milkPreference));
-                        } else {
-                            // If recipe uses generic "plant milk", it's compatible with any choice
-                            return true;
-                        }
-                    });
-                });
-            } else {
-                filteredByMilk = filteredByExclusions; // No specific milk preference, use all already filtered meals
-            }
-
-            // Step 3: Filter based on vegan substitute preference
-            const substitutePreference = userData.substitutePreference; // 'none', 'some', 'all'
-            let finalFilteredMeals = {};
-            Object.keys(filteredByMilk).forEach(mealType => {
-                finalFilteredMeals[mealType] = filteredByMilk[mealType].filter(meal => {
-                    const mealNameLower = meal.name.toLowerCase();
-                    const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
-
-                    const hasGenericSubstitute = mealNameLower.includes('vegan patty') || mealNameLower.includes('vegan sausage') ||
-                                                 mealIngredients.some(ing => ing.includes('vegan patty') || ing.includes('vegan sausage'));
-                    const hasBrandedSubstitute = mealNameLower.includes('beyond') || mealNameLower.includes('impossible') ||
-                                                 mealIngredients.some(ing => ing.includes('beyond meat') || ing.includes('impossible meat'));
-
-                    if (substitutePreference === 'none') {
-                        // Exclude all substitutes
-                        return !hasGenericSubstitute && !hasBrandedSubstitute;
-                    } else if (substitutePreference === 'some') {
-                        // Allow generic, exclude branded
-                        return !hasBrandedSubstitute;
-                    } else if (substitutePreference === 'all') {
-                        // Allow all substitutes
-                        return true;
-                    }
-                    return true; // Default if preference is not explicitly handled or for any other value
-                });
-            });
-
-            console.log('Final Filtered Meals based on all preferences:', finalFilteredMeals);
-            return finalFilteredMeals;
-        }
-
-        function generateWeeklyMealPlan(mealStructure, approvedMeals) {
-            console.log('--- generateWeeklyMealPlan() started with approved meals ---');
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const weekPlan = {};
 
-            // Helper function to scale a meal to target calories
-            const scaleMeal = (baseMeal, targetCalories) => {
-                // Return a placeholder if the base meal is invalid or has no calories
-                if (!baseMeal || !baseMeal.calories || baseMeal.calories === 0) {
-                    return { name: 'Meal not available', calories: 0, protein: 0, ingredients: [], instructions: 'A suitable meal could not be found for this slot.' };
-                }
+            const scaleMeal = (meal, targetCalories) => {
+                if (!meal || meal.calories === 0) return meal;
+                const scaleFactor = targetCalories / meal.calories;
+                
+                const scaledMeal = JSON.parse(JSON.stringify(meal));
+                scaledMeal.calories = Math.round(meal.calories * scaleFactor);
+                scaledMeal.protein = Math.round(meal.protein * scaleFactor);
 
-                const scalingFactor = targetCalories / baseMeal.calories;
+                const roundableUnits = ['slices', 'piece', 'pieces', 'tortilla', 'bun', 'roll', 'arepa', 'pancake', 'scone', 'flatbread', 'chapati', 'naan', 'pita', 'tostada', 'gyoza', 'sheet', 'patty'];
 
-                // Scale ingredients based on the calculated factor
-                const scaledIngredients = baseMeal.ingredients.map(ing => ({
-                    ...ing,
-                    // Round the new quantity to a whole number and ensure it's at least 1
-                    quantity: Math.max(1, Math.round(ing.quantity * scalingFactor))
-                }));
+                scaledMeal.ingredients = meal.ingredients.map(ing => {
+                    let newQuantity = parseFloat((ing.quantity * scaleFactor).toFixed(1));
 
-                // Return a new meal object with scaled values
-                return {
-                    ...baseMeal,
-                    calories: Math.round(targetCalories),
-                    protein: Math.round(baseMeal.protein * scalingFactor),
-                    ingredients: scaledIngredients
-                    // Instructions remain the same; the user must adapt to the new quantities
-                };
+                    const isRoundable = roundableUnits.some(unit => 
+                        ing.unit.toLowerCase().includes(unit) || ing.item.toLowerCase().includes(unit)
+                    );
+
+                    if (isRoundable) {
+                        newQuantity = Math.round(newQuantity);
+                        if (newQuantity < 1) newQuantity = 1; 
+                    }
+
+                    return {
+                        ...ing,
+                        quantity: newQuantity
+                    };
+                });
+                
+                return scaledMeal;
             };
 
-            // Populate the weekPlan, scaling each meal to fit the calorie structure
             days.forEach((day, index) => {
-                // We use the approved meals, cycling through them if there are fewer than 7 days
-                const breakfastChoice = approvedMeals.breakfast[index % approvedMeals.breakfast.length];
-                const lunchChoice = approvedMeals.lunch[index % approvedMeals.lunch.length];
-                const dinnerChoice = approvedMeals.dinner[index % approvedMeals.dinner.length];
-                const snackChoice = approvedMeals.snacks[index % approvedMeals.snacks.length];
+                let todaysMeals = { breakfast: null, lunch: null, dinner: null, snacks: [] };
+                
+                let baseBreakfast = availableMeals.breakfast[index % availableMeals.breakfast.length];
+                let baseLunch = availableMeals.lunch[index % availableMeals.lunch.length];
+                let baseDinner = availableMeals.dinner[index % availableMeals.dinner.length];
 
-                // Assign the scaled version of the meal to the plan
-                weekPlan[day] = {
-                    breakfast: scaleMeal(breakfastChoice, mealStructure.breakfast.calories),
-                    lunch: scaleMeal(lunchChoice, mealStructure.lunch.calories),
-                    dinner: scaleMeal(dinnerChoice, mealStructure.dinner.calories),
-                    snacks: scaleMeal(snackChoice, mealStructure.snacks.calories)
-                };
+                todaysMeals.breakfast = scaleMeal(baseBreakfast, mealTargets.breakfast);
+                todaysMeals.lunch = scaleMeal(baseLunch, mealTargets.lunch);
+                todaysMeals.dinner = scaleMeal(baseDinner, mealTargets.dinner);
+                
+                let currentCalories = (todaysMeals.breakfast?.calories || 0) + 
+                                      (todaysMeals.lunch?.calories || 0) + 
+                                      (todaysMeals.dinner?.calories || 0);
+                
+                let remainingCals = dailyCals - currentCalories;
+
+                if (remainingCals > 75 && availableMeals.snacks.length > 0) {
+                    let availableSnacksForDay = [...availableMeals.snacks].sort((a,b) => b.calories - a.calories);
+
+                    while (remainingCals > 75 && availableSnacksForDay.length > 0) {
+                        let bestSnack = availableSnacksForDay.find(s => s.calories <= remainingCals);
+                        
+                        if (bestSnack) {
+                            todaysMeals.snacks.push(bestSnack);
+                            remainingCals -= bestSnack.calories;
+                            availableSnacksForDay = availableSnacksForDay.filter(s => s.name !== bestSnack.name);
+                        } else {
+                            break; 
+                        }
+                    }
+                }
+
+                weekPlan[day] = todaysMeals;
             });
-            console.log('--- generateWeeklyMealPlan() finished ---');
             return weekPlan;
         }
-        
+
+
         function displayMealPlan() {
-            console.log('--- displayMealPlan() started ---');
             const resultsDiv = document.getElementById('mealPlanResults');
             if (Object.keys(mealPlan).length === 0) {
-                resultsDiv.innerHTML = '<p class="warning">Could not generate a meal plan based on your preferences. Please try adjusting your inputs.</p>';
-                console.warn('Meal plan is empty, displaying warning.');
+                resultsDiv.innerHTML = '<p class="warning">Could not generate a meal plan. Please try adjusting your inputs.</p>';
                 return;
             }
             let html = '';
-            Object.keys(mealPlan).forEach(weekKey => { // weekKey will be "Week 1", "Week 2", etc.
+            Object.keys(mealPlan).forEach(weekKey => {
                 html += `<h3 style="text-align: center; margin-top: 30px; margin-bottom: 20px; color: #5a67d8;">${weekKey}</h3>`;
                 const weeklyPlan = mealPlan[weekKey];
                 Object.keys(weeklyPlan).forEach(day => {
                     const dayMeals = weeklyPlan[day];
-                    // Ensure all meal types exist before trying to access their properties
-                    const totalCals = Object.values(dayMeals).reduce((sum, meal) => sum + (meal ? meal.calories : 0), 0);
+                    const totalCals = (dayMeals.breakfast?.calories || 0) + 
+                                      (dayMeals.lunch?.calories || 0) + 
+                                      (dayMeals.dinner?.calories || 0) +
+                                      dayMeals.snacks.reduce((sum, snack) => sum + snack.calories, 0);
+
+                    let snacksHtml = '';
+                    if (dayMeals.snacks.length > 0) {
+                        dayMeals.snacks.forEach(snack => {
+                            snacksHtml += `<div class="meal-item">${snack.name} (${snack.calories} cal)</div>`;
+                        });
+                    } else {
+                        snacksHtml = `<div class="meal-item">N/A (0 cal)</div>`;
+                    }
+
                     html += `
                         <div class="day-card">
-                            <div class="day-header">${day} - ${totalCals} calories</div>
+                            <div class="day-header">${day} - ~${totalCals} calories</div>
                             <div class="meals">
                                 <div class="meal"><div class="meal-type">🌅 Breakfast</div><div class="meal-item">${dayMeals.breakfast ? dayMeals.breakfast.name : 'N/A'} (${dayMeals.breakfast ? dayMeals.breakfast.calories : 0} cal)</div></div>
                                 <div class="meal"><div class="meal-type">🌞 Lunch</div><div class="meal-item">${dayMeals.lunch ? dayMeals.lunch.name : 'N/A'} (${dayMeals.lunch ? dayMeals.lunch.calories : 0} cal)</div></div>
                                 <div class="meal"><div class="meal-type">🌙 Dinner</div><div class="meal-item">${dayMeals.dinner ? dayMeals.dinner.name : 'N/A'} (${dayMeals.dinner ? dayMeals.dinner.calories : 0} cal)</div></div>
-                                <div class="meal"><div class="meal-type">🍎 Snack</div><div class="meal-item">${dayMeals.snacks ? dayMeals.snacks.name : 'N/A'} (${dayMeals.snacks ? dayMeals.snacks.calories : 0} cal)</div></div>
+                                <div class="meal"><div class="meal-type">🍎 Snack(s)</div>${snacksHtml}</div>
                             </div>
                         </div>`;
                 });
             });
             resultsDiv.innerHTML = html;
-            console.log('--- displayMealPlan() finished ---');
         }
 
         function createShoppingList() {
-            console.log('--- createShoppingList() started ---');
             const allIngredients = {};
-            Object.values(mealPlan).forEach(weeklyPlan => { // Iterate over each week's plan
+            Object.values(mealPlan).forEach(weeklyPlan => {
                 Object.values(weeklyPlan).forEach(day => {
-                    Object.values(day).forEach(meal => {
-                        if (meal && meal.ingredients) { // Ensure meal and ingredients exist
+                    const allMealsForDay = [day.breakfast, day.lunch, day.dinner, ...day.snacks];
+                    allMealsForDay.forEach(meal => {
+                        if (meal && meal.ingredients) {
                             meal.ingredients.forEach(ing => {
                                 const key = ing.item.toLowerCase();
-                                // Handle specific milk type replacement for shopping list based on user preference
                                 let itemKey = key;
                                 if (key === 'plant milk' && userData.milkPreference !== 'any') {
                                     itemKey = userData.milkPreference + ' milk';
                                 }
-
                                 if (!allIngredients[itemKey]) {
                                     allIngredients[itemKey] = { quantity: 0, unit: ing.unit };
                                 }
@@ -2188,26 +2220,14 @@
                     });
                 });
             });
-            console.log('All ingredients gathered:', allIngredients);
 
-            const categories = {
-                'Produce': ['banana', 'berries', 'spinach', 'avocado', 'tomato', 'lime', 'vegetables', 'leafy greens', 'bell peppers', 'carrots', 'cucumber', 'apple', 'sweet potato', 'cherry tomatoes', 'fresh fruit', 'alfalfa sprouts', 'fresh ginger', 'seasonal vegetables', 'lettuce', 'basil', 'onion', 'garlic', 'diced tomatoes'],
-                'Pantry Staples': ['oats', 'chia seeds', 'maple syrup', 'quinoa', 'rice', 'bread', 'tortilla', 'pasta', 'dates', 'spices', 'herbs', 'vanilla extract', 'turmeric', 'curry powder', 'curry paste', 'cocoa powder', 'cinnamon', 'canned crushed tomatoes', 'flax seeds', 'salsa', 'curry block sauce', 'panko breadcrumbs', 'flour', 'garam masala'],
-                'Plant Proteins': ['chickpeas', 'lentils', 'beans', 'tofu', 'plant protein powder', 'black bean patty', 'vegan sausage', 'vegan patty', 'beyond meat grounds', 'impossible burger patty', 'vegan deli slices', 'vegan meatballs', 'edamame'],
-                'Nuts & Seeds': ['hemp seeds', 'nuts', 'almonds', 'walnuts', 'cashews', 'almond butter', 'tahini'],
-                'Plant Milks & Alternatives': ['almond milk', 'coconut milk', 'nutritional yeast', 'cashew cream', 'soy milk', 'oat milk', 'plant milk'], // Keep 'plant milk' as fallback for categorization
-                'Condiments & Sauces': ['hummus', 'soy sauce', 'tahini dressing', 'vegan mayonnaise', 'ketchup', 'marinara sauce', 'dressing'],
-                'Frozen': ['frozen banana', 'frozen edamame'],
-                'Other': ['granola', 'vegetable broth', 'corn', 'toast', 'bun', 'salt']
-            };
+            shoppingList = {};
+            Object.keys(ingredientCategories).forEach(cat => shoppingList[cat] = []);
 
-            shoppingList = {}; // Clear shoppingList object before populating
-            Object.keys(categories).forEach(cat => shoppingList[cat] = []);
-            
             for (const [ingName, ingData] of Object.entries(allIngredients)) {
                 let foundCategory = false;
-                for (const [catName, catItems] of Object.entries(categories)) {
-                    if (catItems.some(item => ingName.includes(item))) {
+                for (const [catName, catItems] of Object.entries(ingredientCategories)) {
+                    if (catItems.some(item => ingName.includes(item.toLowerCase()))) {
                         shoppingList[catName].push({ name: ingName, ...ingData });
                         foundCategory = true;
                         break;
@@ -2218,23 +2238,18 @@
                     shoppingList['Other'].push({ name: ingName, ...ingData });
                 }
             }
-            // Ensure no 'plant milk' item if a specific one was chosen
+
             if (userData.milkPreference !== 'any') {
                 shoppingList['Plant Milks & Alternatives'] = shoppingList['Plant Milks & Alternatives'].filter(item => item.name !== 'plant milk');
             }
-            console.log('--- createShoppingList() finished ---');
         }
-        
-        function createRecipeGuide() { // Removed parameter as recipes are now collected during meal plan generation
-            console.log('--- createRecipeGuide() started ---');
-            // Recipes object is already populated in createMealPlan loop
-            // This function now just ensures recipes is ready for display/download
+
+        function createRecipeGuide() {
             if (Object.keys(recipes).length === 0) {
                 console.warn('Recipes object is empty after meal plan generation.');
             }
-            console.log('--- createRecipeGuide() finished ---');
         }
-        
+
         function showShoppingList() {
             const resultsDiv = document.getElementById('shoppingListResults');
             let html = '<div class="shopping-list">';
@@ -2242,7 +2257,6 @@
                 resultsDiv.innerHTML = '<p class="warning">No shopping list generated. Please ensure a meal plan was successfully created.</p>';
                 return;
             }
-
             Object.entries(shoppingList).forEach(([category, items]) => {
                 if (items.length > 0) {
                     html += `<div class="category-title">${category}</div><ul class="item-list">`;
@@ -2283,61 +2297,45 @@
             });
             html += '</div>';
             resultsDiv.innerHTML = html;
-
             showStep(9);
         }
 
-        function showBenefits() { // New function to show the benefits section
+        window.showBenefits = function() {
             displayComparativeBenefits();
             showStep(10);
         }
 
-        function showRecipesBack() { // Function to go back from benefits to recipes
+        window.showRecipesBack = function() {
             showStep(9);
         }
 
         function displayComparativeBenefits() {
             const benefitsSection = document.getElementById('comparativeBenefitsSection');
-
-            // --- Animal Lives Saved (Estimates based on average animal product consumption) ---
-            // These are widely cited estimates from organizations like The Vegan Society, Animal Charity Evaluators.
-            // A common figure is around 198 animals saved per year per vegan.
             const animalsSavedPerYear = 198;
-            const animalsSavedPerWeek = (animalsSavedPerYear / 52); // No toFixed yet, do it in template string for better control
+            const animalsSavedPerWeek = (animalsSavedPerYear / 52);
 
             document.getElementById('animalsSavedWeek').innerHTML = `• 🐔🐷🐟 <strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong> Approximately <strong>${(animalsSavedPerWeek * userData.numWeeks).toFixed(1)} animal lives</strong>.`;
             document.getElementById('animalsSavedYear').innerHTML = `• 🐔🐷🐟 <strong>Projected per year:</strong> Approximately <strong>${animalsSavedPerYear} animal lives</strong>.`;
 
-            // --- Environmental Benefits Saved ---
-            // Using approximate weekly and yearly savings for an average person switching to vegan
-            // Per day (estimated averages for a shift from omnivore to vegan, based on scientific studies):
-            // - Land: ~18 sq meters per day
-            // - CO2e: ~1.8 kg CO2e per day (difference between ~2.5kg omnivore and ~0.7kg vegan)
-            // - Water: ~4164 liters per day
-            
-            // Per Selected Weeks
-            const landSavedSqMetersTotal = 18 * 7 * userData.numWeeks; 
-            const landSavedSqFtTotal = (landSavedSqMetersTotal * 10.764).toFixed(0); 
-            const co2SavedKgTotal = (2.5 - 0.7) * 7 * userData.numWeeks; 
+            const landSavedSqMetersTotal = 18 * 7 * userData.numWeeks;
+            const landSavedSqFtTotal = (landSavedSqMetersTotal * 10.764).toFixed(0);
+            const co2SavedKgTotal = (2.5 - 0.7) * 7 * userData.numWeeks;
             const co2SavedLbsTotal = (co2SavedKgTotal * 2.20462).toFixed(1);
-            const waterSavedLitersTotal = 4164 * 7 * userData.numWeeks; 
+            const waterSavedLitersTotal = 4164 * 7 * userData.numWeeks;
             const waterSavedGallonsTotal = (waterSavedLitersTotal / 3.785).toFixed(0);
 
-            // Per Year (re-calculate based on full year)
             const landSavedSqMetersYear = 18 * 365;
-            const landSavedAcresYear = (landSavedSqMetersYear / 4046.86).toFixed(1); // 1 acre = 4046.86 sq meters
-            const co2SavedTonnesYear = ((2.5 - 0.7) * 365 / 1000).toFixed(2); // Convert kg to tonnes
-            const waterSavedMillionLitersYear = (4164 * 365 / 1000000).toFixed(2); // Convert liters to million liters
+            const landSavedAcresYear = (landSavedSqMetersYear / 4046.86).toFixed(1);
+            const co2SavedTonnesYear = ((2.5 - 0.7) * 365 / 1000).toFixed(2);
+            const waterSavedMillionLitersYear = (4164 * 365 / 1000000).toFixed(2);
 
             document.getElementById('landSaved').innerHTML = `• 🌱 <strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong> Approximately <strong>${landSavedSqFtTotal} square feet</strong> (${landSavedSqMetersTotal} square meters) of land. (Enough for a small garden!)<br>• 🌱 <strong>Projected per year:</strong> Approximately <strong>${landSavedAcresYear} acres</strong> of land.`;
             document.getElementById('co2Saved').innerHTML = `• 💨 <strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong> Approximately <strong>${co2SavedKgTotal.toFixed(1)} kg CO2e</strong> (${co2SavedLbsTotal} lbs CO2e) of greenhouse gas emissions. (Equivalent to driving a car for ~${(co2SavedKgTotal / 0.22).toFixed(0)} km)<br>• 🌍 <strong>Projected per year:</strong> Approximately <strong>${co2SavedTonnesYear} tonnes CO2e</strong>.`;
             document.getElementById('waterSaved').innerHTML = `• 💧 <strong>Over ${userData.numWeeks} week${userData.numWeeks !== 1 ? 's' : ''}:</strong> Approximately <strong>${waterSavedLitersTotal} liters</strong> (${waterSavedGallonsTotal} gallons) of water. (Enough for ~${(waterSavedLitersTotal / 150).toFixed(0)} showers!)<br>• 🚿 <strong>Projected per year:</strong> Approximately <strong>${waterSavedMillionLitersYear} million liters</strong> of water.`;
 
-            // Add sources section here by dynamically adding content to the benefitsSection
-            // Check if sources section already exists to avoid duplication on multiple calls
             let existingSourcesDiv = benefitsSection.querySelector('.impact-sources');
             if (existingSourcesDiv) {
-                existingSourcesDiv.remove(); // Remove existing to re-add fresh content
+                existingSourcesDiv.remove();
             }
 
             let sourcesHtml = `
@@ -2345,125 +2343,96 @@
                 <ul>
                     <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/animals" target="_blank">The Vegan Society: Why go vegan? (Animals)</a></li>
                     <li>Poore, J., & Nemecek, T. (2018). Reducing food’s environmental impacts through producers and consumers. <a href="https://www.science.org/doi/10.1126/science.aaq0216" target="_blank"><em>Science</em>, 360(6392), 987-992.</a></li>
-                    <li><a href="https://www.vegansociety.com/go-vegan/why-go-vegan/environment" target="_blank">The Vegan Society: Why go vegan? (Environment)</a> (Summarizes impact data)</li>
                 </ul>
             `;
             const sourcesDiv = document.createElement('div');
-            sourcesDiv.classList.add('impact-sources'); // Add a class for easier identification
-            sourcesDiv.innerHTML = sourcesHtml;
+            sourcesDiv.classList.add('impact-sources');
             benefitsSection.appendChild(sourcesDiv);
+            sourcesDiv.innerHTML = sourcesHtml;
         }
 
-        function showMealPlan() {
+        window.showMealPlan = function() {
             showStep(7);
         }
-        
-        // --- PDF Generation Logic ---
 
-        // Function to convert hex color to RGB array (no longer strictly needed for jsPDF direct calls but kept for consistency)
-        function hexToRgb(hex) {
-            var r = parseInt(hex.substring(1, 3), 16);
-            var g = parseInt(hex.substring(3, 5), 16);
-            var b = parseInt(hex.substring(5, 7), 16);
-            return [r, g, b];
-        }
-
-        // Main PDF download function, kept for compatibility if needed elsewhere
-        async function downloadPDF(contentElementId, filename) {
-            const contentElement = document.getElementById(contentElementId);
-            try {
-                const canvas = await html2canvas(contentElement, {
-                    scale: 2,
-                    useCORS: true,
-                    width: contentElement.scrollWidth,
-                    height: contentElement.scrollHeight
-                });
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgProps = pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                let heightLeft = pdfHeight;
-                let position = 0;
-
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                heightLeft -= pdf.internal.pageSize.getHeight();
-
-                while (heightLeft > 0) {
-                    position -= pdf.internal.pageSize.getHeight();
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                    heightLeft -= pdf.internal.pageSize.getHeight();
-                }
-                pdf.save(filename);
-            } catch (error) {
-                console.error('Error generating PDF:', error);
-                alert('Could not generate PDF. Please try again.');
-            }
-        }
-        
         function downloadPlan() {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
-            const pageHeight = pdf.internal.pageSize.getHeight();
             const pageWidth = pdf.internal.pageSize.getWidth();
-            const margin = 15; // Set margin to 15mm
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const margin = 15;
             let cursorY = margin;
+            const contentWidth = pageWidth - 2 * margin;
 
-            if (Object.keys(mealPlan).length === 0) {
-                alert('No meal plan data available to download. Please generate a meal plan first.');
-                return;
-            }
-
-            pdf.setFont("helvetica");
             pdf.setFontSize(24);
-            pdf.text("Your Multi-Week Vegan Meal Plan", pageWidth / 2, cursorY, { align: "center" });
-            cursorY += 20;
+            pdf.setTextColor(118, 75, 162);
+            pdf.text("Your Personalized Vegan Meal Plan", pageWidth / 2, cursorY, { align: "center" });
+            cursorY += 15;
 
-            const tableHeaders = ["Day", "Total Calories", "Meals"];
-            const availableWidth = pageWidth - (2 * margin);
-            const colWidths = [availableWidth * 0.18, availableWidth * 0.22, availableWidth * 0.60];
+            pdf.setFontSize(12);
+            pdf.setTextColor(74, 85, 104);
+            const userInfo = [
+                `Plan Name: ${userData.planName || 'N/A'}`,
+                `Goal: ${userData.goal ? userData.goal.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'N/A'}`,
+                `Target Calories: ${nutritionPlan.targetCalories} kcal`,
+                `Protein: ${nutritionPlan.protein.grams}g | Carbs: ${nutritionPlan.carbs.grams}g | Fat: ${nutritionPlan.fat.grams}g`
+            ];
+            userInfo.forEach(line => {
+                pdf.text(line, margin, cursorY);
+                cursorY += 7;
+            });
+            cursorY += 5;
+
+            pdf.setFontSize(10);
+            pdf.setTextColor(0, 0, 0);
+            const tableHeaders = ["Day", "Calories", "Meals"];
+            const colWidths = [30, 30, contentWidth - 60];
             const colStarts = [margin, margin + colWidths[0], margin + colWidths[0] + colWidths[1]];
+            const rowPadding = 3;
 
+            pdf.setDrawColor(226, 232, 240);
 
             Object.keys(mealPlan).forEach(weekKey => {
-                // Add Week Header
-                pdf.addPage(); // Start each week on a new page for clarity in PDF
-                cursorY = margin; // Reset Y for new page
+                pdf.setFontSize(16);
+                pdf.setTextColor(90, 103, 216);
+                pdf.text(weekKey, pageWidth / 2, cursorY + 10, { align: "center" });
+                cursorY += 20;
 
-                pdf.setFontSize(18); // Larger font for week title
-                pdf.text(weekKey, pageWidth / 2, cursorY, { align: "center" });
-                cursorY += 15;
-
-                // Draw table headers for each week
                 pdf.setFontSize(10);
+                pdf.setFillColor(243, 238, 252);
+                pdf.rect(colStarts[0], cursorY, contentWidth, 8, 'F');
                 tableHeaders.forEach((header, index) => {
-                    pdf.text(header, colStarts[index] + 2, cursorY + 5); 
+                    pdf.setTextColor(74, 85, 104);
+                    pdf.text(header, colStarts[index] + rowPadding, cursorY + 5);
                 });
                 cursorY += 8;
 
                 const weeklyPlan = mealPlan[weekKey];
-                Object.keys(weeklyPlan).forEach((day, dayIndex) => {
+                Object.keys(weeklyPlan).forEach(day => {
                     const dayMeals = weeklyPlan[day];
-                    const totalCals = Object.values(dayMeals).reduce((sum, meal) => sum + (meal ? meal.calories : 0), 0);
+                    const totalCals = (dayMeals.breakfast?.calories || 0) + 
+                                      (dayMeals.lunch?.calories || 0) + 
+                                      (dayMeals.dinner?.calories || 0) +
+                                      dayMeals.snacks.reduce((sum, snack) => sum + snack.calories, 0);
 
-                    const rowPadding = 2;
                     let maxCellHeight = 0;
 
                     const dayCellContent = day;
                     const calCellContent = `~${totalCals} kcal`;
                     
-                    const mealsListFormatted = [
+                    let mealsListFormatted = [
                         `Breakfast: ${dayMeals.breakfast ? dayMeals.breakfast.name : 'N/A'} (${dayMeals.breakfast ? dayMeals.breakfast.calories : 0} kcal)`,
                         `Lunch: ${dayMeals.lunch ? dayMeals.lunch.name : 'N/A'} (${dayMeals.lunch ? dayMeals.lunch.calories : 0} kcal)`,
-                        `Dinner: ${dayMeals.dinner ? dayMeals.dinner.name : 'N/A'} (${dayMeals.dinner ? dayMeals.dinner.calories : 0} kcal)`,
-                        `Snack: ${dayMeals.snacks ? dayMeals.snacks.name : 'N/A'} (${dayMeals.snacks ? dayMeals.snacks.calories : 0} kcal)`
+                        `Dinner: ${dayMeals.dinner ? dayMeals.dinner.name : 'N/A'} (${dayMeals.dinner ? dayMeals.dinner.calories : 0} kcal)`
                     ];
-                    
+                    dayMeals.snacks.forEach(snack => {
+                        mealsListFormatted.push(`Snack: ${snack.name} (${snack.calories} kcal)`);
+                    });
+
+
                     let mealsLines = [];
                     mealsListFormatted.forEach(mealText => {
-                        const lines = pdf.splitTextToSize(mealText, colWidths[2] - (2 * rowPadding)); 
+                        const lines = pdf.splitTextToSize(mealText, colWidths[2] - (2 * rowPadding));
                         mealsLines.push(...lines);
                     });
                     maxCellHeight = Math.max(maxCellHeight, mealsLines.length * 4.5);
@@ -2473,14 +2442,16 @@
                         pdf.addPage();
                         cursorY = margin;
                         pdf.setFontSize(10);
+                        pdf.setFillColor(243, 238, 252);
+                        pdf.rect(colStarts[0], cursorY, contentWidth, 8, 'F');
                         tableHeaders.forEach((header, index) => {
-                            pdf.text(header, colStarts[index] + 2, cursorY + 5);
+                            pdf.setTextColor(74, 85, 104);
+                            pdf.text(header, colStarts[index] + rowPadding, cursorY + 5);
                         });
                         cursorY += 8;
                     }
 
                     pdf.setLineWidth(0.2);
-
                     pdf.rect(colStarts[0], cursorY, colWidths[0], maxCellHeight + rowPadding * 2, 'S');
                     pdf.text(dayCellContent, colStarts[0] + rowPadding, cursorY + rowPadding + 3);
 
@@ -2498,260 +2469,163 @@
                     });
                     cursorY += maxCellHeight + rowPadding * 2;
                 });
+                cursorY += 10;
             });
 
             pdf.save('vegan-meal-plan.pdf');
         }
 
-        function formatShoppingListItem(item) {
-            const { name, quantity, unit } = item;
-            const capName = name.charAt(0).toUpperCase() + name.slice(1);
-            if ((name.includes('milk') || name.includes('broth')) && unit === 'ml' && quantity >= 1000) {
-                const liters = quantity / 1000;
-                const cartons = Math.ceil(liters);
-                if (liters === cartons) return `${capName} (${liters}L)`;
-                return `${capName} (${cartons} x 1L carton${cartons > 1 ? 's' : ''}, ${quantity}ml total)`;
-            }
-            if (name.includes('avocado') && unit === 'g') {
-                const count = Math.round(quantity / 150);
-                return `${capName} (approx. ${count}, ${quantity}g total)`;
-            }
-            if (unit === 'units') return `${capName} (x${quantity})`;
-            return `${capName} (${quantity}${unit})`;
-        }
-        
         function downloadShoppingList() {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
-            const pageHeight = pdf.internal.pageSize.getHeight();
             const pageWidth = pdf.internal.pageSize.getWidth();
-            const margin = 15; // Set margin to 15mm
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const margin = 15;
             let cursorY = margin;
+            const contentWidth = pageWidth - 2 * margin;
 
-            if (Object.keys(shoppingList).length === 0 || Object.values(shoppingList).every(arr => arr.length === 0)) {
-                alert('No shopping list data available to download. Please generate a meal plan first.');
-                return;
-            }
-
-            pdf.setFont("helvetica");
             pdf.setFontSize(24);
-            pdf.text("Your Shopping List", pageWidth / 2, cursorY, { align: "center" });
-            cursorY += 20;
+            pdf.setTextColor(118, 75, 162);
+            pdf.text("Your Vegan Shopping List", pageWidth / 2, cursorY, { align: "center" });
+            cursorY += 15;
 
-            const columnCount = 2;
-            const columnGap = 10; // Gap between columns
-            const availableWidthForColumns = pageWidth - (2 * margin) - ((columnCount - 1) * columnGap);
-            const columnWidth = availableWidthForColumns / columnCount;
+            pdf.setFontSize(10);
+            pdf.setTextColor(0, 0, 0);
 
-            // Track Y position for each column independently
-            let columnYs = Array(columnCount).fill(cursorY);
+            const col1X = margin;
+            const col2X = pageWidth / 2 + 5;
+            const itemLineHeight = 5;
+            let currentColumn = 1;
+            let col1Y = cursorY;
+            let col2Y = cursorY;
 
-            const sortedCategories = Object.keys(shoppingList).sort();
+            Object.entries(shoppingList).forEach(([category, items]) => {
+                if (items.length > 0) {
+                    const categoryTitle = category;
+                    const titleHeight = 7;
 
-            sortedCategories.forEach(category => {
-                const items = shoppingList[category];
-                if (items.length === 0) return; // Skip empty categories
-
-                pdf.setFontSize(12);
-                const categoryTitleHeight = 7;
-                const itemLineHeight = 5;
-                const sectionPadding = 3; // Padding for category title and spacing between items
-
-                // Calculate which column has less content (is "shorter") to add the next category
-                let targetColumnIndex = 0;
-                if (columnYs[1] < columnYs[0]) {
-                    targetColumnIndex = 1;
-                }
-
-                let currentX = margin + (targetColumnIndex * (columnWidth + columnGap));
-                let currentY = columnYs[targetColumnIndex];
-
-                // Estimate height of the current category block to check if it fits
-                let estimatedItemLines = 0;
-                items.forEach(item => {
-                    estimatedItemLines += pdf.splitTextToSize(`☐ ${formatShoppingListItem(item)}`, columnWidth - (2 * sectionPadding)).length;
-                });
-                const estimatedBlockHeight = categoryTitleHeight + sectionPadding + (estimatedItemLines * itemLineHeight) + sectionPadding;
-
-
-                // If the block won't fit in the current column, try the other column first
-                if (currentY + estimatedBlockHeight + margin > pageHeight) {
-                    let otherColumnIndex = (targetColumnIndex === 0) ? 1 : 0;
-                    if (columnYs[otherColumnIndex] + estimatedBlockHeight + margin > pageHeight) {
-                        // If it doesn't fit in either column, add a new page
-                        pdf.addPage();
-                        columnYs = Array(columnCount).fill(margin); // Reset Y for both columns
-                        currentY = margin;
-                        pdf.setFontSize(24);
-                        pdf.text("Your Shopping List (cont.)", pageWidth / 2, currentY, { align: "center" });
-                        currentY += 20;
-                        pdf.setFontSize(12);
-                        columnYs = [currentY, currentY]; // Update base Y for new page
-                        
-                        targetColumnIndex = 0; // Always start new page from left column
-                        currentX = margin;
-                    } else {
-                        // Fits in the other column, switch to it
-                        targetColumnIndex = otherColumnIndex;
-                        currentX = margin + (targetColumnIndex * (columnWidth + columnGap));
-                        currentY = columnYs[targetColumnIndex]; // Set Y to the top of the next column
-                        
-                        pdf.setFontSize(12); // Redraw category title on new column
-                        pdf.text(category + " (cont.)", currentX + sectionPadding, currentY + categoryTitleHeight / 2 + 1.5);
-                        currentY += categoryTitleHeight + sectionPadding;
-                        pdf.setFontSize(10);
+                    if (currentColumn === 1 && col1Y + titleHeight > pageHeight - margin) {
+                        currentColumn = 2;
+                        col2Y = cursorY;
                     }
-                }
-                
-                // Draw category title
-                pdf.text(category, currentX + sectionPadding, currentY + categoryTitleHeight / 2 + 1.5); // Center text vertically in title area
-                currentY += categoryTitleHeight + sectionPadding;
+                    if (currentColumn === 2 && col2Y + titleHeight > pageHeight - margin) {
+                        pdf.addPage();
+                        cursorY = margin;
+                        col1Y = cursorY;
+                        col2Y = cursorY;
+                        currentColumn = 1;
+                    }
 
-                pdf.setFontSize(10);
+                    let currentY = (currentColumn === 1) ? col1Y : col2Y;
+                    let currentX = (currentColumn === 1) ? col1X : col2X;
 
-                // Add items
-                items.forEach(item => {
-                    const itemText = `☐ ${formatShoppingListItem(item)}`;
-                    const lines = pdf.splitTextToSize(itemText, columnWidth - (2 * sectionPadding)); // Use correct column width for wrapping
-                    
-                    lines.forEach(line => {
-                        // Check if individual line fits. If not, manage page/column break.
-                        if (currentY + itemLineHeight + margin > pageHeight) {
-                            let nextColumnIndex = (targetColumnIndex === 0) ? 1 : 0;
-                            if (columnYs[nextColumnIndex] + itemLineHeight + margin > pageHeight) {
-                                // Neither column can fit, new page needed
-                                pdf.addPage();
-                                columnYs = Array(columnCount).fill(margin);
-                                currentY = margin;
-                                pdf.setFontSize(24);
-                                pdf.text("Your Shopping List (cont.)", pageWidth / 2, currentY, { align: "center" });
-                                currentY += 20;
-                                pdf.setFontSize(12);
-                                pdf.text(category + " (cont.)", margin + sectionPadding, currentY + categoryTitleHeight / 2 + 1.5);
-                                currentY += categoryTitleHeight + sectionPadding;
-                                pdf.setFontSize(10);
-                                
-                                targetColumnIndex = 0; // Start fresh on left column of new page
-                                currentX = margin;
-                            } else {
-                                // Move to the other column on the current page
-                                targetColumnIndex = nextColumnIndex;
-                                currentX = margin + (targetColumnIndex * (columnWidth + columnGap));
-                                currentY = columnYs[targetColumnIndex]; // Set Y to the top of the next column
-                                
-                                pdf.setFontSize(12); // Redraw category title on new column
-                                pdf.text(category + " (cont.)", currentX + sectionPadding, currentY + categoryTitleHeight / 2 + 1.5);
-                                currentY += categoryTitleHeight + sectionPadding;
-                                pdf.setFontSize(10);
+                    pdf.setFontSize(12);
+                    pdf.setTextColor(66, 118, 234);
+                    pdf.text(categoryTitle, currentX, currentY);
+                    currentY += titleHeight;
+
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(0, 0, 0);
+
+                    items.forEach(item => {
+                        const itemText = formatShoppingListItem(item);
+                        const lines = pdf.splitTextToSize(itemText, (pageWidth / 2) - margin - 5);
+
+                        lines.forEach(line => {
+                            if (currentY + itemLineHeight > pageHeight - margin) {
+                                if (currentColumn === 1) {
+                                    currentColumn = 2;
+                                    col2Y = cursorY;
+                                    currentY = col2Y;
+                                    currentX = col2X;
+                                } else {
+                                    pdf.addPage();
+                                    cursorY = margin;
+                                    col1Y = cursorY;
+                                    col2Y = cursorY;
+                                    currentY = cursorY;
+                                    currentX = col1X;
+                                    currentColumn = 1;
+                                }
                             }
-                        }
-                        pdf.text(line, currentX + sectionPadding, currentY + itemLineHeight / 2); // Center text vertically in item line
-                        currentY += itemLineHeight;
+                            pdf.text(`• ${line}`, currentX, currentY);
+                            currentY += itemLineHeight;
+                        });
                     });
-                });
-                currentY += sectionPadding; // Space after each category
 
-                columnYs[targetColumnIndex] = currentY; // Update the Y position for the column that was just used
+                    if (currentColumn === 1) {
+                        col1Y = currentY + 5;
+                    } else {
+                        col2Y = currentY + 5;
+                    }
+                    cursorY = Math.max(col1Y, col2Y);
+                }
             });
 
             pdf.save('vegan-shopping-list.pdf');
         }
 
-        async function downloadRecipes() {
+        function downloadRecipes() {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
-            const pageHeight = pdf.internal.pageSize.getHeight();
             const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
             const margin = 15;
             let cursorY = margin;
+            const cardPadding = 10;
+            const sectionSpacing = 5;
+            const infoLineHeight = 6;
+            const listItemHeight = 5;
+            const subtitleHeight = 7;
 
-            if (Object.keys(recipes).length === 0) {
-                alert('No recipe data available to download. Please generate a meal plan first.');
-                return;
-            }
-
-            pdf.setFont("helvetica");
             pdf.setFontSize(24);
-            pdf.text("Your Recipe Guide", pageWidth / 2, cursorY, { align: "center" });
-            cursorY += 20;
-
-            pdf.setFontSize(10);
-
-            // Ensure recipes are collected before calling this.
-            // If createRecipeGuide() logic is now integrated into createMealPlan(), this might not be strictly necessary here.
-            // For now, it relies on the global 'recipes' object being correctly populated.
-            // createRecipeGuide(); // Call to ensure 'recipes' is up-to-date, if not done elsewhere
+            pdf.setTextColor(118, 75, 162); // Purple
+            pdf.text("Your Vegan Recipe Guide", pageWidth / 2, cursorY, { align: "center" });
+            cursorY += 15;
 
             const sortedRecipeNames = Object.keys(recipes).sort();
 
-            for (let i = 0; i < sortedRecipeNames.length; i++) {
-                const recipeName = sortedRecipeNames[i];
+            sortedRecipeNames.forEach((recipeName, index) => {
                 const recipe = recipes[recipeName];
+                const x = margin;
+                const width = pageWidth - 2 * margin;
+                let cardStartY = cursorY;
+                let contentX = x + cardPadding;
+                let contentY = cardStartY + cardPadding;
+                const currentContentWidth = width - 2 * cardPadding;
 
-                const titleHeight = 8;
-                const infoLineHeight = 5;
-                const subtitleHeight = 7;
-                const listItemHeight = 5.5; // Increased line height for list items
-                const sectionSpacing = 4; // Increased space between sub-sections
-                const cardPadding = 7; // Internal padding of the card
+                const estimatedHeight = 10 + 3 * infoLineHeight + 
+                                        (recipe.ingredients.length * listItemHeight) + 
+                                        (recipe.instructions.split('. ').filter(s => s.trim()).length * listItemHeight) + 
+                                        4 * sectionSpacing + 2 * subtitleHeight;
 
-                // Calculate content width for text wrapping inside the card
-                let currentContentWidth = pageWidth - (2 * margin) - (2 * cardPadding);
-                
-                const ingredientsLines = recipe.ingredients.reduce((acc, ing) => {
-                    // Adjusted width for indentation
-                    return acc + pdf.splitTextToSize(`• ${ing.quantity}${ing.unit} ${ing.item}`, currentContentWidth - 8).length; 
-                }, 0);
-                
-                const instructionsSplit = recipe.instructions.split('. ').filter(s => s.trim());
-                const instructionsLines = instructionsSplit.reduce((acc, inst, instIndex) => {
-                    // Adjusted width for indentation
-                    return acc + pdf.splitTextToSize(`${instIndex + 1}. ${inst.trim()}`, currentContentWidth - 8).length; 
-                }, 0);
-
-                const estimatedRecipeContentHeight = titleHeight + infoLineHeight + sectionSpacing +
-                                                     subtitleHeight + (ingredientsLines * listItemHeight) + sectionSpacing +
-                                                     subtitleHeight + (instructionsLines * listItemHeight);
-                
-                // Total estimated height for the card including its internal padding and spacing
-                const estimatedRecipeCardHeight = estimatedRecipeContentHeight + (2 * cardPadding) + 10; // Extra buffer
-
-                // Check if current recipe fits on the remaining part of the page
-                if (cursorY + estimatedRecipeCardHeight + margin > pageHeight && i !== 0) {
+                if (cursorY + estimatedHeight + margin > pageHeight && index > 0) {
                     pdf.addPage();
                     cursorY = margin;
+                    cardStartY = cursorY;
+                    contentY = cardStartY + cardPadding;
                     pdf.setFontSize(24);
+                    pdf.setTextColor(118, 75, 162);
                     pdf.text("Your Recipe Guide (cont.)", pageWidth / 2, cursorY, { align: "center" });
                     cursorY += 20;
-                    pdf.setFontSize(10);
+                    cardStartY = cursorY;
+                    contentY = cursorY + cardPadding;
                 }
-                
-                const x = margin;
-                const width = pageWidth - (2 * margin);
-                const cardStartY = cursorY;
 
-                // Set default stroke color for rect (black) and line width
-                pdf.setLineWidth(0.5); 
-
-                // Add internal padding for content inside the card
-                let contentX = x + cardPadding;
-                let contentY = cursorY + cardPadding;
-
-                // Add Recipe Title
                 pdf.setFontSize(16);
+                pdf.setTextColor(45, 55, 72);
                 pdf.text(recipeName, contentX, contentY);
-                contentY += titleHeight;
+                contentY += 10;
 
-                // Add Recipe Info
                 pdf.setFontSize(10);
-                pdf.text(`Calories: ${recipe.calories} cal   Protein: ${recipe.protein}g   Time: ${recipe.cookingTime}`, contentX, contentY);
+                pdf.setTextColor(113, 128, 150);
+                pdf.text(`${recipe.calories} cal | ${recipe.protein}g protein | ${recipe.cookingTime}`, contentX, contentY);
                 contentY += infoLineHeight + sectionSpacing;
 
-                // Add Ingredients
                 pdf.setFontSize(12);
+                pdf.setTextColor(74, 85, 104);
                 pdf.text("Ingredients:", contentX, contentY);
                 contentY += subtitleHeight;
-
                 pdf.setFontSize(10);
                 recipe.ingredients.forEach(ing => {
                     const ingredientText = `• ${ing.quantity}${ing.unit} ${ing.item}`;
@@ -2762,10 +2636,12 @@
                             cursorY = margin;
                             contentY = cursorY + cardPadding;
                             pdf.setFontSize(24);
+                            pdf.setTextColor(118, 75, 162);
                             pdf.text("Your Recipe Guide (cont.)", pageWidth / 2, cursorY, { align: "center" });
                             cursorY += 20;
                             contentY = cursorY + cardPadding;
                             pdf.setFontSize(10);
+                            pdf.setTextColor(74, 85, 104);
                         }
                         pdf.text(line, contentX + 8, contentY);
                         contentY += listItemHeight;
@@ -2773,11 +2649,10 @@
                 });
                 contentY += sectionSpacing;
 
-                // Add Instructions
                 pdf.setFontSize(12);
+                pdf.setTextColor(74, 85, 104);
                 pdf.text("Instructions:", contentX, contentY);
                 contentY += subtitleHeight;
-
                 pdf.setFontSize(10);
                 const instructions = recipe.instructions.split('. ').filter(s => s.trim());
                 instructions.forEach((instruction, instIndex) => {
@@ -2789,25 +2664,24 @@
                             cursorY = margin;
                             contentY = cursorY + cardPadding;
                             pdf.setFontSize(24);
+                            pdf.setTextColor(118, 75, 162);
                             pdf.text("Your Recipe Guide (cont.)", pageWidth / 2, cursorY, { align: "center" });
                             cursorY += 20;
                             contentY = cursorY + cardPadding;
                             pdf.setFontSize(10);
+                            pdf.setTextColor(74, 85, 104);
                         }
                         pdf.text(line, contentX + 8, contentY);
                         contentY += listItemHeight;
                     });
                 });
                 contentY += sectionSpacing + 5;
-                
-                // Calculate the actual height of the card content for border drawing
-                const cardActualHeight = contentY - cardStartY;
-                
-                // Draw the rounded rectangle for the card after all content is placed
-                pdf.roundedRect(x, cardStartY, width, cardActualHeight, 2, 2, 'S'); // 'S' for stroke (border only)
-                
-                cursorY = contentY; // Update main cursorY for the next recipe
-            }
+
+                pdf.setDrawColor(226, 232, 240);
+                pdf.roundedRect(x, cardStartY, width, contentY - cardStartY, 2, 2, 'S');
+                cursorY = contentY;
+            });
+
             pdf.save('vegan-recipes.pdf');
         }
 
@@ -2821,57 +2695,97 @@
             preliminaryMealChoices = {};
             document.querySelectorAll('input, select, textarea').forEach(el => {
                 if(el.type === 'checkbox') el.checked = false;
+                else if (el.type === 'range') {
+                    if (el.id === 'bodyFat') el.value = 20;
+                    if (el.id === 'dailyCaloriesBurned') el.value = 2000;
+                }
                 else el.value = '';
             });
-            // Reset range slider displays
-            document.getElementById('bodyFat').value = 20;
-            document.getElementById('bodyFatValue').innerText = '20%';
-            document.getElementById('dailyCaloriesBurned').value = 2000;
-            document.getElementById('dailyCaloriesBurnedValue').innerText = '2000 kcal';
-            // Reset aggressive option visibility if it was hidden
+            document.getElementById('bodyFatValue').innerText = document.getElementById('bodyFat').value + '%';
+            document.getElementById('dailyCaloriesBurnedValue').innerText = document.getElementById('dailyCaloriesBurned').value + ' kcal';
+
             const aggressiveOption = document.getElementById('aggressiveOption');
             aggressiveOption.disabled = false;
             aggressiveOption.style.display = 'block';
             document.getElementById('aggressiveWarning').classList.add('hidden');
-
-
             showStep(1);
         }
 
-        function openInfoModal() {
+        window.openInfoModal = function() {
             document.getElementById('infoModal').classList.remove('hidden');
         }
 
-        function closeInfoModal() {
+        window.closeInfoModal = function() {
             document.getElementById('infoModal').classList.add('hidden');
         }
 
-        function openAdvantagesModal() {
+        window.openAdvantagesModal = function() {
             document.getElementById('advantagesModal').classList.remove('hidden');
         }
 
-        function closeAdvantagesModal() {
+        window.closeAdvantagesModal = function() {
             document.getElementById('advantagesModal').classList.add('hidden');
         }
 
-        function openB12Modal() {
+        window.openB12Modal = function() {
             document.getElementById('b12Modal').classList.remove('hidden');
         }
 
-        function closeB12Modal() {
+        window.closeB12Modal = function() {
             document.getElementById('b12Modal').classList.add('hidden');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             showStep(1);
-            // Initialize range slider values
-            document.getElementById('bodyFat').value = 20; // Default value from HTML
+            document.getElementById('bodyFat').value = 20;
             document.getElementById('bodyFatValue').innerText = document.getElementById('bodyFat').value + '%';
-            document.getElementById('dailyCaloriesBurned').value = 2000; // Default value from HTML
+            document.getElementById('dailyCaloriesBurned').value = 2000;
             document.getElementById('dailyCaloriesBurnedValue').innerText = document.getElementById('dailyCaloriesBurned').value + ' kcal';
 
             document.getElementById('bodyFat').addEventListener('change', toggleWeightLossRate);
+            document.getElementById('goal').addEventListener('change', toggleWeightLossRate);
+
+            document.getElementById('nextBtnStep1').addEventListener('click', nextStep);
+            document.getElementById('prevBtnStep2').addEventListener('click', prevStep);
+            document.getElementById('nextBtnStep2').addEventListener('click', nextStep);
+            document.getElementById('prevBtnStep3').addEventListener('click', prevStep);
+            document.getElementById('prevBtnStep4').addEventListener('click', prevStep);
+            document.getElementById('prevBtnStep7').addEventListener('click', prevStep);
+            document.getElementById('prevBtnStep8').addEventListener('click', prevStep);
+            document.getElementById('prevBtnStep9').addEventListener('click', prevStep);
+            document.getElementById('prevBtnStep10').addEventListener('click', prevStep);
         });
+
+        function formatShoppingListItem(item) {
+            const { name, quantity, unit } = item;
+            const capName = name.charAt(0).toUpperCase() + name.slice(1);
+
+            if ((name.includes('milk') || name.includes('broth')) && unit === 'ml' && quantity >= 1000) {
+                const liters = quantity / 1000;
+                const cartons = Math.ceil(liters); 
+                return `${capName} (${cartons} x 1L carton${cartons > 1 ? 's' : ''}, ${Math.ceil(quantity)}ml total)`;
+            }
+            if (name.includes('avocado') && unit === 'g') {
+                const count = Math.round(quantity / 150);
+                return `${capName} (${count} piece${count !== 1 ? 's' : ''})`;
+            }
+            if (name.includes('tofu') && unit === 'g') {
+                const count = Math.round(quantity / 300);
+                return `${capName} (${count} block${count !== 1 ? 's' : ''})`;
+            }
+            if (name.includes('tempeh') && unit === 'g') {
+                const count = Math.round(quantity / 200);
+                return `${capName} (${count} block${count !== 1 ? 's' : ''})`;
+            }
+            if (unit === 'g' && quantity >= 1000) {
+                return `${capName} (${(quantity / 1000).toFixed(1)}kg)`;
+            }
+            if (unit === 'ml' && quantity >= 1000) {
+                return `${capName} (${(quantity / 1000).toFixed(1)}L)`;
+            }
+            return `${capName} (${Math.ceil(quantity)}${unit})`;
+        }
+
     </script>
 </body>
 </html>
