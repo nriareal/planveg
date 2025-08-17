@@ -2009,39 +2009,99 @@
             reviewSection.innerHTML = html;
         }
 
-        function generateMealPlan() {
+         function generateMealPlan() {
             if (!validateCurrentStep()) return;
             showStep('loading');
             
             setTimeout(() => {
                 try {
+                    // --- Step 1: Gather user's explicit choices ---
                     const approvedMeals = { breakfast: [], lunch: [], dinner: [], snacks: [] };
-                    document.querySelectorAll('#mealReviewSection input[type="checkbox"]:checked').forEach(checkbox => {
+                    const excludedMealNames = new Set(); // Use a Set for efficient lookups
+
+                    // Get all meals that were shown to the user in the review step
+                    const allReviewedMeals = document.querySelectorAll('#mealReviewSection input[type="checkbox"]');
+
+                    allReviewedMeals.forEach(checkbox => {
                         const mealType = checkbox.getAttribute('data-meal-type');
                         const mealName = checkbox.value;
                         const mealData = preliminaryMealChoices[mealType].find(m => m.name === mealName);
-                        if (mealData) {
-                            approvedMeals[mealType].push(mealData);
+
+                        if (checkbox.checked) {
+                            if (mealData) {
+                                approvedMeals[mealType].push(mealData);
+                            }
+                        } else {
+                            // If a meal is unchecked, add its name to the permanent exclusion list
+                            excludedMealNames.add(mealName);
                         }
                     });
 
-                    Object.keys(approvedMeals).forEach(type => {
-                        if (approvedMeals[type].length === 0 && preliminaryMealChoices[type].length > 0) {
-                            console.warn(`User unchecked all ${type} meals. Repopulating with preliminary choices.`);
-                            approvedMeals[type] = preliminaryMealChoices[type];
+                    // --- Step 2: Handle meal types where the user unchecked everything ---
+                    Object.keys(approvedMeals).forEach(mealType => {
+                        // If a category is empty because the user unchecked all options, we must find replacements
+                        if (approvedMeals[mealType].length === 0 && preliminaryMealChoices[mealType] && preliminaryMealChoices[mealType].length > 0) {
+                            console.warn(`User unchecked all ${mealType} meals. Finding replacements...`);
+
+                            // Determine how many replacement meals we need to find based on variety preference
+                            const mealChoiceMap = { 'low': 1, 'medium': Math.ceil(7 / 2), 'high': 7 };
+                            const numReplacementsNeeded = mealChoiceMap[userData.variety] || 7;
+
+                            // --- Step 2a: Create the master pool of all potential replacements ---
+                            let potentialReplacements = allMeals[mealType]
+                                // Filter out based on allergies/exclusions
+                                .filter(meal => {
+                                    const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
+                                    return !userData.foodExclusions.some(ex => mealIngredients.some(ingItem => ingItem.includes(ex)));
+                                })
+                                // Filter out based on milk preference (if applicable)
+                                .filter(meal => {
+                                    if (userData.milkPreference && userData.milkPreference !== 'any') {
+                                        const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
+                                        const hasGenericPlantMilk = mealIngredients.some(ing => ing.includes('plant milk'));
+                                        const hasSpecificMilk = mealIngredients.some(ing => ing.includes(userData.milkPreference + ' milk'));
+                                        if (hasGenericPlantMilk) return true;
+                                        if (mealIngredients.some(ing => ing.includes('almond milk') || ing.includes('soy milk') || ing.includes('oat milk') || ing.includes('coconut milk'))) {
+                                            return hasSpecificMilk;
+                                        }
+                                    }
+                                    return true;
+                                })
+                                // CRITICAL: Filter out the meals the user specifically unchecked by name
+                                .filter(meal => !excludedMealNames.has(meal.name));
+
+                            // --- Step 2b: Try to find replacements within the user's preferred cuisines first ---
+                            let replacements = [];
+                            if (userData.cuisinePreferences && userData.cuisinePreferences.length > 0) {
+                                replacements = potentialReplacements.filter(meal =>
+                                    userData.cuisinePreferences.includes(meal.cuisine)
+                                );
+                            }
+
+                            // --- Step 2c: If not enough meals are found, use the broader fallback pool (any cuisine) ---
+                            if (replacements.length < numReplacementsNeeded) {
+                                const existingReplacementNames = new Set(replacements.map(m => m.name));
+                                const fallbackReplacements = potentialReplacements.filter(meal => !existingReplacementNames.has(meal.name));
+                                
+                                replacements = [...replacements, ...fallbackReplacements];
+                            }
+
+                            // --- Step 2d: Populate the approvedMeals list with the found replacements ---
+                            const shuffled = replacements.sort(() => 0.5 - Math.random());
+                            approvedMeals[mealType] = shuffled.slice(0, Math.min(numReplacementsNeeded, shuffled.length));
                         }
                     });
 
+                    // --- Step 3: Final check and plan generation ---
                     let finalMissingMealTypes = [];
-                    const mealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
-                    mealTypes.forEach(type => {
-                        if (approvedMeals[type].length === 0) {
+                    ['breakfast', 'lunch', 'dinner'].forEach(type => { // Only check essential types
+                        if (!approvedMeals[type] || approvedMeals[type].length === 0) {
                             finalMissingMealTypes.push(type.charAt(0).toUpperCase() + type.slice(1));
                         }
                     });
 
                     if (finalMissingMealTypes.length > 0) {
-                        displayErrorMessage('step6', `Cannot generate plan: No available meals for ${finalMissingMealTypes.join(', ')}. This might indicate an issue with the base meal data or very restrictive filters.`);
+                        displayErrorMessage('step6', `Could not find any replacement meals for: ${finalMissingMealTypes.join(', ')}. Your combination of allergies and preferences might be too restrictive. Please go back and adjust your selections.`);
                         showStep(6);
                         return;
                     }
