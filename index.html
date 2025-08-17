@@ -1466,7 +1466,7 @@
             darkModeIcon.innerText = '☀️';
         } else {
             document.documentElement.setAttribute('data-theme', 'light');
-            darkModeIcon.innerText = '';
+            darkModeIcon.innerText = '�';
         }
 
         darkModeToggle.addEventListener('click', () => {
@@ -1912,7 +1912,6 @@
             userData.variety = document.getElementById('variety').value;
             userData.numWeeks = parseInt(document.getElementById('numWeeks').value, 10);
             userData.substitutePreference = document.getElementById('substitutePreference').value;
-            // *** Read selected cuisine preferences ***
             userData.cuisinePreferences = Array.from(document.querySelectorAll('#cuisinePreferences input[type="checkbox"]:checked')).map(cb => cb.value);
 
             if (!validateCurrentStep()) return;
@@ -1931,7 +1930,8 @@
             Object.keys(mealsToFilter).forEach(mealType => {
                 filteredMeals[mealType] = mealsToFilter[mealType].filter(meal => {
                     const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
-                    return !userData.foodExclusions.some(ex => mealIngredients.some(ingItem => ingItem.includes(ex.toLowerCase())));
+                    // CORRECTED LINE: Check if any ingredient item includes the exclusion string
+                    return !userData.foodExclusions.some(ex => mealIngredients.some(ingItem => ingItem.includes(ex)));
                 });
             });
 
@@ -1951,7 +1951,6 @@
                 });
             }
 
-            // *** Filter by cuisine preference ***
             if (userData.cuisinePreferences && userData.cuisinePreferences.length > 0) {
                 Object.keys(filteredMeals).forEach(mealType => {
                     filteredMeals[mealType] = filteredMeals[mealType].filter(meal =>
