@@ -73,6 +73,161 @@ const allMeals = {
         { name: "Quinoa & Bean Tostada", cuisine: "Latin American", calories: 380, protein: 16, cookingTime: "15 mins", ingredients: [ {item: "tostada shells", quantity: 2, unit: "pieces"}, {item: "quinoa", quantity: 60, unit: "g"}, {item: "refried beans", quantity: 100, unit: "g"}, {item: "lettuce", quantity: 50, unit: "g"}, {item: "tomato", quantity: 60, unit: "g"}, {item: "lime juice", quantity: 10, unit: "ml"} ], instructions: 'Cook quinoa until fluffy. Warm refried beans. Spread beans on tostada shells, top with quinoa, shredded lettuce, diced tomato, and lime juice.' }
     ],
     lunch: [
+	{
+    name: "Mediterranean Lentil Stew (Llenties Estofades)",
+    cuisine: "Mediterranean",
+    calories: 480,
+    protein: 24,
+    cookingTime: "45 mins",
+    ingredients: [
+        { item: "brown lentils", quantity: 100, unit: "g" },
+        { item: "potato", quantity: 150, unit: "g" },
+        { item: "carrot", quantity: 80, unit: "g" },
+        { item: "onion", quantity: 70, unit: "g" },
+        { item: "crushed tomatoes", quantity: 150, unit: "g" },
+        { item: "rosemary", quantity: 2, unit: "g" },
+        { item: "vegetable broth", quantity: 500, unit: "ml" },
+        { item: "olive oil", quantity: 15, unit: "ml" }
+    ],
+    instructions: 'Sauté the chopped onion in olive oil. Add the diced carrots and potatoes and cook for 5 minutes. Add the lentils, crushed tomatoes, and vegetable broth. Bring to a boil, then simmer for 35-40 minutes until lentils are tender. Add a sprig of rosemary for the last 10 minutes of cooking.'
+},
+{
+    name: "Lentil Bolognese with Macaroni",
+    cuisine: "Mediterranean",
+    calories: 550,
+    protein: 26,
+    cookingTime: "40 mins",
+    ingredients: [
+        { item: "pasta", quantity: 100, unit: "g" },
+        { item: "brown lentils", quantity: 80, unit: "g" },
+        { item: "onion", quantity: 60, unit: "g" },
+        { item: "carrot", quantity: 50, unit: "g" },
+        { item: "celery", quantity: 40, unit: "g" },
+        { item: "crushed tomatoes", quantity: 200, unit: "g" },
+        { item: "nutritional yeast", quantity: 15, unit: "g" },
+        { item: "oregano", quantity: 3, unit: "g" }
+    ],
+    instructions: 'Boil the pasta. For the sauce, sauté the chopped onion, carrot, and celery. Add the pre-cooked lentils, crushed tomatoes, and oregano. Simmer for 20 minutes. Serve the pasta with the bolognese and sprinkle with nutritional yeast.'
+},
+{
+    name: "Vegan Mushroom & Chickpea Fideuà",
+    cuisine: "Mediterranean",
+    calories: 520,
+    protein: 22,
+    cookingTime: "35 mins",
+    ingredients: [
+        { item: "fideua noodles", quantity: 100, unit: "g" },
+        { item: "mixed mushrooms", quantity: 150, unit: "g" },
+        { item: "chickpeas", quantity: 100, unit: "g" },
+        { item: "onion", quantity: 70, unit: "g" },
+        { item: "tomato", quantity: 100, unit: "g" },
+        { item: "vegetable broth", quantity: 300, unit: "ml" },
+        { item: "saffron", quantity: 1, unit: "g" },
+        { item: "olive oil", quantity: 25, unit: "ml" }
+    ],
+    instructions: 'Sauté the onion and grated tomato. Add the mushrooms and cook until browned. Toast the noodles in the same pan. Add the chickpeas and hot broth with saffron. Cook until the noodles have absorbed the liquid and are tender.'
+},
+{
+    name: "Vegan Seitan Stew (Fricandó Vegà)",
+    cuisine: "Mediterranean",
+    calories: 510,
+    protein: 30,
+    cookingTime: "45 mins",
+    ingredients: [
+        { item: "seitan", quantity: 180, unit: "g" },
+        { item: "shiitake mushrooms", quantity: 100, unit: "g" },
+        { item: "onion", quantity: 80, unit: "g" },
+        { item: "tomato", quantity: 120, unit: "g" },
+        { item: "almonds", quantity: 20, unit: "g" },
+        { item: "white wine", quantity: 50, unit: "ml" },
+        { item: "vegetable broth", quantity: 200, unit: "ml" },
+        { item: "brown rice", quantity: 70, unit: "g" }
+    ],
+    instructions: 'Coat seitan steaks in flour and fry them. In the same pot, make a sofrito with onion and tomato. Add the mushrooms. Pour in the wine and let it evaporate. Return the seitan to the pot, cover with broth, and cook for 30 min. Add a picada (ground almonds and garlic) at the end. Serve with rice.'
+},
+{
+    name: "Breaded Seitan with Ratatouille (Seitan Arrebossat)",
+    cuisine: "Mediterranean",
+    calories: 490,
+    protein: 28,
+    cookingTime: "35 mins",
+    ingredients: [
+        { item: "seitan", quantity: 150, unit: "g" },
+        { item: "panko breadcrumbs", quantity: 40, unit: "g" },
+        { item: "plant milk", quantity: 50, unit: "ml" },
+        { item: "zucchini", quantity: 100, unit: "g" },
+        { item: "eggplant", quantity: 100, unit: "g" },
+        { item: "bell peppers", quantity: 80, unit: "g" },
+        { item: "crushed tomatoes", quantity: 150, unit: "g" }
+    ],
+    instructions: 'Slice the seitan thinly, dip in plant milk, then in breadcrumbs. Fry until golden. For the ratatouille (samfaina), sauté the chopped vegetables (pepper, eggplant, zucchini) and finally add the tomato. Simmer for 20 minutes. Serve the seitan with the ratatouille.'
+},
+{
+    name: "Vegan Catalan Stew (Escudella Vegana)",
+    cuisine: "Mediterranean",
+    calories: 530,
+    protein: 25,
+    cookingTime: "60 mins",
+    ingredients: [
+        { item: "pasta shells", quantity: 60, unit: "g" },
+        { item: "chickpeas", quantity: 100, unit: "g" },
+        { item: "white beans", quantity: 100, unit: "g" },
+        { item: "potato", quantity: 120, unit: "g" },
+        { item: "carrot", quantity: 80, unit: "g" },
+        { item: "firm tofu", quantity: 120, unit: "g" },
+        { item: "breadcrumbs", quantity: 20, unit: "g" },
+        { item: "parsley", quantity: 10, unit: "g" }
+    ],
+    instructions: 'In a large pot, boil the vegetables (potato, carrot) and legumes in plenty of water or broth. For the "pilota" (meatball), mash the tofu with breadcrumbs, garlic, and parsley, form a large ball, and add it to the broth. Boil everything for 45 minutes. Finally, add the pasta and cook it in the same broth. Serve very hot.'
+},
+{
+    name: "Cabbage & Potato Hash with Smoked Tempeh (Trinxat)",
+    cuisine: "Mediterranean",
+    calories: 480,
+    protein: 23,
+    cookingTime: "40 mins",
+    ingredients: [
+        { item: "cabbage", quantity: 250, unit: "g" },
+        { item: "potato", quantity: 200, unit: "g" },
+        { item: "smoked tempeh", quantity: 100, unit: "g" },
+        { item: "garlic", quantity: 10, unit: "g" },
+        { item: "olive oil", quantity: 25, unit: "ml" }
+    ],
+    instructions: 'Boil the cabbage and potato together until very soft. Drain well and mash with a fork. Meanwhile, dice the tempeh very small and fry it in a pan until crispy. Remove it. In the same pan, brown the sliced garlic, add the cabbage and potato mix, and pan-fry it, browning it well on both sides. Serve the trinxat topped with the crispy tempeh.'
+},
+{
+    name: "Vegan Sausages with White Beans",
+    cuisine: "Mediterranean",
+    calories: 540,
+    protein: 27,
+    cookingTime: "25 mins",
+    ingredients: [
+        { item: "vegan sausage", quantity: 150, unit: "g" },
+        { item: "white beans", quantity: 200, unit: "g" },
+        { item: "onion", quantity: 70, unit: "g" },
+        { item: "crushed tomatoes", quantity: 100, unit: "g" },
+        { item: "white wine", quantity: 30, unit: "ml" },
+        { item: "parsley", quantity: 10, unit: "g" }
+    ],
+    instructions: 'Slice the vegan sausages and brown them in a pot. Remove them. In the same oil, sauté the chopped onion, then add the tomato and wine. Cook for 10 minutes. Add the cooked beans and the sausages. Cook everything together for 5 more minutes and serve with fresh chopped parsley.'
+},
+{
+    name: "Catalan Vegan Roast with Prunes & Pine Nuts",
+    cuisine: "Mediterranean",
+    calories: 560,
+    protein: 32,
+    cookingTime: "55 mins",
+    ingredients: [
+        { item: "soy protein chunks (e.g., Heura)", quantity: 120, unit: "g" },
+        { item: "onion", quantity: 100, unit: "g" },
+        { item: "potato", quantity: 150, unit: "g" },
+        { item: "prunes", quantity: 40, unit: "g" },
+        { item: "pine nuts", quantity: 25, unit: "g" },
+        { item: "brandy", quantity: 30, unit: "ml" },
+        { item: "vegetable broth", quantity: 250, unit: "ml" }
+    ],
+    instructions: 'Hydrate the soy protein chunks. Brown them in a pot with oil. Remove them. Sauté the onion and sliced potatoes. Add the protein back. Flambé with brandy. Add the prunes, pine nuts, and broth. Cover and simmer for 35-40 minutes until everything is tender and the sauce has reduced.'
+},
         { name: "Buddha Bowl with Crispy Chickpeas", cuisine: "Fusion", calories: 480, protein: 22, cookingTime: "30 mins", ingredients: [{item: "quinoa", quantity: 80, unit: "g"}, {item: "chickpeas", quantity: 100, unit: "g"}, {item: "roasted vegetables", quantity: 200, unit: "g"}, {item: "tahini dressing", quantity: 30, unit: "g"}, {item: "leafy greens", quantity: 80, unit: "g"}], instructions: 'Cook quinoa. Roast chickpeas and your favorite vegetables until crispy. Assemble bowl with leafy greens, cooked quinoa, roasted chickpeas and vegetables, and tahini dressing.' },
         { name: "Hearty Lentil Soup", cuisine: "Western", calories: 420, protein: 20, cookingTime: "30 mins", ingredients: [{item: "red lentils", quantity: 80, unit: "g"}, {item: "mixed vegetables", quantity: 200, unit: "g"}, {item: "vegetable broth", quantity: 300, unit: "ml"}, {item: "coconut milk", quantity: 50, unit: "ml"}, {item: "curry powder", quantity: 5, unit: "g"}, {item: "crushed tomatoes", quantity: 50, unit: "g"}], instructions: 'Sauté chopped vegetables. Add red lentils, vegetable broth, coconut milk, curry powder, and crushed tomatoes. Simmer until lentils are tender, about 20-25 minutes.' },
         { name: "Mediterranean Quinoa Salad", cuisine: "Mediterranean", calories: 410, protein: 18, cookingTime: "20 mins", ingredients: [{item: "quinoa", quantity: 70, unit: "g"}, {item: "cucumber", quantity: 80, unit: "g"}, {item: "cherry tomatoes", quantity: 80, unit: "g"}, {item: "olives", quantity: 30, unit: "g"}, {item: "red onion", quantity: 20, unit: "g"}, {item: "hummus", quantity: 50, unit: "g"}], instructions: 'Cook and cool quinoa. Chop cucumber, tomatoes, and red onion. Combine all ingredients with olives and a dollop of hummus. Dress with lemon juice and herbs.' },
@@ -144,6 +299,238 @@ const allMeals = {
         { name: "Persian Lentil & Quinoa 'Kuku'", cuisine: "Middle Eastern", calories: 360, protein: 18, cookingTime: "35 mins", ingredients: [ {item: "green lentils", quantity: 80, unit: "g"}, {item: "quinoa", quantity: 60, unit: "g"}, {item: "fresh herbs mix", quantity: 100, unit: "g"}, {item: "onion", quantity: 40, unit: "g"}, {item: "garlic", quantity: 8, unit: "g"}, {item: "turmeric", quantity: 3, unit: "g"}, {item: "baking powder", quantity: 3, unit: "g"}, {item: "olive oil", quantity: 20, unit: "ml"} ], instructions: 'Cook lentils and quinoa separately. Chop herbs finely and mix with sautéed onion and garlic. Combine with grains, turmeric, and baking powder. Pan-fry like a thick pancake until golden on both sides.' }
     ],
     dinner: [
+	{
+    name: "Catalan Lentil Salad (Amanida de Llenties)",
+    cuisine: "Mediterranean",
+    calories: 430,
+    protein: 21,
+    cookingTime: "10 mins",
+    ingredients: [
+        { item: "cooked lentils", quantity: 250, unit: "g" }, // Canned, drained weight
+        { item: "red bell pepper", quantity: 80, unit: "g" },
+        { item: "cucumber", quantity: 100, unit: "g" },
+        { item: "red onion", quantity: 40, unit: "g" },
+        { item: "olive oil", quantity: 20, unit: "ml" },
+        { item: "sherry vinegar", quantity: 15, unit: "ml" },
+        { item: "parsley", quantity: 15, unit: "g" }
+    ],
+    instructions: 'Drain and rinse the canned lentils well. Dice the vegetables into small cubes. Chop the parsley. Mix all ingredients in a large bowl and dress with olive oil and sherry vinegar.'
+},
+{
+    name: "Pumpkin Soup with Grilled Tofu",
+    cuisine: "Mediterranean",
+    calories: 380,
+    protein: 18,
+    cookingTime: "30 mins",
+    ingredients: [
+        { item: "pumpkin", quantity: 300, unit: "g" },
+        { item: "onion", quantity: 80, unit: "g" },
+        { item: "vegetable broth", quantity: 400, unit: "ml" },
+        { item: "firm tofu", quantity: 150, unit: "g" },
+        { item: "olive oil", quantity: 15, unit: "ml" },
+        { item: "pumpkin seeds", quantity: 10, unit: "g" }
+    ],
+    instructions: 'Sauté the onion in oil. Add the diced pumpkin and broth. Cook for 20 minutes. Blend until you get a smooth cream. Cut the tofu into cubes, grill it until golden, and serve it on top of the soup. Garnish with pumpkin seeds.'
+},
+{
+    name: "Zucchini & Onion Soup with Tempeh",
+    cuisine: "Mediterranean",
+    calories: 360,
+    protein: 19,
+    cookingTime: "25 mins",
+    ingredients: [
+        { item: "zucchini", quantity: 300, unit: "g" },
+        { item: "onion", quantity: 100, unit: "g" },
+        { item: "vegetable broth", quantity: 400, unit: "ml" },
+        { item: "tempeh", quantity: 120, unit: "g" },
+        { item: "olive oil", quantity: 15, unit: "ml" },
+        { item: "fresh mint", quantity: 10, unit: "g" }
+    ],
+    instructions: 'Sauté the onion. Add the zucchini and broth, and cook for 15 minutes. Blend until creamy. Crumble the tempeh and sauté it in a pan until crispy. Serve the soup topped with the tempeh and a few fresh mint leaves.'
+},
+{
+    name: "White Beans with Sautéed Mushrooms (Mongetes amb Bolets)",
+    cuisine: "Mediterranean",
+    calories: 410,
+    protein: 22,
+    cookingTime: "20 mins",
+    ingredients: [
+        { item: "white beans", quantity: 200, unit: "g" },
+        { item: "mixed mushrooms", quantity: 150, unit: "g" },
+        { item: "garlic", quantity: 10, unit: "g" },
+        { item: "parsley", quantity: 15, unit: "g" },
+        { item: "olive oil", quantity: 20, unit: "ml" },
+        { item: "white wine", quantity: 30, unit: "ml" }
+    ],
+    instructions: 'Sauté the minced garlic in olive oil. Add the mushrooms and cook until they release their water. Pour in the white wine and let it evaporate. Add the cooked white beans, sauté everything together for 5 minutes, and sprinkle with fresh chopped parsley.'
+},
+{
+    name: "Potato & Green Beans with Tofu (Patata i Mongeta)",
+    cuisine: "Mediterranean",
+    calories: 450,
+    protein: 24,
+    cookingTime: "25 mins",
+    ingredients: [
+        { item: "potato", quantity: 200, unit: "g" },
+        { item: "green beans", quantity: 150, unit: "g" },
+        { item: "firm tofu", quantity: 150, unit: "g" },
+        { item: "garlic", quantity: 8, unit: "g" },
+        { item: "paprika", quantity: 3, unit: "g" },
+        { item: "olive oil", quantity: 20, unit: "ml" }
+    ],
+    instructions: 'Boil the potatoes and green beans until tender. Drain them. In a pan, brown the diced tofu with oil and garlic. Add the potatoes and green beans, sauté everything together, and sprinkle with paprika before serving.'
+},
+{
+    name: "Vegan Spanish Omelette (Truita de Patates)",
+    cuisine: "Mediterranean",
+    calories: 480,
+    protein: 18,
+    cookingTime: "30 mins",
+    ingredients: [
+        { item: "potato", quantity: 250, unit: "g" },
+        { item: "onion", quantity: 100, unit: "g" },
+        { item: "chickpea flour", quantity: 70, unit: "g" },
+        { item: "water", quantity: 150, unit: "ml" },
+        { item: "kala namak", quantity: 3, unit: "g" },
+        { item: "turmeric", quantity: 2, unit: "g" },
+        { item: "olive oil", quantity: 30, unit: "ml" }
+    ],
+    instructions: 'Finely slice the potatoes and onion and slow-cook them in olive oil over low heat until soft. Mix the chickpea flour with water, kala namak salt, and turmeric. Drain the potatoes and mix them with the batter. Cook the omelette in a pan on both sides until set.'
+},
+{
+    name: "Gazpacho with Chickpea Croutons",
+    cuisine: "Mediterranean",
+    calories: 400,
+    protein: 18,
+    cookingTime: "15 mins",
+    ingredients: [
+        { item: "tomato", quantity: 300, unit: "g" },
+        { item: "cucumber", quantity: 100, unit: "g" },
+        { item: "green bell pepper", quantity: 60, unit: "g" },
+        { item: "garlic", quantity: 5, unit: "g" },
+        { item: "olive oil", quantity: 20, unit: "ml" },
+        { item: "sourdough bread", quantity: 30, unit: "g" },
+        { item: "chickpeas", quantity: 100, unit: "g" },
+        { item: "paprika", quantity: 2, unit: "g" }
+    ],
+    instructions: 'Blend the tomatoes, cucumber, pepper, garlic, and bread with olive oil and a little cold water until smooth. Season to taste. For the topping, sauté the cooked chickpeas with a pinch of paprika until slightly golden. Serve the gazpacho cold with the chickpeas on top.'
+},
+{
+    name: "Basque-Style Tofu with Asparagus (Tofu a la Basca)",
+    cuisine: "Mediterranean",
+    calories: 410,
+    protein: 25,
+    cookingTime: "20 mins",
+    ingredients: [
+        { item: "firm tofu", quantity: 180, unit: "g" },
+        { item: "shiitake mushrooms", quantity: 100, unit: "g" },
+        { item: "canned asparagus", quantity: 120, unit: "g" },
+        { item: "garlic", quantity: 10, unit: "g" },
+        { item: "fresh parsley", quantity: 20, unit: "g" },
+        { item: "white wine", quantity: 40, unit: "ml" },
+        { item: "olive oil", quantity: 20, unit: "ml" }
+    ],
+    instructions: 'Dice the tofu and brown it in a pan with oil. Set aside. In the same pan, sauté the garlic and sliced mushrooms. When golden, add the white wine. Add the tofu, chopped asparagus, and a large amount of fresh chopped parsley. Cook together for 2 minutes and serve.'
+},
+{
+    name: "Stewed Peas & Potato with Vegan Burger",
+    cuisine: "Mediterranean",
+    calories: 520,
+    protein: 28,
+    cookingTime: "30 mins",
+    ingredients: [
+        { item: "peas", quantity: 200, unit: "g" },
+        { item: "potato", quantity: 150, unit: "g" },
+        { item: "onion", quantity: 80, unit: "g" },
+        { item: "vegan patty", quantity: 120, unit: "g" },
+        { item: "vegetable broth", quantity: 100, unit: "ml" },
+        { item: "olive oil", quantity: 15, unit: "ml" }
+    ],
+    instructions: 'Sauté the chopped onion in a pot. Add the diced potato and cook for a couple of minutes. Add the peas and broth. Cover and cook over low heat until the potato is tender. Meanwhile, cook the vegan burger on a griddle. Serve the stewed peas and potato with the burger on the side.'
+},
+{
+    name: "Cauliflower with Beans & Smoked Tofu",
+    cuisine: "Mediterranean",
+    calories: 430,
+    protein: 25,
+    cookingTime: "20 mins",
+    ingredients: [
+        { item: "cauliflower", quantity: 250, unit: "g" },
+        { item: "white beans", quantity: 150, unit: "g" },
+        { item: "smoked tofu", quantity: 100, unit: "g" },
+        { item: "garlic", quantity: 8, unit: "g" },
+        { item: "paprika", quantity: 2, unit: "g" },
+        { item: "olive oil", quantity: 15, unit: "ml" }
+    ],
+    instructions: 'Boil the cauliflower until al dente. In a pan, sauté the garlic and sliced smoked tofu. Add the cauliflower and cooked white beans, sauté together for a few minutes with a bit of paprika. Serve hot.'
+},
+{
+    name: "Roasted Veggies with Vegan Sausage (Escalivada)",
+    cuisine: "Mediterranean",
+    calories: 480,
+    protein: 22,
+    cookingTime: "50 mins",
+    ingredients: [
+        { item: "eggplant", quantity: 200, unit: "g" },
+        { item: "red bell pepper", quantity: 150, unit: "g" },
+        { item: "onion", quantity: 100, unit: "g" },
+        { item: "vegan sausage", quantity: 120, unit: "g" },
+        { item: "olive oil", quantity: 25, unit: "ml" },
+        { item: "sourdough bread", quantity: 2, unit: "slices" }
+    ],
+    instructions: 'Roast the eggplant, pepper, and onion in the oven at 200°C (400°F) for 40-50 minutes. Meanwhile, cook the vegan sausages on a griddle. Peel and slice the roasted vegetables into strips and season with oil and salt. Serve them on a slice of toast with the sausage on the side.'
+},
+{
+    name: "Vegan Catalan Stew (Escudella Vegana)",
+    cuisine: "Mediterranean",
+    calories: 530,
+    protein: 25,
+    cookingTime: "60 mins",
+    ingredients: [
+        { item: "pasta shells", quantity: 60, unit: "g" },
+        { item: "chickpeas", quantity: 100, unit: "g" },
+        { item: "white beans", quantity: 100, unit: "g" },
+        { item: "potato", quantity: 120, unit: "g" },
+        { item: "carrot", quantity: 80, unit: "g" },
+        { item: "firm tofu", quantity: 120, unit: "g" },
+        { item: "breadcrumbs", quantity: 20, unit: "g" },
+        { item: "parsley", quantity: 10, unit: "g" }
+    ],
+    instructions: 'In a large pot, boil the vegetables (potato, carrot) and legumes in plenty of water or broth. For the "pilota" (meatball), mash the tofu with breadcrumbs, garlic, and parsley, form a large ball, and add it to the broth. Boil everything for 45 minutes. Finally, add the pasta and cook it in the same broth. Serve very hot.'
+},
+{
+    name: "Stuffed Zucchini with Textured Soy Protein",
+    cuisine: "Mediterranean",
+    calories: 460,
+    protein: 26,
+    cookingTime: "45 mins",
+    ingredients: [
+        { item: "zucchini", quantity: 300, unit: "g" },
+        { item: "tvp (textured vegetable protein)", quantity: 50, unit: "g" },
+        { item: "onion", quantity: 80, unit: "g" },
+        { item: "crushed tomatoes", quantity: 150, unit: "g" },
+        { item: "nutritional yeast", quantity: 15, unit: "g" },
+        { item: "oregano", quantity: 3, unit: "g" },
+        { item: "olive oil", quantity: 15, unit: "ml" }
+    ],
+    instructions: 'Hydrate the TVP with hot broth. Cut the zucchinis in half and scoop out the flesh. Sauté the onion, add the chopped zucchini flesh and the drained TVP. Add the tomato and oregano and cook for 10 min. Fill the zucchinis, sprinkle with nutritional yeast, and bake at 190°C (375°F) for 25-30 minutes.'
+},
+{
+    name: "Spinach, Tofu & Pine Nut Flatbread (Coca d'Espinacs)",
+    cuisine: "Mediterranean",
+    calories: 490,
+    protein: 22,
+    cookingTime: "30 mins",
+    ingredients: [
+        { item: "pizza dough", quantity: 150, unit: "g" },
+        { item: "spinach", quantity: 200, unit: "g" },
+        { item: "firm tofu", quantity: 100, unit: "g" },
+        { item: "pine nuts", quantity: 20, unit: "g" },
+        { item: "raisins", quantity: 20, unit: "g" },
+        { item: "garlic", quantity: 5, unit: "g" }
+    ],
+    instructions: 'Roll out the dough on a baking sheet. Sauté the garlic in a pan, add the spinach, and cook until wilted. Drain it well. Crumble the tofu and mix it with the spinach, pine nuts, and raisins. Spread the mixture over the dough and bake at 200°C (400°F) for 15-20 minutes.'
+}	
         { name: "Creamy Lentil Curry", cuisine: "South Asian", calories: 520, protein: 25, cookingTime: "30 mins", ingredients: [{item: "green lentils", quantity: 100, unit: "g"}, {item: "coconut milk", quantity: 150, unit: "ml"}, {item: "curry paste", quantity: 20, unit: "g"}, {item: "mixed vegetables", quantity: 250, unit: "g"}, {item: "brown rice", quantity: 80, unit: "g"}, {item: "spinach", quantity: 50, unit: "g"}], instructions: 'Cook brown rice. Sauté vegetables. Add green lentils, curry paste, coconut milk, and spinach. Simmer until lentils are tender and sauce has thickened. Serve with rice.' },
         { name: "Spaghetti with Marinara & Meatballs", cuisine: "European", calories: 550, protein: 28, cookingTime: "35 mins", ingredients: [{item: "whole grain pasta", quantity: 100, unit: "g"}, {item: "vegan meatballs", quantity: 120, unit: "g"}, {item: "marinara sauce", quantity: 150, unit: "ml"}, {item: "onion", quantity: 30, unit: "g"}, {item: "garlic", quantity: 10, unit: "g"}, {item: "fresh basil", quantity: 10, unit: "g"}], instructions: 'Cook pasta. Sauté onion and garlic. Add vegan meatballs and cook until browned. Stir in marinara sauce and simmer. Serve over pasta, topped with fresh basil.' },
         { name: "Sheet Pan Fajitas", cuisine: "Latin American", calories: 480, protein: 20, cookingTime: "25 mins", ingredients: [{item: "bell peppers", quantity: 200, unit: "g"}, {item: "onion", quantity: 100, unit: "g"}, {item: "mushrooms", quantity: 100, unit: "g"}, {item: "black beans", quantity: 80, unit: "g"}, {item: "fajita seasoning", quantity: 10, unit: "g"}, {item: "tortillas", quantity: 60, unit: "g"}, {item: "avocado", quantity: 50, unit: "g"}], instructions: 'Toss sliced bell peppers, onion, and mushrooms with black beans and fajita seasoning on a sheet pan. Roast until tender. Serve in warm tortillas with sliced avocado.' },
