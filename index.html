@@ -1908,32 +1908,46 @@
         }
 
         function prepareMealReview() {
-            userData.cookingFreq = document.getElementById('cookingFreq').value;
-            userData.variety = document.getElementById('variety').value;
-            userData.numWeeks = parseInt(document.getElementById('numWeeks').value, 10);
-            userData.substitutePreference = document.getElementById('substitutePreference').value;
-            userData.cuisinePreferences = Array.from(document.querySelectorAll('#cuisinePreferences input[type="checkbox"]:checked')).map(cb => cb.value);
+        userData.cookingFreq = document.getElementById('cookingFreq').value;
+        userData.variety = document.getElementById('variety').value;
+        userData.numWeeks = parseInt(document.getElementById('numWeeks').value, 10);
+        userData.substitutePreference = document.getElementById('substitutePreference').value;
+        userData.cuisinePreferences = Array.from(document.querySelectorAll('#cuisinePreferences input[type="checkbox"]:checked')).map(cb => cb.value);
 
-            if (!validateCurrentStep()) return;
-            
-            const mealsToFilter = JSON.parse(JSON.stringify(allMeals));
-            const mealChoiceMap = { 'low': 1, 'medium': Math.ceil(7 / 2), 'high': 7 };
-            const numUniqueMealsDesired = mealChoiceMap[userData.variety] || 7;
+        // This is a special instruction for the meal plan itself, not a food exclusion
+        // We add it here so if a user checks "gluten", we know to modify the text later.
+        if (document.getElementById('gluten').checked) {
+            if (!userData.foodExclusions.includes('gluten')) {
+                 userData.foodExclusions.push('gluten');
+            }
+        } else {
+            userData.foodExclusions = userData.foodExclusions.filter(ex => ex !== 'gluten');
+        }
 
-            const selectUniqueMeals = (arr, count) => {
-                if (!arr || arr.length === 0) return [];
-                const shuffled = arr.sort(() => 0.5 - Math.random());
-                return shuffled.slice(0, Math.min(count, shuffled.length));
-            };
 
-            const filteredMeals = {};
-            Object.keys(mealsToFilter).forEach(mealType => {
-                filteredMeals[mealType] = mealsToFilter[mealType].filter(meal => {
-                    const mealIngredients = meal.ingredients.map(ing => ing.item.toLowerCase());
-                    // CORRECTED LINE: Check if any ingredient item includes the exclusion string
-                    return !userData.foodExclusions.some(ex => mealIngredients.some(ingItem => ingItem.includes(ex)));
-                });
+        if (!validateCurrentStep()) return;
+        
+        const mealsToFilter = JSON.parse(JSON.stringify(allMeals));
+        const mealChoiceMap = { 'low': 1, 'medium': Math.ceil(7 / 2), 'high': 7 };
+        const numUniqueMealsDesired = mealChoiceMap[userData.variety] || 7;
+
+        const selectUniqueMeals = (arr, count) => {
+            if (!arr || arr.length === 0) return [];
+            const shuffled = arr.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, Math.min(count, shuffled.length));
+        };
+
+        const filteredMeals = {};
+        Object.keys(mealsToFilter).forEach(mealType => {
+            filteredMeals[mealType] = mealsToFilter[mealType].filter(meal => {
+                // NEW LOGIC: Check if any of the user's exclusions match any of the ingredient's tags.
+                // This will correctly filter out a meal with "bread" if the user checks "gluten".
+                const hasExcludedIngredient = userData.foodExclusions.some(exclusion => 
+                    meal.ingredients.some(ing => ing.tags && ing.tags.includes(exclusion))
+                );
+                return !hasExcludedIngredient;
             });
+        });
 
             if (userData.milkPreference && userData.milkPreference !== 'any') {
                 Object.keys(filteredMeals).forEach(mealType => {
@@ -1980,7 +1994,29 @@
                 displayErrorMessage('step5', errorMessage);
                 return;
             }
-            
+            if (userData.foodExclusions.includes('gluten')) {
+            Object.values(preliminaryMealChoices).forEach(mealArray => {
+                mealArray.forEach(meal => {
+                    meal.ingredients.forEach(ing => {
+                        if (ing.item.toLowerCase().includes('bread') || ing.item.toLowerCase().includes('toast')) {
+                            ing.item = 'gluten-free bread';
+                        }
+                        if (ing.item.toLowerCase().includes('pasta')) {
+                            ing.item = 'gluten-free pasta';
+                        }
+                        if (ing.item.toLowerCase().includes('oats')) {
+                            ing.item = 'gluten-free oats';
+                        }
+                        if (ing.item.toLowerCase().includes('tortilla')) {
+                            ing.item = 'gluten-free tortilla';
+                        }
+                         if (ing.item.toLowerCase().includes('soy sauce')) {
+                            ing.item = 'tamari (gluten-free soy sauce)';
+                        }
+                    });
+                });
+            });
+        }
             displayMealReview();
             nextStep();
         }
