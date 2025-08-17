@@ -94,7 +94,7 @@ const allMeals = {
         { name: "Beyond Burger with Side Salad", cuisine: "Western", calories: 600, protein: 25, cookingTime: "20 mins", ingredients: [{item: "beyond burger patty", quantity: 120, unit: "g"}, {item: "whole grain bun", quantity: 80, unit: "g", tags: ["gluten"]}, {item: "mixed greens", quantity: 100, unit: "g"}, {item: "dressing", quantity: 20, unit: "ml"}, {item: "onion", quantity: 20, unit: "g"}, {item: "tomato", quantity: 30, unit: "g"}], instructions: 'Cook Beyond Burger patty according to package. Toast bun. Assemble burger with desired toppings. Serve with a simple side salad.' },
         // --- New Catalan/Spanish Lunch Recipes ---
         {
-            name: "Mediterranean Lentil Stew (Llenties Estofades)",
+            name: "Mediterranean Lentil Stew",
             cuisine: "Mediterranean",
             calories: 480,
             protein: 24,
@@ -148,7 +148,7 @@ const allMeals = {
             instructions: 'Sauté the onion and grated tomato. Add the mushrooms and cook until browned. Toast the noodles in the same pan. Add the chickpeas and hot broth with saffron. Cook until the noodles have absorbed the liquid and are tender.'
         },
         {
-            name: "Vegan Seitan Stew (Fricandó Vegà)",
+            name: "Vegan Seitan Stew (Fricandó)",
             cuisine: "Mediterranean",
             calories: 510,
             protein: 30,
@@ -166,7 +166,7 @@ const allMeals = {
             instructions: 'Coat seitan steaks in flour and fry them. In the same pot, make a sofrito with onion and tomato. Add the mushrooms. Pour in the wine and let it evaporate. Return the seitan to the pot, cover with broth, and cook for 30 min. Add a picada (ground almonds and garlic) at the end. Serve with rice.'
         },
         {
-            name: "Breaded Seitan with Ratatouille (Seitan Arrebossat)",
+            name: "Breaded Seitan with Ratatouille",
             cuisine: "Mediterranean",
             calories: 490,
             protein: 28,
@@ -183,7 +183,7 @@ const allMeals = {
             instructions: 'Slice the seitan thinly, dip in plant milk, then in breadcrumbs. Fry until golden. For the ratatouille (samfaina), sauté the chopped vegetables (pepper, eggplant, zucchini) and finally add the tomato. Simmer for 20 minutes. Serve the seitan with the ratatouille.'
         },
         {
-            name: "Vegan Catalan Stew (Escudella Vegana)",
+            name: "Vegan Catalan Stew (Escudella)",
             cuisine: "Mediterranean",
             calories: 530,
             protein: 25,
@@ -259,7 +259,7 @@ const allMeals = {
         { name: "Impossible Burger with Sweet Potato Fries", cuisine: "Western", calories: 650, protein: 27, cookingTime: "30 mins", ingredients: [{item: "impossible burger patty", quantity: 120, unit: "g", tags: ["soy"]}, {item: "sweet potato", quantity: 200, unit: "g"}, {item: "whole grain bun", quantity: 80, unit: "g", tags: ["gluten"]}, {item: "ketchup", quantity: 20, unit: "g"}, {item: "lettuce", quantity: 20, unit: "g"}, {item: "tomato", quantity: 30, unit: "g"}], instructions: 'Cook Impossible Burger patty. Slice sweet potato into fries and bake. Assemble burger with bun, lettuce, tomato. Serve with fries and ketchup.' },
         // --- New Catalan/Spanish Dinner Recipes ---
         {
-            name: "Catalan Lentil Salad (Amanida de Llenties)",
+            name: "Catalan Lentil Salad",
             cuisine: "Mediterranean",
             calories: 430,
             protein: 21,
@@ -308,7 +308,7 @@ const allMeals = {
             instructions: 'Sauté the onion. Add the zucchini and broth, and cook for 15 minutes. Blend until creamy. Crumble the tempeh and sauté it in a pan until crispy. Serve the soup topped with the tempeh and a few fresh mint leaves.'
         },
         {
-            name: "White Beans with Sautéed Mushrooms (Mongetes amb Bolets)",
+            name: "White Beans with Sautéed Mushrooms",
             cuisine: "Mediterranean",
             calories: 410,
             protein: 22,
@@ -324,7 +324,7 @@ const allMeals = {
             instructions: 'Sauté the minced garlic in olive oil. Add the mushrooms and cook until they release their water. Pour in the white wine and let it evaporate. Add the cooked white beans, sauté everything together for 5 minutes, and sprinkle with fresh chopped parsley.'
         },
         {
-            name: "Potato & Green Beans with Tofu (Patata i Mongeta)",
+            name: "Potato & Green Beans with Tofu",
             cuisine: "Mediterranean",
             calories: 450,
             protein: 24,
@@ -340,7 +340,7 @@ const allMeals = {
             instructions: 'Boil the potatoes and green beans until tender. Drain them. In a pan, brown the diced tofu with oil and garlic. Add the potatoes and green beans, sauté everything together, and sprinkle with paprika before serving.'
         },
         {
-            name: "Vegan Spanish Omelette (Truita de Patates)",
+            name: "Vegan Spanish Omelette",
             cuisine: "Mediterranean",
             calories: 480,
             protein: 18,
